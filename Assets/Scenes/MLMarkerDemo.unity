@@ -309,18 +309,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c823467f10d8d54fbb71802f2ddc37c, type: 3}
---- !u!114 &934747853 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3360617494800046256, guid: 2ad7d02c3ee2a447abc9de300646685d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1533499251}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0cb9aa70a22847b5925ee5f067c10a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1533499251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -458,6 +446,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1611397074}
   - component: {fileID: 1611397073}
+  - component: {fileID: 1611397075}
   m_Layer: 0
   m_Name: Tracker
   m_TagString: Untagged
@@ -477,11 +466,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2c95a1a93e5008479fba8fcd3f523bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  XROrigin: {fileID: 934747853}
-  MarkerPrefab: {fileID: 680233281713652038, guid: 4c823467f10d8d54fbb71802f2ddc37c,
-    type: 3}
-  ArucoType: 4
-  DetectorProfile: 4
 --- !u!4 &1611397074
 Transform:
   m_ObjectHideFlags: 0
@@ -497,6 +481,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1611397075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611397072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea3fb803fe6b58d4baf3fc286a04de78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkerPrefab: {fileID: 680233281713652038, guid: 273defdea0f14c441acdf99100aeeafe,
+    type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
