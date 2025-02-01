@@ -3,19 +3,29 @@ using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.OpenXR;
 using MagicLeap.OpenXR.Features.MarkerUnderstanding;
+using System;
 
+/// <summary> Manages the detection of markers using MagicLeap2's features. </summary>
 public class ML2DetectionManager : MonoBehaviour
 {
+    /// <summary> Reference to the original transform point, needed for coordinate space conversion. </summary>
     private Transform _origin;
-    private MagicLeapMarkerUnderstandingFeature _markerFeature;
-    private MarkerDetector _markerDetector;
-    private AlignmentManager _alignmentManager;
 
+    /// <summary> Reference to MagicLeap's detection feature. </summary>
+    private MagicLeapMarkerUnderstandingFeature _markerFeature;
+
+    /// <summary> Detector used for marker tracking. </summary>
+    private MarkerDetector _markerDetector;
+
+    /// <summary> Event triggered when a marker is detected, providing marker information. </summary>
+    public event Action<MarkerInfo> OnMarkerDetected;
+
+    /// <summary> Prepares everything needed for marker detection. </summary>
     private void Start()
     {
+        // 1. Verifying correct XR implementation - if the origin exists and if marker detection is available
         XROrigin xrOrigin = FindAnyObjectByType<XROrigin>();
-        _markerFeature = OpenXRSettings.Instance.GetFeature<MagicLeapMarkerUnderstandingFeature>();
-        _alignmentManager = GetComponent<AlignmentManager>();
+        _markerFeature    = OpenXRSettings.Instance.GetFeature<MagicLeapMarkerUnderstandingFeature>();
 
         if (xrOrigin == null || _markerFeature == null || !_markerFeature.enabled)
         {
@@ -24,6 +34,7 @@ public class ML2DetectionManager : MonoBehaviour
             return;
         }
 
+        // 2. Configuration of the detection settings and creating of the detector object
         var detectorSettings = new MarkerDetectorSettings
         {
             MarkerType = MarkerType.Aruco,
@@ -32,11 +43,13 @@ public class ML2DetectionManager : MonoBehaviour
                 ArucoType = ArucoType.Dictionary_5x5_50 
             }
         };
-
         _markerDetector = _markerFeature.CreateMarkerDetector(detectorSettings);
-        _origin         = xrOrigin.CameraFloorOffsetObject.transform;
+        
+        // 3. Saving device origin coordinates
+        _origin = xrOrigin.CameraFloorOffsetObject.transform;
     }
 
+    /// <summary> Updates the marker detector and processes all (if any) detected markers. </summary>
     private void Update()
     {
         _markerFeature.UpdateMarkerDetectors();
@@ -46,6 +59,8 @@ public class ML2DetectionManager : MonoBehaviour
         }
     }
 
+    /// <summary> Processes each detected marker, verifies if its a valid detection, 
+    ///           and triggers the event for valid detections.</summary>
     private void ProcessMarkers()
     {
 
@@ -53,15 +68,14 @@ public class ML2DetectionManager : MonoBehaviour
         {
             if (!markerData.MarkerPose.HasValue) continue;
 
-            var markerInfo = new MarkerInfo
-            {
-                Id = markerData.MarkerNumber.ToString(),
-                Pose = new Pose(_origin.TransformPoint(markerData.MarkerPose.Value.position),
-                                _origin.rotation * markerData.MarkerPose.Value.rotation),
-                Size = markerData.MarkerLength
-            };
-
-            _alignmentManager.ProcessMarker(markerInfo);
+            OnMarkerDetected?.Invoke(
+                new MarkerInfo {
+                    Id   = markerData.MarkerNumber.ToString(),
+                    Pose = new Pose(_origin.TransformPoint(markerData.MarkerPose.Value.position),
+                                    _origin.rotation * markerData.MarkerPose.Value.rotation),
+                    Size = markerData.MarkerLength
+                }
+            );
         }
     }
 }
