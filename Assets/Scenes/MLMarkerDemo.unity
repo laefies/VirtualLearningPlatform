@@ -254,6 +254,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cube
       objectReference: {fileID: 0}
+    - target: {fileID: 680233281713652038, guid: 4c823467f10d8d54fbb71802f2ddc37c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2768706434876958901, guid: 4c823467f10d8d54fbb71802f2ddc37c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -267,7 +272,7 @@ PrefabInstance:
     - target: {fileID: 2768706434876958901, guid: 4c823467f10d8d54fbb71802f2ddc37c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2768706434876958901, guid: 4c823467f10d8d54fbb71802f2ddc37c,
         type: 3}
@@ -303,6 +308,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615472207275428720, guid: 4c823467f10d8d54fbb71802f2ddc37c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -493,8 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea3fb803fe6b58d4baf3fc286a04de78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MarkerPrefab: {fileID: 680233281713652038, guid: 273defdea0f14c441acdf99100aeeafe,
-    type: 3}
+  config: {fileID: 11400000, guid: c3c829a3db8bce448937f805a2712a45, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

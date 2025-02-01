@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1758fdf348d7375479485f879a3fcb29, type: 3}
+  m_Name: DemoConfiguration
+  m_EditorClassIdentifier: 
+  MarkerType: 0
+  ArucoDictionary: 4
+  EstimateArucoLength: 1
+  MarkerMappings:
+  - MarkerId: 1
+    SpawnablePrefab: {fileID: 5033761751286104639, guid: 5a1350b62d90c6c49aa5c361307170d1,
+      type: 3}
+  - MarkerId: 2
+    SpawnablePrefab: {fileID: 1299677250393587054, guid: ed9690e9cdf7c564d9b2da719cc7393f,
+      type: 3}
+  - MarkerId: 3
+    SpawnablePrefab: {fileID: 1299677250393587054, guid: eecf5cd5df13b2941a0810d8be956eab,
+      type: 3}
+  - MarkerId: 4
+    SpawnablePrefab: {fileID: 1299677250393587054, guid: 51ae93dc3d7e6fc4690e3c0fd1f055e7,
+      type: 3}

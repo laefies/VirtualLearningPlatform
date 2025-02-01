@@ -50,8 +50,9 @@ sysinfo.txt
 /Assets/NuGet
 /Assets/NuGet.meta
 
-# OpenCV+
-/Assets/OpenCV+Unity
+# Other Packages
+/Assets/Mushroom Forest
+Mushroom Forest.meta
 
 # Builds
 *.apk
