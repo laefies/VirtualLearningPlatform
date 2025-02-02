@@ -3,41 +3,27 @@
 ## What is it?
 Multi-device collaborative system that allows users to interact in a shared learning environment using AR and VR.
 
+At present, the current devices are supported:
+- **MagicLeap2**;
+
 ## Structure
 
 ### 📁 Scripts/
 All C# organized by functionality.
 
-#### Core/
-- **NetworkManager**: Connection management between devices, state synchronization.
-- **WorldManager**:   Shared environmente management and global state.
-- **DeviceManager**:  Abstraction for the various devices.
-
 #### AR/
-- **MarkerDetection/**
-  - Image processing and alignment system;
-  - Specific implementation for various objects and libraries;
 - **Devices/**
   - Specific implementations for various AR devices;
   - Abstractions and shared interfaces;
 
-#### VR/
-- **Devices/**
-  - Specific implementations for various AR devices;
-  - Abstractions and shared interfaces;
+#### Test/
+- Provisory, debugging or general testing *scripts*;
 
-#### Debug/
-- Logging and debugging system;
-- In-game console for easy debugging;
+#### Vision/
+- Classes and structures related to marker detection and object alignment;
 
 ### 📁 Prefabs/
-Project prefabs.
-
-- **UI/**: Interface elements, including debugging console;
-- **Markers/**: Visualizers and other utils regarding marks and detectable objects;
-
-### 📁 Resources/
-Resources and configuration files.
+Project prefabs, separated by tests.
 
 ## Environment Configuration
 
@@ -50,5 +36,5 @@ Resources and configuration files.
 ### Installation
 1. Clone the repository;
 2. Open the project on Unity Hub;
-3. Install via Package Manager all necessary packages;
-4. Configure XR settings as the documentation describes;
+3. Install via Package Manager all packages stated above;
+4. Configure XR settings;

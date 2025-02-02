@@ -17,7 +17,7 @@ MonoBehaviour:
   EstimateArucoLength: 1
   MarkerMappings:
   - MarkerId: 1
-    SpawnablePrefab: {fileID: 5033761751286104639, guid: 5a1350b62d90c6c49aa5c361307170d1,
+    SpawnablePrefab: {fileID: 6885388339068648950, guid: db9727358f14ddb4f9e554148536a690,
       type: 3}
   - MarkerId: 2
     SpawnablePrefab: {fileID: 1299677250393587054, guid: ed9690e9cdf7c564d9b2da719cc7393f,
