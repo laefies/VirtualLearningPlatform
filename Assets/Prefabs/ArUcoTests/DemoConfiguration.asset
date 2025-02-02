@@ -20,11 +20,11 @@ MonoBehaviour:
     SpawnablePrefab: {fileID: 6885388339068648950, guid: db9727358f14ddb4f9e554148536a690,
       type: 3}
   - MarkerId: 2
-    SpawnablePrefab: {fileID: 1299677250393587054, guid: ed9690e9cdf7c564d9b2da719cc7393f,
+    SpawnablePrefab: {fileID: 6533911759601820002, guid: b0a9b291b6b86db4791cfaa866d7d4bf,
       type: 3}
   - MarkerId: 3
-    SpawnablePrefab: {fileID: 1299677250393587054, guid: eecf5cd5df13b2941a0810d8be956eab,
+    SpawnablePrefab: {fileID: 8544284896621417048, guid: 2151eb8a867242944bbe568b6bebe4e4,
       type: 3}
   - MarkerId: 4
-    SpawnablePrefab: {fileID: 1299677250393587054, guid: 51ae93dc3d7e6fc4690e3c0fd1f055e7,
+    SpawnablePrefab: {fileID: 6185474822961324127, guid: 7e42c376320a0604c8fc68fb486ba066,
       type: 3}
