@@ -8,9 +8,21 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MLMarkerDemo.unity
     guid: fba0520c0a230fc47a5959b99bd55e3a
+  - enabled: 0
+    path: Assets/Scenes/HandTrackingTest.unity
+    guid: 81d2ecb7af383a54f9cdc24b298a17fa
+  - enabled: 0
+    path: Assets/Samples/XR Interaction Toolkit/2.5.2/Hands Interaction Demo/HandsDemoScene.unity
+    guid: 3ff35cecbcc52cc42945cf531638a60a
+  - enabled: 0
+    path: Assets/Scenes/HandMarkerDemo.unity
+    guid: 509a8f934a463d94cac0ab5c7fae3272
+  - enabled: 1
+    path: Assets/Scenes/MarkerHandsDemo.unity
+    guid: 7648c49d56524994a9694c8fd2dbe618
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: be2dfd4e545ad4e4cbdd3097b0b417e2,
       type: 2}

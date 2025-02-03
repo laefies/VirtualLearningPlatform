@@ -7,7 +7,7 @@ public class Spawnable : MonoBehaviour
     [SerializeField] private float positionLerpSpeed  = 10000f;
     [SerializeField] private float rotationLerpSpeed  = 10000f;
     [SerializeField] private float dockMultiplier     = 1.5f;
-    [SerializeField] private float disableTime        = 1f;
+    [SerializeField] private float disableTime        = .5f;
 
     private bool _isGrabbed  = false;
     private bool _withinDock = true;

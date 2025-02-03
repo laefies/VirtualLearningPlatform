@@ -10,4 +10,5 @@
     </activity>
   </application>
   <uses-permission android:name="com.magicleap.permission.MARKER_TRACKING" />
+  <uses-permission android:name="com.magicleap.permission.HAND_TRACKING" />
 </manifest>

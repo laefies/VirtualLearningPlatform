@@ -54,6 +54,8 @@ sysinfo.txt
 /Assets/Mushroom Forest
 Mushroom Forest.meta
 
+/[Aa]ssets/[Ss]amples/*
+
 # Builds
 *.apk
 *.aab
