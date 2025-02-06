@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1758fdf348d7375479485f879a3fcb29, type: 3}
+  m_Name: SunAppConfiguration
+  m_EditorClassIdentifier: 
+  MarkerType: 0
+  ArucoDictionary: 4
+  EstimateArucoLength: 1
+  MarkerMappings:
+  - MarkerId: 1
+    SpawnablePrefab: {fileID: 5244820236726262426, guid: 0a6c8b8599c9b7442ae994ecce695fec,
+      type: 3}

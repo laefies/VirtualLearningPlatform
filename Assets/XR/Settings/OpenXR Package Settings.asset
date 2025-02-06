@@ -34,7 +34,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd2e160e79e4358a71fa4a1592da582, type: 3}
   m_Name: MagicLeapPhysicalOcclusionFeature Android
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Magic Leap 2 Physical Occlusion
   version: 1.0.0
   featureIdInternal: com.magicleap.openxr.feature.ml2_physical_occlusion
@@ -390,8 +390,8 @@ MonoBehaviour:
   FocusDistance: 0
   UseProtectedSurface: 0
   UseVignetteMode: 0
-  GlobalDimmerEnabled: 0
-  GlobalDimmerValue: 0
+  GlobalDimmerEnabled: 1
+  GlobalDimmerValue: 0.13
 --- !u!114 &-4210848673589204334
 MonoBehaviour:
   m_ObjectHideFlags: 0

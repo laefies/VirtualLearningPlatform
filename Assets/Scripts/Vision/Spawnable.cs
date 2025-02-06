@@ -4,8 +4,8 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// <summary> Component that handles objects that can be spawned over detected marks. </summary>
 public class Spawnable : MonoBehaviour
 {
-    [SerializeField] private float positionLerpSpeed  = 10000f;
-    [SerializeField] private float rotationLerpSpeed  = 10000f;
+    [SerializeField] private float positionLerpSpeed  = .5f;
+    [SerializeField] private float rotationLerpSpeed  = .5f;
     [SerializeField] private float dockMultiplier     = 1.5f;
     [SerializeField] private float disableTime        = .5f;
 
