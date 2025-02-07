@@ -12,7 +12,6 @@ public class AlignmentManager : MonoBehaviour
     /// <summary> Dictionary of all currently tracked objects, mapped by their IDs. </summary>
     private Dictionary<string, Spawnable> _tracked = new Dictionary<string, Spawnable>();
 
-    // TODO
     /// <summary> Reference to the marker detection manager of the device in-use.</summary>
     private ML2DetectionManager detectionManager;
 

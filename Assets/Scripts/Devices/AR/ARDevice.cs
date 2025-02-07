@@ -7,7 +7,6 @@ public class ARDevice : MonoBehaviour
 {
     public static ARDevice Instance { get; private set; }
 
-    // TODO Abstract? Make Vision Manager?
     [SerializeField] public ML2DetectionManager Detection;
     [SerializeField] public AlignmentManager Alignment;
     [SerializeField] public XRInteractionManager Interaction;

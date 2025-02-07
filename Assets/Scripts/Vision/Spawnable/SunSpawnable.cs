@@ -1,8 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 
-/// <summary> Component that handles objects that can be spawned over detected marks. </summary>
-public class Spawnable : MonoBehaviour
+public class SunSpawnable : MonoBehaviour
 {
     [SerializeField] private float positionLerpSpeed  = .5f;
     [SerializeField] private float rotationLerpSpeed  = .5f;
@@ -11,11 +11,11 @@ public class Spawnable : MonoBehaviour
 
     private bool _isGrabbed  = false;
     private bool _withinDock = true;
-    private MarkerInfo _marker;
+    protected MarkerInfo _marker;
     private float _lastSeen  = 0f;
     private Rigidbody _rb;
 
-    void Awake()
+    protected void Awake()
     {
         _rb = GetComponent<Rigidbody>(); 
     }
@@ -51,7 +51,7 @@ public class Spawnable : MonoBehaviour
         _marker   = markerInfo;
     }
 
-    private void Update()
+    protected void Update()
     {
         _lastSeen += Time.deltaTime;
 
