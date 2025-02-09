@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(LineRenderer))]
 [RequireComponent(typeof(Rigidbody))]
@@ -9,6 +10,7 @@ public class SunInteractable : Interactable
 {
     // TODO » Melhorar raio visualmente;
     private LineRenderer _beam;
+    public Text _infoPanel;
 
     public override void PrepareComponents()
     {
@@ -28,7 +30,7 @@ public class SunInteractable : Interactable
         _beam.SetPosition(0, transform.position);
         _beam.SetPosition(1, panel.Pose.position);
 
-        Debug.Log(GetIncidenceAngle(panel));
+        _infoPanel.text = $"    Angle: {GetIncidenceAngle(panel)}°\n    Light: ";
     }
 
     public float GetIncidenceAngle(MarkerInfo panel)
@@ -37,7 +39,7 @@ public class SunInteractable : Interactable
         Vector3 sunToPanel  = (panel.Pose.position - transform.position).normalized;
 
         float angleRad = Mathf.Acos(Vector3.Dot(panelNormal, sunToPanel));
-        return angleRad * Mathf.Rad2Deg;
+        return Mathf.Round(angleRad * Mathf.Rad2Deg);
     }
 
 }
