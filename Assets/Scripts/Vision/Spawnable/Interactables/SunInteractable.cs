@@ -10,16 +10,19 @@ public class SunInteractable : Interactable
 {
     // TODO » Melhorar raio visualmente;
     private LineRenderer _beam;
-    public Text _infoPanel;
+    private float _angle = 90;
+    private float _light = 0.8f;
+
+    public Text _angleText;
+    public Text _lightText;
 
     public override void PrepareComponents()
     {
         _beam = GetComponent<LineRenderer>();
         _beam.startWidth = 0.01f;
         _beam.endWidth   = 0.03f;
-        _beam.startColor = Color.red;
-        _beam.endColor   = Color.red;
-        _beam.material   = new Material(Shader.Find("Sprites/Default"));
+        // _beam.startColor = Color.red;
+        // _beam.endColor   = Color.red;
     }
 
     public override void UpdateComponents()
@@ -30,16 +33,22 @@ public class SunInteractable : Interactable
         _beam.SetPosition(0, transform.position);
         _beam.SetPosition(1, panel.Pose.position);
 
-        _infoPanel.text = $"    Angle: {GetIncidenceAngle(panel)}°\n    Light: ";
+        GetIncidenceAngle(panel);
     }
 
-    public float GetIncidenceAngle(MarkerInfo panel)
+    public void GetIncidenceAngle(MarkerInfo panel)
     {
         Vector3 panelNormal = panel.Pose.rotation * Vector3.up;
         Vector3 sunToPanel  = (panel.Pose.position - transform.position).normalized;
 
         float angleRad = Mathf.Acos(Vector3.Dot(panelNormal, sunToPanel));
-        return Mathf.Round(angleRad * Mathf.Rad2Deg);
+
+        _angle = Mathf.Round(angleRad * Mathf.Rad2Deg);
+        _angleText.text = $"    Angle: {_angle}°";
     }
 
+    public void SetLightPercentage(float value) {
+        _light = value;
+        _lightText.text = $"{Mathf.Round(_light * 100)}%";
+    }
 }

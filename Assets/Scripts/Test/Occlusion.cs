@@ -48,7 +48,7 @@ public class Occlusion : MonoBehaviour
 
         // EXTRA
         MagicLeapRenderingExtensionsFeature rendering = OpenXRSettings.Instance.GetFeature<MagicLeapRenderingExtensionsFeature>();
-        rendering.BlendMode = XrEnvironmentBlendMode.AlphaBlend;
+       // rendering.BlendMode = XrEnvironmentBlendMode.AlphaBlend;
 
     }
 
