@@ -19,7 +19,7 @@ public abstract class Interactable : MonoBehaviour
         float distance      = Vector3.Distance(transform.position, markInfo.Pose.position);
 
         if (distance > markInfo.Size * dockTolMultiplier)
-            spawnable.SetIsDocked(false);
+            spawnable.ChangeDockStatus(false);
     }
 
     public abstract void PrepareComponents();

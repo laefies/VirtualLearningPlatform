@@ -43,8 +43,8 @@ public class SunInteractable : Interactable
 
         float angleRad = Mathf.Acos(Vector3.Dot(panelNormal, sunToPanel));
 
-        _angle = Mathf.Round(angleRad * Mathf.Rad2Deg);
-        _angleText.text = $"    Angle: {_angle}°";
+        _angle = 180-Mathf.Round(angleRad * Mathf.Rad2Deg);
+        _angleText.text = $"{_angle}°";
     }
 
     public void SetLightPercentage(float value) {

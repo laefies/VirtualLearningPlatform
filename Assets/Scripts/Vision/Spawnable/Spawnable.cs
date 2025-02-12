@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class Spawnable : MonoBehaviour
@@ -6,17 +7,20 @@ public class Spawnable : MonoBehaviour
     [SerializeField] private float positionLerpSpeed = .5f;
     [SerializeField] private float rotationLerpSpeed = .5f;
 
-    private bool _isDocked = true;
     private MarkerInfo _marker;
+    public GameObject dock;
+    public Toggle dockToggle;
+    public Transform dockableTransforms;
 
     public MarkerInfo GetMarkerInfo()
     {
         return _marker;
     }
 
-    public void SetIsDocked(bool value)
+    public void ChangeDockStatus(bool isDocked)
     {
-        _isDocked = value;
+        dockableTransforms.SetParent(isDocked ? transform : null);
+        dockToggle.isOn = isDocked;
     }
 
     public void UpdateTransform(MarkerInfo markerInfo)
@@ -26,11 +30,11 @@ public class Spawnable : MonoBehaviour
 
     void Update()
     {
-        if (_isDocked) {
-            transform.position   = Vector3.Lerp(transform.position, _marker.Pose.position, Time.deltaTime * positionLerpSpeed);
-            transform.rotation   = Quaternion.Slerp(transform.rotation, _marker.Pose.rotation, Time.deltaTime * rotationLerpSpeed);
-            transform.localScale = Vector3.one * _marker.Size;
-        }
+        // transform.position = Vector3.Lerp(transform.position, _marker.Pose.position, Time.deltaTime * positionLerpSpeed);
+        // transform.rotation = Quaternion.Slerp(transform.rotation, _marker.Pose.rotation, Time.deltaTime * rotationLerpSpeed);
+        // transform.localScale = Vector3.one * _marker.Size;
+        transform.SetPositionAndRotation(_marker.Pose.position, _marker.Pose.rotation);
+        transform.localScale = Vector3.one * _marker.Size;
     }
 
 }
