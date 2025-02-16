@@ -8,7 +8,6 @@ public class Spawnable : MonoBehaviour
     [SerializeField] private float rotationLerpSpeed = .5f;
 
     private MarkerInfo _marker;
-    public GameObject dock;
     public Toggle dockToggle;
     public Transform dockableTransforms;
 
