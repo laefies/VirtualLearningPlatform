@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+// TODO Periodically check for objects that havent been updated in a while.
+
 /// <summary> Handles spawning of objects based on the detected markers. </summary>
 public class AlignmentManager : MonoBehaviour
 {

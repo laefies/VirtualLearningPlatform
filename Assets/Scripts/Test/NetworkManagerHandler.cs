@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class NetworkManagerHandler : MonoBehaviour
 {
-    [SerializeField] private bool isHost;
 
     void Start()
     {
-        Debug.Log("Debug: Hii");
-        if (isHost) {
+        // TODO Designated server
+        if (Application.isEditor && Application.isPlaying) {
             NetworkManager.Singleton.StartHost();
         } else {
             Debug.Log("Debug: Trying client");
