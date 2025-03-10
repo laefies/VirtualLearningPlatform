@@ -18,7 +18,8 @@ public class ML2DetectionManager : MonoBehaviour
     private MarkerDetector _markerDetector;
 
     /// <summary> Event triggered when a marker is detected, providing marker information. </summary>
-    public event Action<MarkerInfo> OnMarkerDetected;
+    //public event Action<MarkerInfo> OnMarkerDetected;
+    private NetworkObjectManager _objectManager;
 
     /// <summary> Prepares everything needed for marker detection. </summary>
     private void Start()
@@ -47,6 +48,9 @@ public class ML2DetectionManager : MonoBehaviour
         
         // 3. Saving device origin coordinates
         _origin = xrOrigin.CameraFloorOffsetObject.transform;
+
+        // 4. Saving information regarding spawner
+        _objectManager = FindObjectOfType<NetworkObjectManager>();
     }
 
     /// <summary> Updates the marker detector and processes all (if any) detected markers. </summary>
@@ -68,14 +72,14 @@ public class ML2DetectionManager : MonoBehaviour
         {
             if (!markerData.MarkerPose.HasValue) continue;
 
-            OnMarkerDetected?.Invoke(
+            _objectManager?.ProcessMarker(
                 new MarkerInfo {
                     Id   = markerData.MarkerNumber.ToString(),
                     Pose = new Pose(_origin.TransformPoint(markerData.MarkerPose.Value.position),
                                     _origin.rotation * markerData.MarkerPose.Value.rotation),
                     Size = markerData.MarkerLength
                 }
-            );
+            );            
         }
     }
 }
