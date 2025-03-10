@@ -10,56 +10,58 @@ public class Detector : MonoBehaviour
 
     private Worker _worker;
 
-    private Tensor<float> _lastOutput;
+    private Tensor<float> _output0, _output1;
 
     void OnEnable()
     {
+        // Prepare model
         _worker = new Worker(ModelLoader.Load(modelAsset), BackendType.GPUCompute);
     }
 
-    public void TreatResults()
+    public static float[,] Reshape(float[] flattenedArray, int rows, int cols, bool transpose = false)
     {
-        if (_lastOutput == null)
+        float[,] result = new float[transpose ? cols : rows, transpose ? rows : cols];
+        
+        if (transpose)
         {
-            Debug.LogError("No output tensor to process.");
-            return;
+            for (int i = 0; i < flattenedArray.Length; i++)
+                result[i % cols, i / cols] = flattenedArray[i];
+        }
+        else
+        {
+            for (int i = 0; i < flattenedArray.Length; i++)
+                result[i / cols, i % cols] = flattenedArray[i];
         }
 
-        Debug.Log(_lastOutput[0]);
-
-        for (int i = 0; i < _lastOutput.shape[1]; i++)
-        {
-            Debug.Log(_lastOutput[0, i]);
-
-            // float x      = _lastOutput[0, i, 0]; // X-coordinate
-            // float y          = _lastOutput[0, i, 1]; // Y-coordinate
-
-            // float width      = _lastOutput[0, i, 2];
-            // float height     = _lastOutput[0, i, 3];
-
-            // float confidence = _lastOutput[0, i, 4];
-            // int classId = (int)_lastOutput[0, i, 5]; // Class ID (assuming last index)
-
-            // if (confidence < 0.5f) continue;
-
-            // Debug.Log($"Detected object: Class {classId}, Confidence {confidence}, Box: ({x}, {y}, {width}, {height})");
-        }
+        return result;
     }
 
+    public void TreatResults()
+    {        
+        if (_output0 == null || _output1 == null) return;
 
+        float[] output1 = _output1.DownloadToArray();
+
+        float[,] output0 = Reshape(_output0.DownloadToArray(), _output0.shape[1], _output0.shape[2], true);        
+
+
+    }
+
+    // TODO 
+    // Save original size? 
+    // Make async
+    // Obter número classes e etc em runtime
     public void Detect(Texture2D imageTexture)
     {
-
-        if (_worker == null)
-        {
-            Debug.LogError("Worker is not initialized!");
-            return;
-        }
+        if (_worker == null) return;
 
         _worker.Schedule(TextureConverter.ToTensor(imageTexture, width: 640, height: 640));
 
-        var results = _worker.PeekOutput() as Tensor<float>;
-        _lastOutput = results.ReadbackAndClone();
+        var outputTensor0 = _worker.PeekOutput("output0") as Tensor<float>;
+        var outputTensor1 = _worker.PeekOutput("output1") as Tensor<float>;
+
+        _output0 = outputTensor0.ReadbackAndClone();
+        _output1 = outputTensor1.ReadbackAndClone();
 
         TreatResults();
     }
@@ -67,5 +69,7 @@ public class Detector : MonoBehaviour
     void OnDisable()
     {
         _worker?.Dispose();
+        _output0?.Dispose();
+        _output1?.Dispose();
     }
 }

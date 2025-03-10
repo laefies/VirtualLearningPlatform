@@ -53,6 +53,7 @@ public class SunSpawnable : MonoBehaviour
 
     protected void Update()
     {
+        Debug.Log("AAA: Testing");
         _lastSeen += Time.deltaTime;
 
         if (!_isGrabbed && _withinDock && _lastSeen >= disableTime)
