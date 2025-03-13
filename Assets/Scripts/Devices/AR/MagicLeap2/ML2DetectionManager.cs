@@ -72,7 +72,7 @@ public class ML2DetectionManager : MonoBehaviour
         {
             if (!markerData.MarkerPose.HasValue) continue;
 
-            _objectManager?.ProcessMarker(
+            _objectManager?.ProcessMarkerServerRpc(
                 new MarkerInfo {
                     Id   = markerData.MarkerNumber.ToString(),
                     Pose = new Pose(_origin.TransformPoint(markerData.MarkerPose.Value.position),

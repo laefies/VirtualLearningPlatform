@@ -20,7 +20,7 @@ public struct MarkerInfo : INetworkSerializable
     {
         serializer.SerializeValue(ref Id);
         
-        Vector3 position = Pose.position;
+        Vector3 position    = Pose.position;
         Quaternion rotation = Pose.rotation;
         serializer.SerializeValue(ref position);
         serializer.SerializeValue(ref rotation);

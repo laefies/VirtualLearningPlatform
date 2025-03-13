@@ -12,6 +12,7 @@ public class PlayerManager : NetworkBehaviour
         {
             GameObject devicePrefab = Application.isEditor ? testDevice : ml2Device;
             GameObject deviceInstance = Instantiate(devicePrefab, transform);
+
         }
     }
 }

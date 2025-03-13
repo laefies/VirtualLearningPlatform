@@ -10,27 +10,14 @@ public class NetworkObjectManager : NetworkBehaviour
 
     private Dictionary<string, Spawnable> _tracked = new Dictionary<string, Spawnable>();
 
-    private void Awake()
+    void Start()
     {
         config.Initialize();
     }
 
     public void ProcessMarker(MarkerInfo markerInfo)
     {
-        if (IsClient) {
-
-            ProcessMarkerServerRpc(markerInfo);
-
-            GameObject[] allObjects = FindObjectsOfType<GameObject>();
-
-            foreach (GameObject obj in allObjects)
-            {
-                if (obj.transform.parent == null) // Only objects without a parent
-                {
-                    Debug.Log(obj.name + ": " + obj.transform.position);
-                }
-            }
-        }
+        if (IsClient) ProcessMarkerServerRpc(markerInfo);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -49,16 +36,16 @@ public class NetworkObjectManager : NetworkBehaviour
 
     private void SpawnObject(MarkerInfo markerInfo)
     {
-        GameObject obj = Instantiate(config.GetPrefab(markerInfo.Id));
-        obj.GetComponent<NetworkObject>().Spawn(true);
+        GameObject spawnedObject = Instantiate(config.GetPrefab(markerInfo.Id));
+        spawnedObject.GetComponent<NetworkObject>().Spawn(true);
 
-        Spawnable spawnable = obj.GetComponent<Spawnable>();
+        Spawnable spawnable = spawnedObject.GetComponent<Spawnable>();
         spawnable.UpdateTransform(markerInfo);
         _tracked[markerInfo.Id] = spawnable;
     }
 
     private void UpdateObject(MarkerInfo markerInfo)
-    {
+    {        
         _tracked[markerInfo.Id].UpdateTransform(markerInfo);
     }
 }

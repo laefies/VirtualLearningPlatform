@@ -1,39 +1,57 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit;
+using Unity.Netcode;
 
-public class Spawnable : MonoBehaviour
+public class Spawnable : NetworkBehaviour
 {
-    [SerializeField] private float positionLerpSpeed = .5f;
-    [SerializeField] private float rotationLerpSpeed = .5f;
+    //private MarkerInfo _marker;
+    private NetworkVariable<MarkerInfo> _marker = new NetworkVariable<MarkerInfo>(
+        new MarkerInfo()
+        {
+            Id = "Default", Pose = new Pose(Vector3.zero, Quaternion.identity), Size = 1.0f
+        },
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server);
 
-    private MarkerInfo _marker;
     public Toggle dockToggle;
     public Transform dockableTransforms;
 
     public MarkerInfo GetMarkerInfo()
     {
-        return _marker;
-    }
-
-    public void ChangeDockStatus(bool isDocked)
-    {
-        dockableTransforms.SetParent(isDocked ? transform : null);
-        dockToggle.isOn = isDocked;
+        return _marker.Value;
     }
 
     public void UpdateTransform(MarkerInfo markerInfo)
     {
-        _marker = markerInfo;
+        if (IsServer)
+            _marker.Value = markerInfo;
     }
 
-    void Update()
+    void Update() {
+        if (!IsOwner) return;
+
+        transform.SetPositionAndRotation(_marker.Value.Pose.position, _marker.Value.Pose.rotation);
+        transform.localScale = Vector3.one * _marker.Value.Size;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ChangeDockStatusServerRpc(bool isDocked)
     {
-        // transform.position = Vector3.Lerp(transform.position, _marker.Pose.position, Time.deltaTime * positionLerpSpeed);
-        // transform.rotation = Quaternion.Slerp(transform.rotation, _marker.Pose.rotation, Time.deltaTime * rotationLerpSpeed);
-        // transform.localScale = Vector3.one * _marker.Size;
-        transform.SetPositionAndRotation(_marker.Pose.position, _marker.Pose.rotation);
-        transform.localScale = Vector3.one * _marker.Size;
+        Debug.Log("Server dock: " + isDocked);
+        dockableTransforms.SetParent(isDocked ? transform : null);
+        dockToggle.isOn = isDocked;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestOwnershipServerRpc(ServerRpcParams rpcParams = default)
+    {
+        NetworkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
+    }
+
+    [ServerRpc]
+    public void ReturnOwnershipServerRpc()
+    {
+        NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
     }
 
 }
