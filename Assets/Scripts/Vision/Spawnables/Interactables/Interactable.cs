@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.Netcode;
 
-public abstract class Interactable : MonoBehaviour
+public abstract class Interactable : NetworkBehaviour
 {
     [SerializeField] private float dockTolMultiplier = 1.5f;
     protected Spawnable spawnable;
@@ -35,10 +35,10 @@ public abstract class Interactable : MonoBehaviour
         float distance      = Vector3.Distance(transform.position, markInfo.Pose.position);
 
         if (distance > markInfo.Size * dockTolMultiplier)
-            spawnable.ChangeDockStatusServerRpc(false);
+            spawnable.ChangeDockStatus(false);
     }
 
-    void Update() {
+    void Update() {    
         UpdateComponents();
     }
 

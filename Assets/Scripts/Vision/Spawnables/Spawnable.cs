@@ -4,7 +4,7 @@ using Unity.Netcode;
 
 public class Spawnable : NetworkBehaviour
 {
-    //private MarkerInfo _marker;
+    private NetworkVariable<bool> _isDocked = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<MarkerInfo> _marker = new NetworkVariable<MarkerInfo>(
         new MarkerInfo()
         {
@@ -15,6 +15,18 @@ public class Spawnable : NetworkBehaviour
 
     public Toggle dockToggle;
     public Transform dockableTransforms;
+
+    void Start() {
+        _isDocked.OnValueChanged += (oldValue, newValue) => {
+            dockToggle.isOn = newValue;
+        };
+    }
+
+    public void ChangeDockStatus(bool newDockState) {
+        if (_isDocked.Value == newDockState) return;
+
+        ChangeDockStatusServerRpc(newDockState);
+    }
 
     public MarkerInfo GetMarkerInfo()
     {
@@ -35,11 +47,10 @@ public class Spawnable : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void ChangeDockStatusServerRpc(bool isDocked)
+    private void ChangeDockStatusServerRpc(bool newDockState)
     {
-        Debug.Log("Server dock: " + isDocked);
-        dockableTransforms.SetParent(isDocked ? transform : null);
-        dockToggle.isOn = isDocked;
+        dockableTransforms.SetParent(newDockState ? transform : null);
+        _isDocked.Value = newDockState;
     }
 
     [ServerRpc(RequireOwnership = false)]
