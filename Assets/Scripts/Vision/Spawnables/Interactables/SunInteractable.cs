@@ -29,6 +29,7 @@ public class SunInteractable : Interactable
             _lightSlider.SetValueWithoutNotify(newValue);
             _lightText.text = $"{Mathf.Round(newValue * 100)}%";
             UpdateCloudVisibility();
+            UpdateBeam();
         }; 
 
         _angle.OnValueChanged += (oldValue, newValue) => {
@@ -96,7 +97,7 @@ public class SunInteractable : Interactable
                 if (!cloud.activeSelf)
                 {
                     Vector3 topPosition    = cloud.transform.localPosition;
-                    Vector3 bottomPosition = topPosition + new Vector3(0, 0, 1.5f); 
+                    Vector3 bottomPosition = topPosition + new Vector3(0, -1.5f, 0); 
                     cloud.transform.localPosition = bottomPosition;
                     cloud.SetActive(true);
                     cloud.transform.DOLocalMove(topPosition, 0.5f);
@@ -106,7 +107,7 @@ public class SunInteractable : Interactable
             {
                 if (!DOTween.IsTweening(cloud.transform) && cloud.activeSelf) {
                     Vector3 topPosition    = cloud.transform.localPosition;
-                    Vector3 bottomPosition = topPosition + new Vector3(0, 0, 1.5f); 
+                    Vector3 bottomPosition = topPosition + new Vector3(0, -1.5f, 0); 
 
                     cloud.transform.DOLocalMove(bottomPosition, 0.2f).OnComplete(() =>
                     {

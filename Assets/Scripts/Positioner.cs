@@ -61,12 +61,12 @@ public class Positioner : MonoBehaviour
             Vector3 lookDirection = xrCamera.position - transform.position;
             lookDirection.y = 0;
             transform.rotation = Quaternion.LookRotation(lookDirection);
+        } 
+        else
+        {
+            Vector3 targetForward = target.forward;
+            targetForward.y = 0;
+            transform.rotation = Quaternion.LookRotation(targetForward);
         }
-        //     else
-        // {
-        //     Vector3 targetForward = target.forward;
-        //     targetForward.y = 0;
-        //     transform.rotation = Quaternion.LookRotation(targetForward);
-        // }
     }
 }
