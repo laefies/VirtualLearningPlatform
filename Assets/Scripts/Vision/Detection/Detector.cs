@@ -1,75 +1,113 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Sentis;
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using NativeWebSocket;
 
 public class Detector : MonoBehaviour
 {
-    [SerializeField]
-    private ModelAsset modelAsset;
+    [SerializeField] private string serverUrl = "ws://localhost:8765";
+    private WebSocket websocket;
+    private bool isConnected = false;
+    private Queue<byte[]> messageQueue = new Queue<byte[]>();
+    private object queueLock = new object();
+    private bool awaitingResponse = false;
 
-    private Worker _worker;
-
-    private Tensor<float> _output0, _output1;
-
-    void OnEnable()
+    void Start()
     {
-        // Prepare model
-        _worker = new Worker(ModelLoader.Load(modelAsset), BackendType.GPUCompute);
+        ConnectToServer();
     }
 
-    public static float[,] Reshape(float[] flattenedArray, int rows, int cols, bool transpose = false)
+    async void Update()
     {
-        float[,] result = new float[transpose ? cols : rows, transpose ? rows : cols];
+        if (websocket == null) return;
         
-        if (transpose)
+        #if !UNITY_WEBGL || UNITY_EDITOR
+        websocket.DispatchMessageQueue();
+        #endif
+        
+        if (isConnected)
         {
-            for (int i = 0; i < flattenedArray.Length; i++)
-                result[i % cols, i / cols] = flattenedArray[i];
+            lock (queueLock)
+            {
+                while (messageQueue.Count > 0)
+                {
+                    byte[] message = messageQueue.Dequeue();
+                    SendMessageAsync(message);
+                }
+            }
         }
-        else
+    }
+
+    public async void ConnectToServer()
+    {
+        websocket = new WebSocket(serverUrl);
+
+        websocket.OnOpen += () => 
         {
-            for (int i = 0; i < flattenedArray.Length; i++)
-                result[i / cols, i % cols] = flattenedArray[i];
+            Debug.Log("Connection open!");
+            isConnected = true;
+        };
+
+        websocket.OnClose += (e) => 
+        {
+            Debug.Log($"Connection closed! Code: {e}");
+            isConnected = false;
+        };
+
+        websocket.OnMessage += (bytes) => 
+        {
+            var message = Encoding.UTF8.GetString(bytes);
+            Debug.Log($"Received message: {message}");
+            awaitingResponse = false;
+        };
+
+        websocket.OnError += (e) =>
+        { 
+            Debug.LogError($"WebSocket Error: {e}");
+        };
+
+        try
+        {
+            await websocket.Connect();
         }
-
-        return result;
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to connect to WebSocket server: {ex.Message}");
+        }
     }
 
-    public void TreatResults()
-    {        
-        if (_output0 == null || _output1 == null) return;
-
-        float[] output1 = _output1.DownloadToArray();
-
-        float[,] output0 = Reshape(_output0.DownloadToArray(), _output0.shape[1], _output0.shape[2], true);        
-
-
-    }
-
-    // TODO 
-    // Save original size? 
-    // Make async
-    // Obter número classes e etc em runtime
-    public void Detect(Texture2D imageTexture)
+    public void QueueFrameToSend(byte[] frameData)
     {
-        if (_worker == null) return;
+        if (!isConnected) return;
 
-        _worker.Schedule(TextureConverter.ToTensor(imageTexture, width: 640, height: 640));
-
-        var outputTensor0 = _worker.PeekOutput("output0") as Tensor<float>;
-        var outputTensor1 = _worker.PeekOutput("output1") as Tensor<float>;
-
-        _output0 = outputTensor0.ReadbackAndClone();
-        _output1 = outputTensor1.ReadbackAndClone();
-
-        TreatResults();
+        lock (queueLock)
+        {
+            messageQueue.Clear();
+            messageQueue.Enqueue(frameData);
+        }
     }
 
-    void OnDisable()
+    private async void SendMessageAsync(byte[] message)
     {
-        _worker?.Dispose();
-        _output0?.Dispose();
-        _output1?.Dispose();
+        if (websocket.State == WebSocketState.Open && !awaitingResponse)
+        {
+            await websocket.Send(message);
+            awaitingResponse = true;
+        }
+    }
+
+    private async void CloseConnection()
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            await websocket.Close();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        CloseConnection();
     }
 }
