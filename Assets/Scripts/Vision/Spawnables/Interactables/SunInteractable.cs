@@ -24,6 +24,7 @@ public class SunInteractable : Interactable
         _beam = GetComponent<LineRenderer>();
         _beam.startWidth = 0.03f;
         _beam.endWidth   = 0.05f;
+        UpdateBeam();
 
         _light.OnValueChanged += (oldValue, newValue) => { 
             _lightSlider.SetValueWithoutNotify(newValue);

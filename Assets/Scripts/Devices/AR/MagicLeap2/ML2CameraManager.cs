@@ -1,166 +1,321 @@
-using System.Collections;
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR.MagicLeap;
-using static UnityEngine.XR.MagicLeap.MLCameraBase.Metadata;
+using System.Collections.Generic;
 
-public class ML2CameraManager : CameraManager
+public class ML2CameraManager : MonoBehaviour
 {
-    private MLCamera colorCamera;
-    private bool isCameraConnected;
-    private bool cameraDeviceAvailable;
-    private bool isCapturingImage;
-    private readonly MLPermissions.Callbacks permissionCallbacks = new MLPermissions.Callbacks();
+    public bool IsCameraConnected => _captureCamera != null && _captureCamera.ConnectionEstablished;
+    
+    [SerializeField][Tooltip("If true, the camera capture will start immediately.")]
+    private bool _startCameraCaptureOnStart = true;
 
-    protected override bool SetUpCamera()
-    {
-        MLResult result = MLPermissions.RequestPermission(MLPermission.Camera, permissionCallbacks);
-        if (!result.IsOk)
-        {
-            enabled = false;
-        }
+    #region Capture Config
+    private int _targetImageWidth = 640;
+    private int _targetImageHeight = 360;
+    private MLCameraBase.Identifier _cameraIdentifier = MLCameraBase.Identifier.CV;
+    private MLCameraBase.CaptureFrameRate _targetFrameRate = MLCameraBase.CaptureFrameRate._30FPS;
+    private MLCameraBase.OutputFormat _outputFormat = MLCameraBase.OutputFormat.RGBA_8888;
+    #endregion
 
-        return true;
-    }
+    #region Magic Leap Camera Info
+    private MLCamera _captureCamera;
+    private bool _isCapturingVideo = false;
+    #endregion
 
-    protected override async void CaptureFrame()
-    {
-        if (MLCamera.IsCaptureTypeSupported(colorCamera, MLCamera.CaptureType.Image))
-        {
-            isCapturingImage = true;
+    private bool? _cameraPermissionGranted;
+    private bool _isCameraInitializationInProgress;
+    private readonly MLPermissions.Callbacks _permissionCallbacks = new MLPermissions.Callbacks();
+    private Texture2D _videoTextureRgb;
 
-            var aeawbResult = await colorCamera.PreCaptureAEAWBAsync();
-            if (aeawbResult.IsOk)
-            {
-                var result = await colorCamera.CaptureImageAsync(1);
-                if (!result.IsOk)
-                {
-                    Debug.LogError("Image capture failed!");
-                }
-            }
+    private Detector _detector;
+    private NetworkObjectManager _objectManager;
 
-            isCapturingImage = false;
-        }
-    }
-
+    private MLCamera.IntrinsicCalibrationParameters intrinsicParams;
+    private Matrix4x4 extrinsicParams;
 
     private void Awake()
     {
-        texture = new Texture2D(8, 8, TextureFormat.RGB24, false);
-        permissionCallbacks.OnPermissionGranted += OnPermissionGranted;
+        _permissionCallbacks.OnPermissionGranted += OnPermissionGranted;
+        _permissionCallbacks.OnPermissionDenied += OnPermissionDenied;
+        _permissionCallbacks.OnPermissionDeniedAndDontAskAgain += OnPermissionDenied;
+        _isCapturingVideo = false;
+
+        _detector = FindObjectOfType<Detector>();
+        _detector.OnMarkDetected += HandleDetectedMarks;
+
+        _objectManager = FindObjectOfType<NetworkObjectManager>();
     }
 
-    void OnDisable()
+    void Start()
     {
-        permissionCallbacks.OnPermissionGranted -= OnPermissionGranted;
-
-        if (colorCamera != null && isCameraConnected)
+        if (_startCameraCaptureOnStart)
         {
-            colorCamera.Disconnect();
-            isCameraConnected = false;
+            StartCameraCapture(_cameraIdentifier, _targetImageWidth, _targetImageHeight);
         }
+    }
+
+    public void StartCameraCapture(MLCameraBase.Identifier cameraIdentifier = MLCameraBase.Identifier.CV, int width = 1920, int height = 1080, Action<bool> onCameraCaptureStarted = null)
+    {
+        if (_isCameraInitializationInProgress)
+        {
+            Debug.LogError("Camera Initialization is already in progress.");
+            onCameraCaptureStarted?.Invoke(false);
+            return;
+        }
+
+        this._cameraIdentifier = cameraIdentifier;
+        _targetImageWidth = width;
+        _targetImageHeight = height;
+        TryEnableMLCamera(onCameraCaptureStarted);
+    }
+
+    private void OnDisable()
+    {
+        _ = DisconnectCameraAsync();
     }
 
     private void OnPermissionGranted(string permission)
     {
-        StartCoroutine(EnableMLCamera());
-        StartCoroutine(CaptureFrameLoop());
-    }
-
-    private IEnumerator EnableMLCamera()
-    {
-        while (!cameraDeviceAvailable)
+        if (permission == MLPermission.Camera)
         {
-            MLResult result = MLCamera.GetDeviceAvailabilityStatus(MLCamera.Identifier.Main, out cameraDeviceAvailable);
-            if (!(result.IsOk && cameraDeviceAvailable))
-            {
-                yield return new WaitForSeconds(1.0f);
-            }
-        }
-
-        ConnectCamera();
-        while (!isCameraConnected)
-        {
-            yield return null;
-        }
-
-        ConfigureAndPrepareCapture();
-    }
-
-    private async void ConnectCamera()
-    {
-        MLCamera.ConnectContext context = MLCamera.ConnectContext.Create();
-        context.EnableVideoStabilization = false;
-        context.Flags = MLCameraBase.ConnectFlag.CamOnly;
-
-        colorCamera = await MLCamera.CreateAndConnectAsync(context);
-
-        if (colorCamera != null)
-        {
-            colorCamera.OnRawImageAvailable += OnCaptureRawImageComplete;
-            isCameraConnected = true;
+            _cameraPermissionGranted = true;
+            Debug.Log($"Granted {permission}.");
         }
     }
 
-    private IEnumerator CaptureFrameLoop()
+    private void OnPermissionDenied(string permission)
     {
-        while (true)
+        if (permission == MLPermission.Camera)
         {
-            if (isCameraConnected && !isCapturingImage)
-            {
-                if (MLCamera.IsCaptureTypeSupported(colorCamera, MLCamera.CaptureType.Image))
-                {
-                    CaptureFrame();
-                }
-            }
-            yield return new WaitForSeconds(3.0f);
+            _cameraPermissionGranted = false;
+            Debug.LogError($"{permission} denied, camera capture won't function.");
         }
     }
 
-
-    private async void ConfigureAndPrepareCapture()
+    private async void TryEnableMLCamera(Action<bool> onCameraCaptureStarted = null)
     {
-        MLCamera.CaptureStreamConfig[] imageConfig = new MLCamera.CaptureStreamConfig[1]
+        if (_isCameraInitializationInProgress)
         {
-            new MLCamera.CaptureStreamConfig()
-            {
-                OutputFormat = MLCamera.OutputFormat.JPEG,
-                CaptureType  = MLCamera.CaptureType.Image,
-                Width = 1920, Height = 1080
-            }
-        };
-
-        MLCamera.CaptureConfig captureConfig = new MLCamera.CaptureConfig()
-        {
-            StreamConfigs = imageConfig,
-            CaptureFrameRate = MLCamera.CaptureFrameRate._30FPS
-        };
-
-        MLResult prepareCaptureResult = colorCamera.PrepareCapture(captureConfig, out MLCamera.Metadata _);
-        if (!prepareCaptureResult.IsOk)
-        {
+            onCameraCaptureStarted?.Invoke(false);
             return;
         }
-    }
 
+        _isCameraInitializationInProgress = true;
 
-    private void OnCaptureRawImageComplete(MLCamera.CameraOutput capturedImage, MLCamera.ResultExtras resultExtras, MLCamera.Metadata metadataHandle)
-    {
-        MLResult aeStateResult = metadataHandle.GetControlAEStateResultMetadata(out ControlAEState controlAEState);
-        MLResult awbStateResult = metadataHandle.GetControlAWBStateResultMetadata(out ControlAWBState controlAWBState);
+        _cameraPermissionGranted = null;
+        MLPermissions.RequestPermission(MLPermission.Camera, _permissionCallbacks);
 
-        if (aeStateResult.IsOk && awbStateResult.IsOk)
+        while (!_cameraPermissionGranted.HasValue)
         {
-            bool autoExposureComplete = controlAEState == MLCameraBase.Metadata.ControlAEState.Converged || controlAEState == MLCameraBase.Metadata.ControlAEState.Locked;
-            bool autoWhiteBalanceComplete = controlAWBState == MLCameraBase.Metadata.ControlAWBState.Converged || controlAWBState == MLCameraBase.Metadata.ControlAWBState.Locked;
+            await Task.Delay(TimeSpan.FromSeconds(1.0f));
+        }
 
-            if (autoExposureComplete && autoWhiteBalanceComplete)
+        if (MLPermissions.CheckPermission(MLPermission.Camera).IsOk || _cameraPermissionGranted.GetValueOrDefault(false))
+        {
+            bool isCameraAvailable = await WaitForCameraAvailabilityAsync();
+            if (isCameraAvailable)
             {
-                if (capturedImage.Format == MLCameraBase.OutputFormat.JPEG)
-                {
-                    SendFrameToServer(capturedImage.Planes[0].Data);
-                }
+                await ConnectAndConfigureCameraAsync();
             }
         }
 
+        _isCameraInitializationInProgress = false;
+        onCameraCaptureStarted?.Invoke(_isCapturingVideo);
+    }
+
+    private async Task<bool> WaitForCameraAvailabilityAsync()
+    {
+        bool cameraDeviceAvailable = false;
+        int maxAttempts = 10;
+        int attempts = 0;
+   
+        while (!cameraDeviceAvailable && attempts < maxAttempts)
+        {
+            MLResult result = MLCameraBase.GetDeviceAvailabilityStatus(_cameraIdentifier, out cameraDeviceAvailable);
+            if (result.IsOk == false && cameraDeviceAvailable == false)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1.0f));
+            }
+            attempts++;
+        }
+
+        return cameraDeviceAvailable;
+    }
+
+    private async Task<bool> ConnectAndConfigureCameraAsync()
+    {
+        MLCameraBase.ConnectContext context = MLCameraBase.ConnectContext.Create();
+        context.CamId = _cameraIdentifier;
+        context.Flags = MLCameraBase.ConnectFlag.CamOnly;
+
+        _captureCamera = await MLCamera.CreateAndConnectAsync(context);
+        if (_captureCamera == null)
+        {
+            Debug.LogError("Could not create or connect to a valid camera.");
+            return false;
+        }
+
+        if (!GetStreamCapabilityWBestFit(out MLCameraBase.StreamCapability streamCapability))
+        {
+            Debug.LogError("No valid Image Streams available. Disconnecting Camera.");
+            await DisconnectCameraAsync();
+            return false;
+        }
+
+        var captureConfig = new MLCameraBase.CaptureConfig();
+        captureConfig.CaptureFrameRate = _targetFrameRate;
+        captureConfig.StreamConfigs = new MLCameraBase.CaptureStreamConfig[1];
+        captureConfig.StreamConfigs[0] = MLCameraBase.CaptureStreamConfig.Create(streamCapability, _outputFormat);
+
+        var prepareResult = _captureCamera.PrepareCapture(captureConfig, out MLCameraBase.Metadata _);
+        if (!MLResult.DidNativeCallSucceed(prepareResult.Result, nameof(_captureCamera.PrepareCapture)))
+        {
+            Debug.LogError($"Could not prepare capture. Result: {prepareResult.Result}");
+            await DisconnectCameraAsync();
+            return false;
+        }
+
+        return await StartVideoCaptureAsync();
+    }
+
+    private async Task<bool> StartVideoCaptureAsync()
+    {
+        await _captureCamera.PreCaptureAEAWBAsync();
+
+        var startCapture = await _captureCamera.CaptureVideoStartAsync();
+        _isCapturingVideo = MLResult.DidNativeCallSucceed(startCapture.Result, nameof(_captureCamera.CaptureVideoStart));
+
+        if (!_isCapturingVideo)
+        {
+            Debug.LogError($"Could not start camera capture. Result: {startCapture.Result}");
+            return false;
+        }
+
+        _captureCamera.OnRawVideoFrameAvailable += OnCaptureRawVideoFrameAvailable;
+        return true;
+    }
+
+    private async Task DisconnectCameraAsync()
+    {
+        if (_captureCamera != null)
+        {
+            if (_isCapturingVideo)
+            {
+                await _captureCamera.CaptureVideoStopAsync();
+                _captureCamera.OnRawVideoFrameAvailable -= OnCaptureRawVideoFrameAvailable;
+            }
+
+            await _captureCamera.DisconnectAsync();
+            _captureCamera = null;
+        }
+
+        _isCapturingVideo = false;
+    }
+
+    private bool GetStreamCapabilityWBestFit(out MLCameraBase.StreamCapability streamCapability)
+    {
+        streamCapability = default;
+
+        if (_captureCamera == null)
+        {
+            Debug.Log("Could not get Stream capabilities Info. No Camera Connected");
+            return false;
+        }
+
+        MLCameraBase.StreamCapability[] streamCapabilities =
+            MLCameraBase.GetImageStreamCapabilitiesForCamera(_captureCamera, MLCameraBase.CaptureType.Video);
+
+        if (streamCapabilities.Length <= 0) 
+            return false;
+
+        if (MLCameraBase.TryGetBestFitStreamCapabilityFromCollection(streamCapabilities, _targetImageWidth,
+                _targetImageHeight, MLCameraBase.CaptureType.Video,
+                out streamCapability))
+        {
+            return true;
+        }
+
+        streamCapability = streamCapabilities[0];
+        return true;
+    }
+
+    private void OnCaptureRawVideoFrameAvailable(MLCameraBase.CameraOutput cameraOutput,
+        MLCameraBase.ResultExtras resultExtras,
+        MLCameraBase.Metadata metadata)
+    {
+            
+        intrinsicParams = resultExtras.Intrinsics.Value;
+
+        if (MLCVCamera.GetFramePose(resultExtras.VCamTimestamp, out Matrix4x4 outMatrix).IsOk) {
+            extrinsicParams = outMatrix;            
+        }
+
+        if (cameraOutput.Format == MLCamera.OutputFormat.RGBA_8888)
+        {
+            MLCamera.FlipFrameVertically(ref cameraOutput);
+            ProcessFrame(cameraOutput.Planes[0]);
+        }
+    }
+
+    private void ProcessFrame(MLCamera.PlaneInfo imagePlane)
+    {
+        if (_videoTextureRgb == null || 
+            _videoTextureRgb.width != imagePlane.Width || 
+            _videoTextureRgb.height != imagePlane.Height)
+        {
+            if (_videoTextureRgb != null)
+                Destroy(_videoTextureRgb);
+                
+            _videoTextureRgb = new Texture2D((int)imagePlane.Width, (int)imagePlane.Height, TextureFormat.RGBA32, false);
+        }
+
+        int actualWidth = (int)(imagePlane.Width * imagePlane.PixelStride);
+        if (imagePlane.Stride != actualWidth)
+        {
+            var newTextureData = new byte[actualWidth * imagePlane.Height];
+            for (int i = 0; i < imagePlane.Height; i++)
+            {
+                Buffer.BlockCopy(imagePlane.Data, (int)(i * imagePlane.Stride), newTextureData, i * actualWidth, actualWidth);
+            }
+            _videoTextureRgb.LoadRawTextureData(newTextureData);
+        }
+        else
+        {
+            _videoTextureRgb.LoadRawTextureData(imagePlane.Data);
+        }
+        
+        _videoTextureRgb.Apply();
+
+        _detector.QueueFrameToSend(_videoTextureRgb.EncodeToJPG());
+    }
+
+    private void HandleDetectedMarks(DetectionMessage message)
+    {
+        Debug.Log("Hii");
+        foreach (var detection in message.detections)
+        {
+            if (detection.corners.Count != 4) return;
+
+            List<Vector3> cornerPositions = new List<Vector3>();
+            foreach (var point in detection.corners) {                
+                Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, new Vector2(point[0], point[1]));
+                cornerPositions.Add(cornerPos);
+                Debug.Log("Marker Data: " + cornerPos);
+            }
+
+            Vector3 sum = Vector3.zero;
+            foreach (var pos in cornerPositions) sum += pos;
+
+            Debug.Log(cornerPositions[0]);
+            _objectManager?.ProcessMarkerServerRpc(
+                new MarkerInfo {
+                    Id   = "1",
+                    Pose = new Pose(sum / cornerPositions.Count, Quaternion.identity),
+                    Size = 0.5f
+                }
+            );            
+        }
     }
 }

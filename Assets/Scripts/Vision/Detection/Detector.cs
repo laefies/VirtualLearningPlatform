@@ -4,6 +4,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using NativeWebSocket;
+using Newtonsoft.Json; 
+
+public class Detection
+{
+    public string class_id;
+    public List<List<int>> corners;
+}
+
+public class DetectionMessage
+{
+    public List<Detection> detections;
+}
 
 public class Detector : MonoBehaviour
 {
@@ -13,6 +25,9 @@ public class Detector : MonoBehaviour
     private Queue<byte[]> messageQueue = new Queue<byte[]>();
     private object queueLock = new object();
     private bool awaitingResponse = false;
+
+    public event Action<DetectionMessage> OnMarkDetected;
+
 
     void Start()
     {
@@ -58,8 +73,10 @@ public class Detector : MonoBehaviour
 
         websocket.OnMessage += (bytes) => 
         {
-            var message = Encoding.UTF8.GetString(bytes);
-            Debug.Log($"Received message: {message}");
+            var message = System.Text.Encoding.UTF8.GetString(bytes);            
+            DetectionMessage detectionData = JsonConvert.DeserializeObject<DetectionMessage>(message);
+            OnMarkDetected?.Invoke(detectionData);
+
             awaitingResponse = false;
         };
 

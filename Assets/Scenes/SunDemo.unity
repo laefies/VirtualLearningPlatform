@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &402523704
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -467,7 +467,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7993669252763154317, guid: f897651ef7e4c1545b6eaf152d6f2621,
         type: 3}
       insertIndex: 1
-      addedObject: {fileID: 4160249966237377625}
+      addedObject: {fileID: 4160249966237377629}
   m_SourcePrefab: {fileID: 100100000, guid: f897651ef7e4c1545b6eaf152d6f2621, type: 3}
 --- !u!1 &4160249966237377624 stripped
 GameObject:
@@ -475,7 +475,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4160249966237377623}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4160249966237377625
+--- !u!114 &4160249966237377629
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -484,10 +484,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4160249966237377624}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c18bedbcf77ec54aac98add1f938df9, type: 3}
+  m_Script: {fileID: 11500000, guid: e56ac9783cbd21b4d9912deb3c5e2c83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _screenRendererRGB: {fileID: 402523705}
   _startCameraCaptureOnStart: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
