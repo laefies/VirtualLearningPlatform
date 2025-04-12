@@ -12,48 +12,43 @@ public class SunInteractable : Interactable
 {
     private NetworkVariable<float> _angle = new NetworkVariable<float>(90f,  NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _light = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<float> _power = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    private static float _panelArea  = 2f;    // m2
+    private static float _panelEffic = 0.18f; // 18%
+
     private LineRenderer _beam;
-    
     [SerializeField] private Text _angleText;
     [SerializeField] private Text _lightText;
     [SerializeField] private Slider _lightSlider;
     [SerializeField] private Transform cloudParent;
 
+
+    // Inherited methods - component preparation and updating
     public override void PrepareComponents()
     {
         _beam = GetComponent<LineRenderer>();
         _beam.startWidth = 0.03f;
         _beam.endWidth   = 0.05f;
-        UpdateBeam();
 
         _light.OnValueChanged += (oldValue, newValue) => { 
             _lightSlider.SetValueWithoutNotify(newValue);
             _lightText.text = $"{Mathf.Round(newValue * 100)}%";
             UpdateCloudVisibility();
-            UpdateBeam();
         }; 
 
         _angle.OnValueChanged += (oldValue, newValue) => {
             _angleText.text = $"{newValue}°";
-            UpdateBeam();
         };
     }
 
     public override void UpdateComponents()
     {
-        if (IsServer) GetIncidenceAngle();
-    }
-
-    private void GetIncidenceAngle()
-    {
-        MarkerInfo panel = spawnable.GetMarkerInfo();
-
-        Vector3 panelNormal = panel.Pose.rotation * Vector3.up;
-        Vector3 sunToPanel = (panel.Pose.position - transform.position).normalized;
-
-        float angleRad = Mathf.Acos(Vector3.Dot(panelNormal, sunToPanel));
-
-        _angle.Value = 180 - Mathf.Round(angleRad * Mathf.Rad2Deg);
+        if (IsServer) { GetIncidenceAngle();
+                   UpdateSolarPowerOutput(); }
+                   
+        UpdateBeam();
+        Debug.Log("Power Output Value is " + _power.Value);
     }
 
     private void UpdateBeam() {
@@ -70,6 +65,25 @@ public class SunInteractable : Interactable
         _beam.startColor = currentColor;
     }
 
+    // Method to calculate power output
+    private void UpdateSolarPowerOutput() {
+        float dirNormIrr = 1000f * Mathf.Exp(-3f * _light.Value);
+        float incFactor  = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
+
+        _power.Value = dirNormIrr * incFactor * _panelArea * _panelEffic; 
+    }
+
+    // Methods relating to incidence angle
+    private void GetIncidenceAngle()
+    {
+        MarkerInfo panel     = spawnable.GetMarkerInfo();
+        Vector3 panelNormal  = panel.Pose.rotation * -Vector3.forward;
+        Vector3 sunDirection = (transform.position - panel.Pose.position).normalized;
+
+        _angle.Value = Mathf.Round(Vector3.Angle(panelNormal, sunDirection));
+    }
+
+    // Methods relating to light percentage / cloud visibility
     public void SetLightPercentage(float value)
     {
         if (_light.Value == value) return;
