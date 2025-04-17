@@ -10,16 +10,19 @@ using Unity.Netcode;
 [RequireComponent(typeof(MeshRenderer))]
 public class SunInteractable : Interactable
 {
+    private static float _panelArea  = 2f;    // m2
+    private static float _panelEffic = 0.18f; // 18%
+
+
     private NetworkVariable<float> _angle = new NetworkVariable<float>(90f,  NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _light = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _power = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    private static float _panelArea  = 2f;    // m2
-    private static float _panelEffic = 0.18f; // 18%
 
     private LineRenderer _beam;
     [SerializeField] private Text _angleText;
     [SerializeField] private Text _lightText;
+    [SerializeField] private Text _powerText;
     [SerializeField] private Slider _lightSlider;
     [SerializeField] private Transform cloudParent;
 
@@ -40,6 +43,10 @@ public class SunInteractable : Interactable
         _angle.OnValueChanged += (oldValue, newValue) => {
             _angleText.text = $"{newValue}°";
         };
+
+        _power.OnValueChanged += (oldValue, newValue) => {
+            _powerText.text = $"{Mathf.Round(newValue * 10f) / 10f}W";
+        };
     }
 
     public override void UpdateComponents()
@@ -48,7 +55,7 @@ public class SunInteractable : Interactable
                    UpdateSolarPowerOutput(); }
                    
         UpdateBeam();
-        Debug.Log("Power Output Value is " + _power.Value);
+       // Debug.Log("Power Output Value is " + _power.Value);
     }
 
     private void UpdateBeam() {
@@ -67,7 +74,7 @@ public class SunInteractable : Interactable
 
     // Method to calculate power output
     private void UpdateSolarPowerOutput() {
-        float dirNormIrr = 1000f * Mathf.Exp(-3f * _light.Value);
+        float dirNormIrr = 800f * Mathf.Exp(-3f * _light.Value);
         float incFactor  = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
 
         _power.Value = dirNormIrr * incFactor * _panelArea * _panelEffic; 
