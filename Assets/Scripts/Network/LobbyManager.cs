@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Authentication;
@@ -7,6 +8,11 @@ using Unity.Services.Lobbies;
 using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using Unity.Netcode;
+
+/* TODO
+*     . Refactor game start;
+*/
 
 // Manages multiplayer lobby logic: authentication, lobby creation/joining, heartbeats, and transitions.
 public class LobbyManager : MonoBehaviour
@@ -16,6 +22,7 @@ public class LobbyManager : MonoBehaviour
 
     // Key used to pass the relay code
     private static string KEY_START_GAME = "Start";
+    public static string KEY_NETWORK_CLIENT_ID = "NetworkClientID";
 
     // Events to notify other systems about lobby actions
     private event EventHandler OnLeftLobby;
@@ -46,10 +53,9 @@ public class LobbyManager : MonoBehaviour
         Authenticate();
     }
 
-    private void Update() {
+    async void Update() {
         HandleLobbyHeartbeat();  // If hosting, Keep lobby alive
         HandleLobbyPolling();    // Check for updates in joined lobby
-
         PrintPlayers();
     }
 
@@ -84,26 +90,39 @@ public class LobbyManager : MonoBehaviour
         Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, nPlayers, options);
         joinedLobby = lobby;
 
-        Debug.Log("Created Lobby!");
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
 
+        Debug.Log("Created a new Lobby!");
         return joinedLobby;
     }
 
     // Joins a specific lobby by ID
-    private async void JoinLobby(Lobby lobby) {
+    private async void JoinLobbyByID(Lobby lobby) {
         JoinLobbyByIdOptions options = new JoinLobbyByIdOptions { Player = CreatePlayer() };
         joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
     }
 
     // Leaves the current lobby
-    private async void LeaveLobby() {
+    public async void LeaveLobby() {
         if (joinedLobby != null) {
             try {
+                Debug.Log("Leaving lobby...");
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
                 joinedLobby = null;
                 OnLeftLobby?.Invoke(this, EventArgs.Empty);
+            } catch (LobbyServiceException e) {
+                Debug.Log("Error:" + e);
+            }
+        }
+    }
+
+    // Quicks player from a lobby
+    public async void RemoveFromLobby(string playerID) {
+        if (joinedLobby != null) {
+            try {
+                Debug.Log("Removing player from lobby...");
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerID);
             } catch (LobbyServiceException e) {
                 Debug.Log("Error:" + e);
             }
@@ -131,18 +150,38 @@ public class LobbyManager : MonoBehaviour
             lobbyPollTimer -= Time.deltaTime;
             if (lobbyPollTimer < 0f) {
                 lobbyPollTimer = 2f;
-                joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
 
-                // Check if player is still in the lobby
+                // Get lobby updates
+                Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+                joinedLobby = lobby;
+                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+
+                // Handling cases where player was unexpectedly removed from the lobby
                 if (!IsPlayerInLobby()) {
+                    Debug.Log("Lobby Warning: Not in Lobby Anymore!");
                     joinedLobby = null;
+                }
+
+                // Handling cases where player joined a lobby with a disconnected host
+                if (!IsLobbyHost()) {
+                    string hostCIDstring = GetPlayerFieldValueById(lobby.HostId, KEY_NETWORK_CLIENT_ID);
+
+                    if (!ulong.TryParse(hostCIDstring, out ulong hostCID) || 
+                        !NetworkManager.Singleton.ConnectedClients.ContainsKey(hostCID))
+                    {
+                        Debug.Log("Unusual activity from host in the network! Changing hosts...");
+                        RemoveFromLobby(lobby.HostId);
+                    }
                 }
             }
         }
     }
 
-    // Creates player metadata (currently just a random name)
+    /*
+     * --- PLAYER METHODS ---
+     */
+
+    // Creates player metadata (just a random name)
     private Player CreatePlayer() {
         return new Player { 
             Data = new Dictionary<string, PlayerDataObject> {
@@ -151,19 +190,58 @@ public class LobbyManager : MonoBehaviour
                         PlayerDataObject.VisibilityOptions.Member, 
                         "Player" + UnityEngine.Random.Range(10, 99)
                     ) 
-                }
+                },
+                { KEY_NETWORK_CLIENT_ID,  
+                  new PlayerDataObject( PlayerDataObject.VisibilityOptions.Member, "Not Connected") }
             }
         }; 
     }
 
+    // Updates player activity status, and handles any necessary ownership transference
+    public async void UpdatePlayerData(string field, string newValue) {
+
+        joinedLobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, 
+        new UpdatePlayerOptions {
+            Data = new Dictionary<string, PlayerDataObject> {
+                { field, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, newValue) }
+            }
+        });
+
+    }
+
+    // Returns a player ID that matches a certain key-value serach
+    public string GetPlayerIdByFieldValue(string field, string value) {
+        foreach (var player in joinedLobby.Players)
+        {
+            if (player.Data != null && player.Data.ContainsKey(field)) {
+                if (player.Data[field].Value == value)
+                {
+                    return player.Id;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // Returns the value of a field for a specific player by ID
+    public string GetPlayerFieldValueById(string playerId, string field)
+    {
+        foreach (var player in joinedLobby.Players)
+        {
+            if (player.Id == playerId && player.Data != null && player.Data.ContainsKey(field))
+            {
+                return player.Data[field].Value;
+            }
+        }
+
+        return null;
+    }
+
+
     /*
      * --- UTILITY METHODS ---
      */
-
-    // Returns the current lobby
-    private Lobby GetJoinedLobby() {
-        return joinedLobby;
-    }
 
     // Checks if this player is the host of the lobby
     private bool IsLobbyHost() {
@@ -185,9 +263,10 @@ public class LobbyManager : MonoBehaviour
     // Prints all players in the given lobby
     private void PrintPlayers() {
         if (joinedLobby != null) {
+
             string message = "Players in Lobby:";
             foreach (Player player in joinedLobby.Players) {
-                message += "\n Is Host?: " + (joinedLobby.HostId == player.Id) + " Name: " + player.Data["PlayerName"].Value;
+                message += "\n Is Host?: " + (joinedLobby.HostId == player.Id) + " Name: " + player.Data["PlayerName"].Value +  " Client: " + player.Data[KEY_NETWORK_CLIENT_ID].Value;;
             }
             Debug.Log(message);
         }
@@ -214,7 +293,7 @@ public class LobbyManager : MonoBehaviour
     private async void StartGame() {
         if (IsLobbyHost()) {
             try {
-                Debug.Log("Starting a new game...");
+                Debug.Log("Starting a new relay server...");
 
                 string relayCode = await RelayManager.Instance.CreateRelay();
 
@@ -254,12 +333,6 @@ public class LobbyManager : MonoBehaviour
             // If no lobbies exist, fallback and create a new one
             CreateLobbyAndStartGame();
         }
-    }
-
-    // Handle closing lobby
-    private void OnApplicationQuit()
-    {
-        LeaveLobby();
     }
 
 }

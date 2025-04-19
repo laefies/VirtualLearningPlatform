@@ -1,28 +1,62 @@
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject testDevice;
+    [System.Serializable]
+    public class DeviceMapping
+    {
+        public string deviceIdentifier;
+        public GameObject devicePrefab;
+    }
 
-    [SerializeField] private GameObject ml2Device;
-
-    [SerializeField] private GameObject htc2Device;
+    [SerializeField] private GameObject defaultDevicePrefab;
+    [SerializeField] private List<DeviceMapping> deviceMappings = new List<DeviceMapping>();
 
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
-            GameObject deviceInstance = Instantiate(GetPlayerPrefab(), transform);
+            Debug.Log("Spawning onto network! => Client " + GetComponent<NetworkObject>().OwnerClientId);
+
+            // Get both prefab and device identifier
+            (GameObject devicePrefab, string deviceName) = GetPlayerPrefabAndDeviceName();
+            
+            // Rename player object with the device identifier
+            LobbyManager.Instance.UpdatePlayerData(
+                LobbyManager.KEY_NETWORK_CLIENT_ID, 
+                GetComponent<NetworkObject>().OwnerClientId.ToString()
+            );
+            
+            // Instantiate the device prefab
+            GameObject deviceInstance = Instantiate(devicePrefab, transform);
         }
     }
 
-    private GameObject GetPlayerPrefab() {
-        if (Application.isEditor) return testDevice;
+    public override void OnNetworkDespawn()
+    {
+        Debug.Log("Despawning from network! => Client " + GetComponent<NetworkObject>().OwnerClientId);
 
-        if (SystemInfo.deviceModel == "Magic Leap Magic Leap 2")
-            return ml2Device;
+        if (IsHost) {
+            string playerID = LobbyManager.Instance.GetPlayerIdByFieldValue(
+                LobbyManager.KEY_NETWORK_CLIENT_ID, 
+                GetComponent<NetworkObject>().OwnerClientId.ToString()
+            );
+            if (playerID != null) LobbyManager.Instance.RemoveFromLobby(playerID);
+        }
 
-        return htc2Device;
     }
+
+    private (GameObject, string) GetPlayerPrefabAndDeviceName()
+    {
+        foreach (var mapping in deviceMappings)
+        {
+            if (SystemInfo.deviceModel.Contains(mapping.deviceIdentifier))
+                return (mapping.devicePrefab, mapping.deviceIdentifier);
+        }
+
+        return (defaultDevicePrefab, "Test Device");
+    }
+
 }
