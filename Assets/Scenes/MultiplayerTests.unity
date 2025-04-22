@@ -238,8 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a65f979f54a7654a8bb1120345ac128, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectManager: {fileID: 3040089315333674666, guid: 499aedf048f5008489b7fa70d657a756,
-    type: 3}
 --- !u!114 &542526834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,12 +288,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742419533}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0432866d010ec0241a0b0975484908c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrl: ws://192.168.1.142:8765
+  serverUrl: wss://supreme-quail-united.ngrok-free.app
 --- !u!4 &742419535
 Transform:
   m_ObjectHideFlags: 0

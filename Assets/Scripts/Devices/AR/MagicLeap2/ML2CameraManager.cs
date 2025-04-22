@@ -6,6 +6,12 @@ using System.Collections.Generic;
 
 public class ML2CameraManager : MonoBehaviour
 {
+    // TODO Delete after fix
+    // float testingCallTime = 0f;
+
+
+
+
     public bool IsCameraConnected => _captureCamera != null && _captureCamera.ConnectionEstablished;
     
     [SerializeField][Tooltip("If true, the camera capture will start immediately.")]
@@ -29,7 +35,6 @@ public class ML2CameraManager : MonoBehaviour
     private readonly MLPermissions.Callbacks _permissionCallbacks = new MLPermissions.Callbacks();
     private Texture2D _videoTextureRgb;
 
-    private Detector _detector;
     private NetworkObjectManager _objectManager;
 
     private MLCamera.IntrinsicCalibrationParameters intrinsicParams;
@@ -41,11 +46,6 @@ public class ML2CameraManager : MonoBehaviour
         _permissionCallbacks.OnPermissionDenied += OnPermissionDenied;
         _permissionCallbacks.OnPermissionDeniedAndDontAskAgain += OnPermissionDenied;
         _isCapturingVideo = false;
-
-        _detector = FindObjectOfType<Detector>();
-        _detector.OnMarkDetected += HandleDetectedMarks;
-
-        _objectManager = FindObjectOfType<NetworkObjectManager>();
     }
 
     void Start()
@@ -53,6 +53,15 @@ public class ML2CameraManager : MonoBehaviour
         if (_startCameraCaptureOnStart)
         {
             StartCameraCapture(_cameraIdentifier, _targetImageWidth, _targetImageHeight);
+        }
+
+        Detector.Instance.OnMarkDetected += HandleDetectedMarks;
+        _objectManager = FindObjectOfType<NetworkObjectManager>();
+    }
+
+    void Update() {
+        if (_videoTextureRgb != null && Detector.Instance.IsAvailable()) {
+            Detector.Instance.SendMessageAsync(_videoTextureRgb.EncodeToJPG(20));
         }
     }
 
@@ -287,13 +296,16 @@ public class ML2CameraManager : MonoBehaviour
         }
         
         _videoTextureRgb.Apply();
-
-        _detector.QueueFrameToSend(_videoTextureRgb.EncodeToJPG());
     }
 
     private void HandleDetectedMarks(DetectionMessage message)
     {
-        Debug.Log("Hii");
+        // TODO Delete after fix
+        // float currentTime = Time.time;
+        // float deltaTime = currentTime - testingCallTime;
+        // Debug.Log("[DETECT] Time since last detection result: " + deltaTime + " seconds");
+        // testingCallTime = currentTime;
+
         foreach (var detection in message.detections)
         {
             if (detection.corners.Count != 4) return;
@@ -305,17 +317,17 @@ public class ML2CameraManager : MonoBehaviour
                 Debug.Log("Marker Data: " + cornerPos);
             }
 
-            Vector3 sum = Vector3.zero;
-            foreach (var pos in cornerPositions) sum += pos;
+            // Vector3 sum = Vector3.zero;
+            // foreach (var pos in cornerPositions) sum += pos;
 
-            Debug.Log(cornerPositions[0]);
-            _objectManager?.ProcessMarkerServerRpc(
-                new MarkerInfo {
-                    Id   = "1",
-                    Pose = new Pose(sum / cornerPositions.Count, Quaternion.identity),
-                    Size = 0.5f
-                }
-            );            
+            // Debug.Log(cornerPositions[0]);
+            // _objectManager?.ProcessMarkerServerRpc(
+            //     new MarkerInfo {
+            //         Id   = "1",
+            //         Pose = new Pose(sum / cornerPositions.Count, Quaternion.identity),
+            //         Size = 0.5f
+            //     }
+            // );            
         }
     }
 }

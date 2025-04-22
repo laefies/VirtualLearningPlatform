@@ -56,7 +56,7 @@ public class LobbyManager : MonoBehaviour
     async void Update() {
         HandleLobbyHeartbeat();  // If hosting, Keep lobby alive
         HandleLobbyPolling();    // Check for updates in joined lobby
-        PrintPlayers();
+        // PrintPlayers();
     }
 
     // Authenticates the player anonymously to Unity Services

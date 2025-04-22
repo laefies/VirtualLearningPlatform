@@ -19,19 +19,33 @@ public class DetectionMessage
 
 public class Detector : MonoBehaviour
 {
-    [SerializeField] private string serverUrl = "ws://localhost:8765";
+    [SerializeField] private string serverUrl = "wss://supreme-quail-united.ngrok-free.app";
     private WebSocket websocket;
-    private bool isConnected = false;
-    private Queue<byte[]> messageQueue = new Queue<byte[]>();
-    private object queueLock = new object();
-    private bool awaitingResponse = false;
 
+    private bool isConnected = false;
+    private bool awaitingResponse = false;
     public event Action<DetectionMessage> OnMarkDetected;
 
+
+    private DateTime lastSentTime;
+    private TimeSpan averageRTT = TimeSpan.FromMilliseconds(1000);
+    private readonly float alpha = 0.2f;
+
+    public static Detector Instance{ get; private set;}
+
+    private void Awake() {
+        Instance = this;
+    }
 
     void Start()
     {
         ConnectToServer();
+    }
+
+    public bool IsAvailable() {
+        if (!isConnected) return false;
+
+        return (DateTime.UtcNow - lastSentTime).TotalSeconds >= .25;
     }
 
     async void Update()
@@ -40,22 +54,10 @@ public class Detector : MonoBehaviour
         
         #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
-        #endif
-        
-        if (isConnected)
-        {
-            lock (queueLock)
-            {
-                while (messageQueue.Count > 0)
-                {
-                    byte[] message = messageQueue.Dequeue();
-                    SendMessageAsync(message);
-                }
-            }
-        }
+        #endif        
     }
 
-    public async void ConnectToServer()
+    async void ConnectToServer()
     {
         websocket = new WebSocket(serverUrl);
 
@@ -73,11 +75,15 @@ public class Detector : MonoBehaviour
 
         websocket.OnMessage += (bytes) => 
         {
+            awaitingResponse = false;
+
+            // TimeSpan rtt = DateTime.UtcNow - lastSentTime;
+            // averageRTT = TimeSpan.FromMilliseconds((1 - alpha) * averageRTT.TotalMilliseconds + alpha * rtt.TotalMilliseconds);
+            // Debug.Log("RTT1 " + averageRTT);
+
             var message = System.Text.Encoding.UTF8.GetString(bytes);            
             DetectionMessage detectionData = JsonConvert.DeserializeObject<DetectionMessage>(message);
             OnMarkDetected?.Invoke(detectionData);
-
-            awaitingResponse = false;
         };
 
         websocket.OnError += (e) =>
@@ -95,21 +101,15 @@ public class Detector : MonoBehaviour
         }
     }
 
-    public void QueueFrameToSend(byte[] frameData)
+    public async void SendMessageAsync(byte[] message)
     {
-        if (!isConnected) return;
-
-        lock (queueLock)
+        if (websocket.State == WebSocketState.Open && IsAvailable())
         {
-            messageQueue.Clear();
-            messageQueue.Enqueue(frameData);
-        }
-    }
+            // float deltaTime = Time.time - testingCallTime;
+            // Debug.Log("[SEND] Time since last frame sent: " + deltaTime + " seconds");
+            // testingCallTime = Time.time;
 
-    private async void SendMessageAsync(byte[] message)
-    {
-        if (websocket.State == WebSocketState.Open && !awaitingResponse)
-        {
+            lastSentTime     = DateTime.UtcNow;
             await websocket.Send(message);
             awaitingResponse = true;
         }

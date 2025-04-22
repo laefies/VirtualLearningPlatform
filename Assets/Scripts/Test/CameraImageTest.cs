@@ -272,6 +272,6 @@ public class CameraImageTest : MonoBehaviour
         
         _videoTextureRgb.Apply();
 
-        _detector.QueueFrameToSend(_videoTextureRgb.EncodeToJPG());
+        //_detector.QueueFrameToSend(_videoTextureRgb.EncodeToJPG());
     }
 }

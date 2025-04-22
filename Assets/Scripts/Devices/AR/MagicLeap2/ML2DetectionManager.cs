@@ -8,6 +8,12 @@ using System;
 /// <summary> Manages the detection of markers using MagicLeap2's features. </summary>
 public class ML2DetectionManager : MonoBehaviour
 {
+
+
+    float testingCallTime = 0f;
+
+
+
     /// <summary> Reference to the original transform point, needed for coordinate space conversion. </summary>
     private Transform _origin;
 
@@ -67,7 +73,6 @@ public class ML2DetectionManager : MonoBehaviour
     ///           and triggers the event for valid detections.</summary>
     private void ProcessMarkers()
     {
-
         foreach (var markerData in _markerDetector.Data)
         {
             if (!markerData.MarkerPose.HasValue) continue;
