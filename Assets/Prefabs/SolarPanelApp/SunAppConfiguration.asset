@@ -19,3 +19,6 @@ MonoBehaviour:
   - MarkerId: 1
     SpawnablePrefab: {fileID: 5244820236726262426, guid: 5deb2e4e80215b44c9077f10b973af8d,
       type: 3}
+  - MarkerId: Solar Panel
+    SpawnablePrefab: {fileID: 5244820236726262426, guid: 5deb2e4e80215b44c9077f10b973af8d,
+      type: 3}

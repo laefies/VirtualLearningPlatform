@@ -7,15 +7,20 @@ using System;
 public class NetworkObjectManager : NetworkBehaviour
 {
     public DetectionConfiguration config;
-
     private Dictionary<string, Spawnable> _tracked = new Dictionary<string, Spawnable>();
+
+    public static NetworkObjectManager Instance{ get; private set;}
+
+    private void Awake() {
+        Instance = this;
+    }
 
     void Start()
     {
         config.Initialize();
     }
 
-    public void ProcessMarker(MarkerInfo markerInfo)
+    public async void ProcessMarker(MarkerInfo markerInfo)
     {
         if (IsClient) ProcessMarkerServerRpc(markerInfo);
     }
@@ -36,11 +41,13 @@ public class NetworkObjectManager : NetworkBehaviour
 
     private void SpawnObject(MarkerInfo markerInfo)
     {
+        Debug.Log("[NOM] Hiii");
         GameObject spawnedObject = Instantiate(config.GetPrefab(markerInfo.Id));
         spawnedObject.GetComponent<NetworkObject>().Spawn(true);
 
         Spawnable spawnable = spawnedObject.GetComponent<Spawnable>();
         spawnable.UpdateTransform(markerInfo);
+
         _tracked[markerInfo.Id] = spawnable;
     }
 

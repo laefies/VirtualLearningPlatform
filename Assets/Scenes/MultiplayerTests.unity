@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 542526832}
   - component: {fileID: 542526834}
   - component: {fileID: 542526835}
-  - component: {fileID: 542526833}
+  - component: {fileID: 542526836}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -226,18 +226,6 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
---- !u!114 &542526833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542526829}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a65f979f54a7654a8bb1120345ac128, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &542526834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,51 +252,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bfcae6c91864c47b227bb922ccaf63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &742419533
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 742419535}
-  - component: {fileID: 742419534}
-  m_Layer: 0
-  m_Name: Detector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &742419534
+--- !u!114 &542526836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742419533}
+  m_GameObject: {fileID: 542526829}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0432866d010ec0241a0b0975484908c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 365be973d0b456c47b4b8aea6c8fd24e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrl: wss://supreme-quail-united.ngrok-free.app
---- !u!4 &742419535
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742419533}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &882485406
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,4 +388,3 @@ SceneRoots:
   m_Roots:
   - {fileID: 882485408}
   - {fileID: 542526830}
-  - {fileID: 742419535}

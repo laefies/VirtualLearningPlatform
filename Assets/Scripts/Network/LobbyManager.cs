@@ -161,18 +161,6 @@ public class LobbyManager : MonoBehaviour
                     Debug.Log("Lobby Warning: Not in Lobby Anymore!");
                     joinedLobby = null;
                 }
-
-                // Handling cases where player joined a lobby with a disconnected host
-                if (!IsLobbyHost()) {
-                    string hostCIDstring = GetPlayerFieldValueById(lobby.HostId, KEY_NETWORK_CLIENT_ID);
-
-                    if (!ulong.TryParse(hostCIDstring, out ulong hostCID) || 
-                        !NetworkManager.Singleton.ConnectedClients.ContainsKey(hostCID))
-                    {
-                        Debug.Log("Unusual activity from host in the network! Changing hosts...");
-                        RemoveFromLobby(lobby.HostId);
-                    }
-                }
             }
         }
     }

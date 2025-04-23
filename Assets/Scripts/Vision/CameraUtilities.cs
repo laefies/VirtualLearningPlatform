@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.XR.MagicLeap;
 
-// Note: In the future, generalize the intrinsic/extrinsic params as dataclasses
 public class CameraUtilities
 {
     private static float _rayLength = 3;

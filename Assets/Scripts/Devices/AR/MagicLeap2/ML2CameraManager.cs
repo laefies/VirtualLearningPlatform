@@ -4,18 +4,32 @@ using UnityEngine;
 using UnityEngine.XR.MagicLeap;
 using System.Collections.Generic;
 
+[Serializable]
+public class IntrinsicParameters
+{
+    public int width;
+    public int height;
+    public float fov;
+    public float[] focalLength;
+    public float[] principalPoint;
+}
+
+[Serializable]
+public class ExtrinsicParameters
+{
+    public float[] position;
+    public float[] rotation;
+}
+
+[RequireComponent(typeof(Detector))]
 public class ML2CameraManager : MonoBehaviour
 {
-    // TODO Delete after fix
-    // float testingCallTime = 0f;
-
-
-
-
     public bool IsCameraConnected => _captureCamera != null && _captureCamera.ConnectionEstablished;
     
     [SerializeField][Tooltip("If true, the camera capture will start immediately.")]
     private bool _startCameraCaptureOnStart = true;
+
+    private Texture2D _frameTexture;
 
     #region Capture Config
     private int _targetImageWidth = 640;
@@ -25,20 +39,16 @@ public class ML2CameraManager : MonoBehaviour
     private MLCameraBase.OutputFormat _outputFormat = MLCameraBase.OutputFormat.RGBA_8888;
     #endregion
 
-    #region Magic Leap Camera Info
-    private MLCamera _captureCamera;
-    private bool _isCapturingVideo = false;
-    #endregion
-
+    #region Initialization Config
     private bool? _cameraPermissionGranted;
     private bool _isCameraInitializationInProgress;
     private readonly MLPermissions.Callbacks _permissionCallbacks = new MLPermissions.Callbacks();
-    private Texture2D _videoTextureRgb;
+    #endregion
 
-    private NetworkObjectManager _objectManager;
-
-    private MLCamera.IntrinsicCalibrationParameters intrinsicParams;
-    private Matrix4x4 extrinsicParams;
+    #region Camera Info
+    private MLCamera _captureCamera;
+    private bool _isCapturingVideo = false;
+    #endregion
 
     private void Awake()
     {
@@ -53,15 +63,6 @@ public class ML2CameraManager : MonoBehaviour
         if (_startCameraCaptureOnStart)
         {
             StartCameraCapture(_cameraIdentifier, _targetImageWidth, _targetImageHeight);
-        }
-
-        Detector.Instance.OnMarkDetected += HandleDetectedMarks;
-        _objectManager = FindObjectOfType<NetworkObjectManager>();
-    }
-
-    void Update() {
-        if (_videoTextureRgb != null && Detector.Instance.IsAvailable()) {
-            Detector.Instance.SendMessageAsync(_videoTextureRgb.EncodeToJPG(20));
         }
     }
 
@@ -254,30 +255,75 @@ public class ML2CameraManager : MonoBehaviour
         MLCameraBase.ResultExtras resultExtras,
         MLCameraBase.Metadata metadata)
     {
-            
-        intrinsicParams = resultExtras.Intrinsics.Value;
-
-        if (MLCVCamera.GetFramePose(resultExtras.VCamTimestamp, out Matrix4x4 outMatrix).IsOk) {
-            extrinsicParams = outMatrix;            
-        }
 
         if (cameraOutput.Format == MLCamera.OutputFormat.RGBA_8888)
         {
-            MLCamera.FlipFrameVertically(ref cameraOutput);
-            ProcessFrame(cameraOutput.Planes[0]);
+            if (Detector.Instance.IsAvailable()) {
+
+                // Prepare frame
+                MLCamera.FlipFrameVertically(ref cameraOutput);
+                ProcessFrame(cameraOutput.Planes[0]);
+
+                // Intrinsic Parameters
+                IntrinsicParameters intrinsic = null;
+                if (resultExtras.Intrinsics != null) {
+                    intrinsic = new IntrinsicParameters
+                    {
+                        width          = (int)resultExtras.Intrinsics.Value.Width,
+                        height         = (int)resultExtras.Intrinsics.Value.Height,
+                        fov            = resultExtras.Intrinsics.Value.FOV,
+                        focalLength    = new float[] {
+                            resultExtras.Intrinsics.Value.FocalLength.x,
+                            resultExtras.Intrinsics.Value.FocalLength.y
+                        },
+                        principalPoint = new float[] {
+                            resultExtras.Intrinsics.Value.PrincipalPoint.x,
+                            resultExtras.Intrinsics.Value.PrincipalPoint.y
+                        }
+                    };
+                }
+
+                // Extrinsic Parameters
+                MLResult result = MLCVCamera.GetFramePose(resultExtras.VCamTimestamp, out Matrix4x4 poseMatrix);
+                ExtrinsicParameters extrinsic = null;
+                if (result.IsOk)
+                {
+                    extrinsic = new ExtrinsicParameters
+                    {
+                        position = new float[] {
+                            poseMatrix.GetPosition().x, poseMatrix.GetPosition().y, 
+                            poseMatrix.GetPosition().z
+                        },
+                        rotation = new float[] {
+                            poseMatrix.rotation.x, poseMatrix.rotation.y,
+                            poseMatrix.rotation.z, poseMatrix.rotation.w
+                        }
+                    };
+                }
+
+                // Prepare to send
+                Detector.Instance.SendMessageAsync(
+                    new DetectionRequest
+                    {
+                        frameData       = Convert.ToBase64String(_frameTexture?.EncodeToJPG(20)),
+                        intrinsicParams = intrinsic,
+                        extrinsicParams = extrinsic
+                    }
+                );
+            }
         }
     }
 
     private void ProcessFrame(MLCamera.PlaneInfo imagePlane)
     {
-        if (_videoTextureRgb == null || 
-            _videoTextureRgb.width != imagePlane.Width || 
-            _videoTextureRgb.height != imagePlane.Height)
+        if (_frameTexture == null || 
+            _frameTexture.width != imagePlane.Width || 
+            _frameTexture.height != imagePlane.Height)
         {
-            if (_videoTextureRgb != null)
-                Destroy(_videoTextureRgb);
+            if (_frameTexture != null)
+                Destroy(_frameTexture);
                 
-            _videoTextureRgb = new Texture2D((int)imagePlane.Width, (int)imagePlane.Height, TextureFormat.RGBA32, false);
+            _frameTexture = new Texture2D((int)imagePlane.Width, (int)imagePlane.Height, TextureFormat.RGBA32, false);
         }
 
         int actualWidth = (int)(imagePlane.Width * imagePlane.PixelStride);
@@ -288,46 +334,14 @@ public class ML2CameraManager : MonoBehaviour
             {
                 Buffer.BlockCopy(imagePlane.Data, (int)(i * imagePlane.Stride), newTextureData, i * actualWidth, actualWidth);
             }
-            _videoTextureRgb.LoadRawTextureData(newTextureData);
+            _frameTexture.LoadRawTextureData(newTextureData);
         }
         else
         {
-            _videoTextureRgb.LoadRawTextureData(imagePlane.Data);
+            _frameTexture.LoadRawTextureData(imagePlane.Data);
         }
         
-        _videoTextureRgb.Apply();
+        _frameTexture.Apply();
     }
 
-    private void HandleDetectedMarks(DetectionMessage message)
-    {
-        // TODO Delete after fix
-        // float currentTime = Time.time;
-        // float deltaTime = currentTime - testingCallTime;
-        // Debug.Log("[DETECT] Time since last detection result: " + deltaTime + " seconds");
-        // testingCallTime = currentTime;
-
-        foreach (var detection in message.detections)
-        {
-            if (detection.corners.Count != 4) return;
-
-            List<Vector3> cornerPositions = new List<Vector3>();
-            foreach (var point in detection.corners) {                
-                Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, new Vector2(point[0], point[1]));
-                cornerPositions.Add(cornerPos);
-                Debug.Log("Marker Data: " + cornerPos);
-            }
-
-            // Vector3 sum = Vector3.zero;
-            // foreach (var pos in cornerPositions) sum += pos;
-
-            // Debug.Log(cornerPositions[0]);
-            // _objectManager?.ProcessMarkerServerRpc(
-            //     new MarkerInfo {
-            //         Id   = "1",
-            //         Pose = new Pose(sum / cornerPositions.Count, Quaternion.identity),
-            //         Size = 0.5f
-            //     }
-            // );            
-        }
-    }
 }

@@ -6,30 +6,39 @@ using System.Collections.Generic;
 using NativeWebSocket;
 using Newtonsoft.Json; 
 
+[Serializable]
+public class DetectionRequest
+{
+    public string frameData;
+    public IntrinsicParameters intrinsicParams;
+    public ExtrinsicParameters extrinsicParams;
+}
+
+[Serializable]
+public class DetectionResponse
+{
+    public List<Detection> detections;
+    public IntrinsicParameters intrinsicParams;
+    public ExtrinsicParameters extrinsicParams;
+}
+
 public class Detection
 {
     public string class_id;
     public List<List<int>> corners;
 }
 
-public class DetectionMessage
-{
-    public List<Detection> detections;
-}
-
 public class Detector : MonoBehaviour
 {
-    [SerializeField] private string serverUrl = "wss://supreme-quail-united.ngrok-free.app";
+    [SerializeField] private string serverUrl  = "wss://supreme-quail-united.ngrok-free.app";
+    [SerializeField] private float requestRate = .5f;
+
     private WebSocket websocket;
 
-    private bool isConnected = false;
-    private bool awaitingResponse = false;
-    public event Action<DetectionMessage> OnMarkDetected;
-
+    private bool isConnected      = false;
 
     private DateTime lastSentTime;
-    private TimeSpan averageRTT = TimeSpan.FromMilliseconds(1000);
-    private readonly float alpha = 0.2f;
+    private DetectionResponse lastResponse;
 
     public static Detector Instance{ get; private set;}
 
@@ -45,7 +54,7 @@ public class Detector : MonoBehaviour
     public bool IsAvailable() {
         if (!isConnected) return false;
 
-        return (DateTime.UtcNow - lastSentTime).TotalSeconds >= .25;
+        return (DateTime.UtcNow - lastSentTime).TotalSeconds >= requestRate;
     }
 
     async void Update()
@@ -54,7 +63,8 @@ public class Detector : MonoBehaviour
         
         #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
-        #endif        
+        #endif
+
     }
 
     async void ConnectToServer()
@@ -75,15 +85,8 @@ public class Detector : MonoBehaviour
 
         websocket.OnMessage += (bytes) => 
         {
-            awaitingResponse = false;
-
-            // TimeSpan rtt = DateTime.UtcNow - lastSentTime;
-            // averageRTT = TimeSpan.FromMilliseconds((1 - alpha) * averageRTT.TotalMilliseconds + alpha * rtt.TotalMilliseconds);
-            // Debug.Log("RTT1 " + averageRTT);
-
-            var message = System.Text.Encoding.UTF8.GetString(bytes);            
-            DetectionMessage detectionData = JsonConvert.DeserializeObject<DetectionMessage>(message);
-            OnMarkDetected?.Invoke(detectionData);
+            JsonConvert.DeserializeObject<DetectionResponse>(Encoding.UTF8.GetString(bytes))
+                ?.detections?.ForEach(HandleDetection);
         };
 
         websocket.OnError += (e) =>
@@ -101,17 +104,41 @@ public class Detector : MonoBehaviour
         }
     }
 
-    public async void SendMessageAsync(byte[] message)
+    private void HandleDetection(Detection detection) {
+        // TODO Python
+        if (detection.corners.Count != 4) return;
+
+        Vector3 sum = Vector3.zero;
+        List<Vector3> cornerPositions = new List<Vector3>();
+                        
+        // foreach (var point in detection.corners)
+        // {
+        //     // Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(
+        //     //     intrinsicParams, extrinsicParams, new Vector2(point[0], point[1])
+        //     // );
+        //     cornerPositions.Add(cornerPos);
+        //     sum += cornerPos;
+        // }
+
+        // Vector3 center = sum / cornerPositions.Count;
+
+        NetworkObjectManager.Instance.ProcessMarkerServerRpc(
+            new MarkerInfo {
+                Id   = detection.class_id,
+                Pose = new Pose(new Vector3(0.04f,0.96f,0.31f), Quaternion.identity),
+                Size = 0.05f
+            }
+        );
+    }
+
+
+    public async void SendMessageAsync(DetectionRequest request)
     {
         if (websocket.State == WebSocketState.Open && IsAvailable())
         {
-            // float deltaTime = Time.time - testingCallTime;
-            // Debug.Log("[SEND] Time since last frame sent: " + deltaTime + " seconds");
-            // testingCallTime = Time.time;
-
-            lastSentTime     = DateTime.UtcNow;
-            await websocket.Send(message);
-            awaitingResponse = true;
+            string jsonMessage = JsonConvert.SerializeObject(request);
+            await websocket.Send(Encoding.UTF8.GetBytes(jsonMessage));
+            lastSentTime = DateTime.UtcNow;
         }
     }
 
