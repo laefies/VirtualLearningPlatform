@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using NativeWebSocket;
 using Newtonsoft.Json; 
+using UnityEngine.XR.OpenXR;
+using Unity.XR.CoreUtils;
 
 [Serializable]
 public class DetectionRequest
@@ -28,14 +30,17 @@ public class Detection
     public List<List<int>> corners;
 }
 
+
 public class Detector : MonoBehaviour
 {
     [SerializeField] private string serverUrl  = "wss://supreme-quail-united.ngrok-free.app";
     [SerializeField] private float requestRate = .5f;
+    private Transform _origin;
 
     private WebSocket websocket;
 
     private bool isConnected      = false;
+    private bool awaitingResponse = false;
 
     private DateTime lastSentTime;
     private DetectionResponse lastResponse;
@@ -44,11 +49,14 @@ public class Detector : MonoBehaviour
 
     private void Awake() {
         Instance = this;
+
     }
 
     void Start()
     {
         ConnectToServer();
+        XROrigin xrOrigin = FindAnyObjectByType<XROrigin>();
+        _origin = xrOrigin.CameraFloorOffsetObject.transform;
     }
 
     public bool IsAvailable() {
@@ -64,6 +72,16 @@ public class Detector : MonoBehaviour
         #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
         #endif
+
+            if (lastResponse != null)
+            {
+                DetectionResponse toHandle = lastResponse;
+                lastResponse = null;
+                foreach (var detection in toHandle.detections)
+                {
+                    HandleDetection(detection, toHandle.intrinsicParams, toHandle.extrinsicParams);
+                }
+            }
 
     }
 
@@ -85,8 +103,8 @@ public class Detector : MonoBehaviour
 
         websocket.OnMessage += (bytes) => 
         {
-            JsonConvert.DeserializeObject<DetectionResponse>(Encoding.UTF8.GetString(bytes))
-                ?.detections?.ForEach(HandleDetection);
+            awaitingResponse = false;
+            lastResponse = JsonConvert.DeserializeObject<DetectionResponse>(Encoding.UTF8.GetString(bytes));            
         };
 
         websocket.OnError += (e) =>
@@ -104,30 +122,39 @@ public class Detector : MonoBehaviour
         }
     }
 
-    private void HandleDetection(Detection detection) {
+    private void HandleDetection(Detection detection, IntrinsicParameters intrinsicParams, ExtrinsicParameters extrinsicParams) {
         // TODO Python
         if (detection.corners.Count != 4) return;
 
         Vector3 sum = Vector3.zero;
         List<Vector3> cornerPositions = new List<Vector3>();
                         
-        // foreach (var point in detection.corners)
-        // {
-        //     // Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(
-        //     //     intrinsicParams, extrinsicParams, new Vector2(point[0], point[1])
-        //     // );
-        //     cornerPositions.Add(cornerPos);
-        //     sum += cornerPos;
-        // }
+        foreach (var point in detection.corners)
+        {
+            Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(
+                 intrinsicParams, extrinsicParams, new Vector2(point[0], point[1])
+            );
+            cornerPositions.Add(cornerPos);
+            sum += cornerPos;
+        }
 
-        // Vector3 center = sum / cornerPositions.Count;
+        Vector3 center = sum / cornerPositions.Count;
+        Debug.Log("Center Sem Transform: " + center);
+        Debug.Log("Center Com Transform: " + _origin.TransformPoint(center));
+        Vector3 centerTest = _origin.TransformPoint(center);
+
+        Vector2 topLeftPixel    = new Vector2(0, 0);
+        Vector2 bottomLeftPixel = new Vector2(0, 360);
+
+        Debug.Log("Top Pixel   \n" + CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, topLeftPixel));
+        Debug.Log("Bottom Left \n" + CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, bottomLeftPixel));
 
         NetworkObjectManager.Instance.ProcessMarkerServerRpc(
-            new MarkerInfo {
-                Id   = detection.class_id,
-                Pose = new Pose(new Vector3(0.04f,0.96f,0.31f), Quaternion.identity),
-                Size = 0.05f
-            }
+             new MarkerInfo {
+                 Id   = detection.class_id,
+                 Pose = new Pose(new Vector3(center.x, 1.06f, center.z), Quaternion.identity),
+                 Size = 0.05f
+             }
         );
     }
 
@@ -138,6 +165,7 @@ public class Detector : MonoBehaviour
         {
             string jsonMessage = JsonConvert.SerializeObject(request);
             await websocket.Send(Encoding.UTF8.GetBytes(jsonMessage));
+            awaitingResponse = true;
             lastSentTime = DateTime.UtcNow;
         }
     }

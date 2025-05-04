@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351854b4205b0d04d8e2beb03e3d6e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDevicePrefab: {fileID: 1948357030248192423, guid: 28a5f5d784f31e147a02448cb6407427,
+  defaultDevicePrefab: {fileID: 2148610529626539581, guid: e3a860ec6703c634295fcbbd9b37698e,
     type: 3}
   deviceMappings:
   - deviceIdentifier: Magic Leap 2

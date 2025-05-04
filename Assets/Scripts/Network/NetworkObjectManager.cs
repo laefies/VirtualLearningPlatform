@@ -33,22 +33,19 @@ public class NetworkObjectManager : NetworkBehaviour
         if (config.GetPrefab(markerInfo.Id) == null)
             return;
 
-        if (_tracked.ContainsKey(markerInfo.Id))
-            UpdateObject(markerInfo);
-        else
+        if (!_tracked.ContainsKey(markerInfo.Id))
             SpawnObject(markerInfo);
+
+        UpdateObject(markerInfo);
     }
 
     private void SpawnObject(MarkerInfo markerInfo)
     {
-        Debug.Log("[NOM] Hiii");
-        GameObject spawnedObject = Instantiate(config.GetPrefab(markerInfo.Id));
+        GameObject spawnedObject = Instantiate(config.GetPrefab(markerInfo.Id), markerInfo.Pose.position, markerInfo.Pose.rotation);
+        spawnedObject.transform.localScale = Vector3.one * markerInfo.Size;
+
         spawnedObject.GetComponent<NetworkObject>().Spawn(true);
-
-        Spawnable spawnable = spawnedObject.GetComponent<Spawnable>();
-        spawnable.UpdateTransform(markerInfo);
-
-        _tracked[markerInfo.Id] = spawnable;
+        _tracked[markerInfo.Id] = spawnedObject.GetComponent<Spawnable>();
     }
 
     private void UpdateObject(MarkerInfo markerInfo)

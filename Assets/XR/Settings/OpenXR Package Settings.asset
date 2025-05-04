@@ -792,7 +792,7 @@ MonoBehaviour:
   required: 0
   perceptionSnapshots: 1
   farClipPolicy: 2
-  nearClipPolicy: 1
+  nearClipPolicy: 0
 --- !u!114 &-617047911112981900
 MonoBehaviour:
   m_ObjectHideFlags: 0

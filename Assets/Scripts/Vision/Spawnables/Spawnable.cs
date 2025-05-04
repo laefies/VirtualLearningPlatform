@@ -20,6 +20,7 @@ public class Spawnable : NetworkBehaviour
         _isDocked.OnValueChanged += (oldValue, newValue) => {
             dockToggle.isOn = newValue;
         };
+        //gameObject.SetActive(false);
     }
 
     public void ChangeDockStatus(bool newDockState) {
@@ -44,6 +45,7 @@ public class Spawnable : NetworkBehaviour
 
         transform.SetPositionAndRotation(_marker.Value.Pose.position, _marker.Value.Pose.rotation);
         transform.localScale = Vector3.one * _marker.Value.Size;
+        //gameObject.SetActive(true);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -13,4 +13,5 @@
   <uses-permission android:name="com.magicleap.permission.HAND_TRACKING" />
   <uses-permission android:name="com.magicleap.permission.SPATIAL_ANCHOR" />
   <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="com.magicleap.permission.SPATIAL_MAPPING" />
 </manifest>

@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.XR.MagicLeap;
 using System.Collections.Generic;
 
+using UnityEngine.XR;
+using UnityEngine.XR.Management;
+using UnityEngine.XR.OpenXR;
+using MagicLeap.OpenXR.Features;
+
 [Serializable]
 public class IntrinsicParameters
 {
@@ -12,6 +17,7 @@ public class IntrinsicParameters
     public float fov;
     public float[] focalLength;
     public float[] principalPoint;
+    public double[] distortion;
 }
 
 [Serializable]
@@ -50,6 +56,9 @@ public class ML2CameraManager : MonoBehaviour
     private bool _isCapturingVideo = false;
     #endregion
 
+    private XRInputSubsystem inputSubsystem;
+
+
     private void Awake()
     {
         _permissionCallbacks.OnPermissionGranted += OnPermissionGranted;
@@ -60,9 +69,25 @@ public class ML2CameraManager : MonoBehaviour
 
     void Start()
     {
+        inputSubsystem = XRGeneralSettings.Instance.Manager.activeLoader.GetLoadedSubsystem<XRInputSubsystem>();
+        SetSpace(TrackingOriginModeFlags.Unbounded);
+
         if (_startCameraCaptureOnStart)
         {
             StartCameraCapture(_cameraIdentifier, _targetImageWidth, _targetImageHeight);
+        }
+    }
+
+    private void SetSpace(TrackingOriginModeFlags flag)
+    {
+        if (inputSubsystem.TrySetTrackingOriginMode(flag))
+        {
+            Debug.Log($"Current Space: {inputSubsystem.GetTrackingOriginMode()}");
+            inputSubsystem.TryRecenter();
+        }
+        else
+        {
+            Debug.LogError($"SetSpace failed to set Tracking Mode Origin to {flag}");
         }
     }
 
@@ -279,7 +304,8 @@ public class ML2CameraManager : MonoBehaviour
                         principalPoint = new float[] {
                             resultExtras.Intrinsics.Value.PrincipalPoint.x,
                             resultExtras.Intrinsics.Value.PrincipalPoint.y
-                        }
+                        },
+                        distortion = resultExtras.Intrinsics.Value.Distortion
                     };
                 }
 
@@ -291,7 +317,8 @@ public class ML2CameraManager : MonoBehaviour
                     extrinsic = new ExtrinsicParameters
                     {
                         position = new float[] {
-                            poseMatrix.GetPosition().x, poseMatrix.GetPosition().y, 
+                            poseMatrix.GetPosition().x,
+                            poseMatrix.GetPosition().y, 
                             poseMatrix.GetPosition().z
                         },
                         rotation = new float[] {
