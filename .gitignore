@@ -57,6 +57,7 @@ Mushroom Forest.meta
 
 /[Aa]ssets/[Ss]amples/*
 /[Aa]ssets/[Pp]lugins/*
+/[Aa]ssets/[Tt]ext[Mm]esh Pro/*
 
 # Builds
 *.apk

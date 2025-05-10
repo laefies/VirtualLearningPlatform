@@ -10,9 +10,6 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Unity.Netcode;
 
-/* TODO
-*     . Refactor game start;
-*/
 
 // Manages multiplayer lobby logic: authentication, lobby creation/joining, heartbeats, and transitions.
 public class LobbyManager : MonoBehaviour
@@ -25,22 +22,22 @@ public class LobbyManager : MonoBehaviour
     public static string KEY_NETWORK_CLIENT_ID = "NetworkClientID";
 
     // Events to notify other systems about lobby actions
-    private event EventHandler OnLeftLobby;
-    private event EventHandler<LobbyEventArgs> OnJoinedLobby;
-    private event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
-    private event EventHandler<LobbyListChangedEventArgs> OnLobbyListChanged;
+    public event EventHandler OnLeftLobby;
+    public event EventHandler<LobbyEventArgs> OnJoinedLobby;
+    public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
+    public event EventHandler<LobbyListChangedEventArgs> OnLobbyListChanged;
 
     // Custom event args classes to pass lobby data
-    private class LobbyEventArgs : EventArgs {
+    public class LobbyEventArgs : EventArgs {
         public Lobby lobby;
     }
-    private class LobbyListChangedEventArgs : EventArgs {
+    public class LobbyListChangedEventArgs : EventArgs {
         public List<Lobby> lobbyList;
     }
 
     // Internal timers
-    private float heartbeatTimer = 15f;       // Time between heartbeat pings
-    private float lobbyPollTimer = 1.1f;      // Time between lobby updates
+    private float heartbeatTimer = 15f;   // Time between heartbeat pings
+    private float lobbyPollTimer = 1.1f;  // Time between lobby updates
 
     // The currently joined lobby
     private Lobby joinedLobby;
@@ -56,7 +53,6 @@ public class LobbyManager : MonoBehaviour
     async void Update() {
         HandleLobbyHeartbeat();  // If hosting, Keep lobby alive
         HandleLobbyPolling();    // Check for updates in joined lobby
-        // PrintPlayers();
     }
 
     // Authenticates the player anonymously to Unity Services
@@ -64,11 +60,8 @@ public class LobbyManager : MonoBehaviour
     {
         await UnityServices.InitializeAsync();
         AuthenticationService.Instance.SignedIn += async () => { 
-            if (await AnyLobbiesExist())
-                QuickJoinLobby();
-            else
-                CreateLobbyAndStartGame();
-         };
+            Debug.Log("[Unity Services] Player authenticated");
+        };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
@@ -77,7 +70,7 @@ public class LobbyManager : MonoBehaviour
      */
 
     // Creates a new lobby with options and adds the player
-    private async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 4, bool isPrivate = false)
+    public async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 4, bool isPrivate = false)
     {
         CreateLobbyOptions options = new CreateLobbyOptions { 
             IsPrivate = isPrivate, 
@@ -90,9 +83,7 @@ public class LobbyManager : MonoBehaviour
         Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, nPlayers, options);
         joinedLobby = lobby;
 
-        OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
-
-        Debug.Log("Created a new Lobby!");
+        OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });        
         return joinedLobby;
     }
 
@@ -162,6 +153,37 @@ public class LobbyManager : MonoBehaviour
                     joinedLobby = null;
                 }
             }
+        }
+    }
+
+    // Fetches the list of existing lobbies
+    public async void RefreshLobbyList() {
+        try {
+            QueryLobbiesOptions options = new QueryLobbiesOptions();
+            options.Count = 25;
+
+            // Filters -
+            //  :: Find only open lobbies (lobbies with open slots)
+            options.Filters = new List<QueryFilter> {
+                new QueryFilter(
+                    field: QueryFilter.FieldOptions.AvailableSlots,
+                    op: QueryFilter.OpOptions.GT,
+                    value: "0")
+            };
+
+            //  :: Order results showing newer lobbies first
+            options.Order = new List<QueryOrder> {
+                new QueryOrder( 
+                    asc: false, 
+                    field: QueryOrder.FieldOptions.Created)
+            };
+
+            // Query for the list and invoke the event to signal new values
+            QueryResponse lobbyListQueryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+
+            OnLobbyListChanged?.Invoke(this, new LobbyListChangedEventArgs { lobbyList = lobbyListQueryResponse.Results });
+        } catch(LobbyServiceException e) {
+            Debug.Log(e);
         }
     }
 
@@ -300,12 +322,6 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    // Create a lobby and start up the game
-    private async void CreateLobbyAndStartGame() {
-        await CreateLobby();
-        StartGame();
-    }
-
     // Quickly join the first available server
     private async void QuickJoinLobby() {
         try {
@@ -317,9 +333,6 @@ public class LobbyManager : MonoBehaviour
             RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
         } catch (LobbyServiceException e) {
             Debug.LogWarning("Failed to quick join a lobby: " + e);
-
-            // If no lobbies exist, fallback and create a new one
-            CreateLobbyAndStartGame();
         }
     }
 

@@ -130,9 +130,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
         }
     }
 
-    /// <summary>
-    /// Updates the LineRenderer component to visualize the interaction ray in-game.
-    /// </summary>
+    /// <summary>Updates the LineRenderer component to visualize the interaction ray ingame.</summary>
     /// <param name="ray">The ray being cast.</param>
     /// <param name="hit">Information about the raycast hit, if any.</param>
     /// <param name="hitDistance">Distance to the hit point or maximum ray distance.</param>
