@@ -41,26 +41,26 @@ public class LobbyManager : MonoBehaviour
 
     // The currently joined lobby
     private Lobby joinedLobby;
+    private bool isAuthenticated;
 
     private void Awake() {
         Instance = this;
     }
 
-    void Start() {
-        Authenticate();
-    }
-
     async void Update() {
-        HandleLobbyHeartbeat();  // If hosting, Keep lobby alive
-        HandleLobbyPolling();    // Check for updates in joined lobby
+        if (isAuthenticated) {
+            HandleLobbyHeartbeat();  // If hosting, Keep lobby alive
+            HandleLobbyPolling();    // Check for updates in joined lobby
+        }
     }
 
     // Authenticates the player anonymously to Unity Services
-    private async void Authenticate()
+    public async void Authenticate()
     {
         await UnityServices.InitializeAsync();
-        AuthenticationService.Instance.SignedIn += async () => { 
-            Debug.Log("[Unity Services] Player authenticated");
+        AuthenticationService.Instance.SignedIn += async () => {
+            isAuthenticated = true; 
+            RefreshLobbyList();
         };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
@@ -72,26 +72,40 @@ public class LobbyManager : MonoBehaviour
     // Creates a new lobby with options and adds the player
     public async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 4, bool isPrivate = false)
     {
-        CreateLobbyOptions options = new CreateLobbyOptions { 
-            IsPrivate = isPrivate, 
-            Player    = CreatePlayer(),
-            Data      = new Dictionary<string, DataObject> {
-                { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
-            }
-        };
+        Debug.Log("Called Create");
+        if (!IsPlayerInLobby()) {
+            CreateLobbyOptions options = new CreateLobbyOptions { 
+                IsPrivate = isPrivate, 
+                Player    = CreatePlayer(),
+                Data      = new Dictionary<string, DataObject> {
+                    { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                }
+            };
 
-        Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, nPlayers, options);
-        joinedLobby = lobby;
+            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, nPlayers, options);
+            joinedLobby = lobby;
 
-        OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });        
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });      
+        }  
+
         return joinedLobby;
     }
 
-    // Joins a specific lobby by ID
-    private async void JoinLobbyByID(Lobby lobby) {
-        JoinLobbyByIdOptions options = new JoinLobbyByIdOptions { Player = CreatePlayer() };
-        joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
-        OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+    // Join a specific lobby sent as a parameter
+    public async Task<Lobby> JoinLobby(Lobby lobby) {
+        Debug.Log("Called Join");
+
+        try {
+            JoinLobbyByIdOptions options = new JoinLobbyByIdOptions { Player = CreatePlayer() };
+
+            joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
+
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+        } catch (LobbyServiceException e) {
+            Debug.Log("Error:" + e);
+        }
+
+        return joinedLobby;
     }
 
     // Leaves the current lobby
@@ -274,11 +288,13 @@ public class LobbyManager : MonoBehaviour
     private void PrintPlayers() {
         if (joinedLobby != null) {
 
-            string message = "Players in Lobby:";
+            string playerInfo = "Players in Lobby:";
+            
             foreach (Player player in joinedLobby.Players) {
-                message += "\n Is Host?: " + (joinedLobby.HostId == player.Id) + " Name: " + player.Data["PlayerName"].Value +  " Client: " + player.Data[KEY_NETWORK_CLIENT_ID].Value;;
+                playerInfo += "\n Is Host?: " + (joinedLobby.HostId == player.Id) + " Name: " + player.Data["PlayerName"].Value +  " Client: " + player.Data[KEY_NETWORK_CLIENT_ID].Value;;
             }
-            Debug.Log(message);
+
+            Debug.Log(playerInfo);
         }
     }
 
@@ -321,19 +337,4 @@ public class LobbyManager : MonoBehaviour
             }
         }
     }
-
-    // Quickly join the first available server
-    private async void QuickJoinLobby() {
-        try {
-            // Try to join any available lobby
-            QuickJoinLobbyOptions options = new QuickJoinLobbyOptions { Player = CreatePlayer() };
-            joinedLobby = await Lobbies.Instance.QuickJoinLobbyAsync(options);
-
-            // Join relay
-            RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
-        } catch (LobbyServiceException e) {
-            Debug.LogWarning("Failed to quick join a lobby: " + e);
-        }
-    }
-
 }
