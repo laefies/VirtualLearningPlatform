@@ -4,6 +4,7 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class LobbyListItemUI : MonoBehaviour
@@ -20,7 +21,15 @@ public class LobbyListItemUI : MonoBehaviour
         _playerInfoTextfield.text = $"{lobby.Players.Count}/{lobby.MaxPlayers} Players";
     }
 
+    public void SetColor(Color mainColor) {
+        gameObject.GetComponent<Image>().color = mainColor;
+    }
+
     public async void HandleLobbyClick() {
         await LobbyManager.Instance.JoinLobby(lobby);
+    }
+
+    async void Update() {
+        if (Input.GetKeyDown(KeyCode.J)) HandleLobbyClick();
     }
 }

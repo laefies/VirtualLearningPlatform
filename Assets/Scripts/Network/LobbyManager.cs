@@ -72,7 +72,6 @@ public class LobbyManager : MonoBehaviour
     // Creates a new lobby with options and adds the player
     public async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 4, bool isPrivate = false)
     {
-        Debug.Log("Called Create");
         if (!IsPlayerInLobby()) {
             CreateLobbyOptions options = new CreateLobbyOptions { 
                 IsPrivate = isPrivate, 
@@ -93,16 +92,18 @@ public class LobbyManager : MonoBehaviour
 
     // Join a specific lobby sent as a parameter
     public async Task<Lobby> JoinLobby(Lobby lobby) {
-        Debug.Log("Called Join");
-
         try {
             JoinLobbyByIdOptions options = new JoinLobbyByIdOptions { Player = CreatePlayer() };
 
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
 
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+
         } catch (LobbyServiceException e) {
-            Debug.Log("Error:" + e);
+
+            // Usually refers to cases where the lobby doesn't exist anymore
+            Debug.Log("[Lobby Error]" + e);
+            RefreshLobbyList();
         }
 
         return joinedLobby;
@@ -112,24 +113,36 @@ public class LobbyManager : MonoBehaviour
     public async void LeaveLobby() {
         if (joinedLobby != null) {
             try {
-                Debug.Log("Leaving lobby...");
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
                 joinedLobby = null;
+
                 OnLeftLobby?.Invoke(this, EventArgs.Empty);
             } catch (LobbyServiceException e) {
-                Debug.Log("Error:" + e);
+                Debug.Log("[Lobby Error]" + e);
             }
         }
     }
 
-    // Quicks player from a lobby
+    // Kicks a player from a lobby
     public async void RemoveFromLobby(string playerID) {
-        if (joinedLobby != null) {
+        if (IsLobbyHost()) {
             try {
-                Debug.Log("Removing player from lobby...");
                 await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerID);
             } catch (LobbyServiceException e) {
-                Debug.Log("Error:" + e);
+                Debug.Log("[Lobby Error]" + e);
+            }
+        }
+    }
+
+    // Transfers ownership of the lobby to another player
+    public async void MigrateLobbyHost(string playerID) {
+        if (IsLobbyHost()) {
+            try {
+                joinedLobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
+                    HostId = playerID
+                });
+            } catch (LobbyServiceException e) {
+                Debug.Log("[Lobby Error]" + e);
             }
         }
     }
@@ -151,21 +164,29 @@ public class LobbyManager : MonoBehaviour
 
     // Polls the lobby state periodically to check for updates or game start
     private async void HandleLobbyPolling() {
+
+        // If the player is presumably inside a lobby...
         if (joinedLobby != null) {
             lobbyPollTimer -= Time.deltaTime;
             if (lobbyPollTimer < 0f) {
                 lobbyPollTimer = 2f;
 
-                // Get lobby updates
+                // 1 :: Get lobby updates
                 Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
                 joinedLobby = lobby;
-                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = lobby });
 
-                // Handling cases where player was unexpectedly removed from the lobby
+                // 2 :: Handle cases where player was unexpectedly removed from the lobby
                 if (!IsPlayerInLobby()) {
-                    Debug.Log("Lobby Warning: Not in Lobby Anymore!");
+                    Debug.Log("[TEST LOBBY] Not in Lobby Anymore!");
+                    OnLeftLobby?.Invoke(this, EventArgs.Empty);
                     joinedLobby = null;
+                    return;
                 }
+
+                // TODO 
+                // 3 :: Check if the game has started, handling any relay needs
+                
+                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = lobby });
             }
         }
     }
@@ -197,7 +218,7 @@ public class LobbyManager : MonoBehaviour
 
             OnLobbyListChanged?.Invoke(this, new LobbyListChangedEventArgs { lobbyList = lobbyListQueryResponse.Results });
         } catch(LobbyServiceException e) {
-            Debug.Log(e);
+            Debug.Log("[Lobby Error]" + e);
         }
     }
 
@@ -268,12 +289,12 @@ public class LobbyManager : MonoBehaviour
      */
 
     // Checks if this player is the host of the lobby
-    private bool IsLobbyHost() {
+    public bool IsLobbyHost() {
         return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
 
     // Checks if the player is still in the lobby
-    private bool IsPlayerInLobby() {
+    public bool IsPlayerInLobby() {
         if (joinedLobby != null && joinedLobby.Players != null) {
             foreach (Player player in joinedLobby.Players) {
                 if (player.Id == AuthenticationService.Instance.PlayerId) {
@@ -284,20 +305,6 @@ public class LobbyManager : MonoBehaviour
         return false;
     }
 
-    // Prints all players in the given lobby
-    private void PrintPlayers() {
-        if (joinedLobby != null) {
-
-            string playerInfo = "Players in Lobby:";
-            
-            foreach (Player player in joinedLobby.Players) {
-                playerInfo += "\n Is Host?: " + (joinedLobby.HostId == player.Id) + " Name: " + player.Data["PlayerName"].Value +  " Client: " + player.Data[KEY_NETWORK_CLIENT_ID].Value;;
-            }
-
-            Debug.Log(playerInfo);
-        }
-    }
-
     // Checks if there are any available lobbies (for UI or matchmaking logic)
     private async Task<bool> AnyLobbiesExist()
     {
@@ -306,7 +313,7 @@ public class LobbyManager : MonoBehaviour
 
             return queryResponse.Results.Count > 0;
         } catch (LobbyServiceException e) {
-            Debug.Log("Error:" + e);
+            Debug.Log("[Lobby Error]" + e);
             return false;
         }
     }
@@ -319,8 +326,6 @@ public class LobbyManager : MonoBehaviour
     private async void StartGame() {
         if (IsLobbyHost()) {
             try {
-                Debug.Log("Starting a new relay server...");
-
                 string relayCode = await RelayManager.Instance.CreateRelay();
 
                 // Update the lobby to share the relay code
@@ -331,9 +336,8 @@ public class LobbyManager : MonoBehaviour
                 });
 
                 joinedLobby = lobby;
-                Debug.Log("Game Started");
             } catch (LobbyServiceException e) {
-                Debug.Log("Lobby Error: " + e);
+                Debug.Log("[Lobby Error]" + e);
             }
         }
     }
