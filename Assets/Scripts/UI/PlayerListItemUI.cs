@@ -27,7 +27,7 @@ public class PlayerListItemUI : MonoBehaviour
 
         // Show a crown icon on the host entry to regular members of the lobby,
         // and lobby management options to the host
-        _hostIndicator.SetActive(!LobbyManager.Instance.IsLobbyHost() &&  isHostEntry);
+        _hostIndicator.SetActive(isHostEntry);
         _lobbyHostOptions.SetActive(LobbyManager.Instance.IsLobbyHost() && !isHostEntry);
     }
 

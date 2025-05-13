@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 203356223264942176}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -68,7 +68,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60
+  field of view: 30
   orthographic: 0
   orthographic size: 1
   m_Depth: 0
@@ -312,8 +312,8 @@ MonoBehaviour:
   rayOrigin: {fileID: 1128710864141142144}
   rayDistance: 100
   rayColor: {r: 1, g: 1, b: 1, a: 1}
-  rayColorSelected: {r: 0.25888216, g: 0.3195532, b: 0.6792453, a: 1}
   rayColorHit: {r: 0.5748665, g: 0.6124588, b: 0.8301887, a: 1}
+  rayColorSelected: {r: 0.25888216, g: 0.3195532, b: 0.6792453, a: 1}
   scrollSpeed: 0.1
 --- !u!1 &8385265114756558855
 GameObject:
