@@ -10,22 +10,25 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Unity.Netcode;
 
-
 // Manages multiplayer lobby logic: authentication, lobby creation/joining, heartbeats, and transitions.
 public class LobbyManager : MonoBehaviour
 {
     // Singleton instance for global access
     public static LobbyManager Instance { get; private set;}
 
-    // Key used to pass the relay code
-    private static string KEY_START_GAME = "Start";
-    public static string KEY_NETWORK_CLIENT_ID = "NetworkClientID";
+    // Lobby data keys
+    public static string KEY_RELAY_CODE  = "RelayCode";  // Key used to pass the relay code
+    public static string KEY_LOBBY_STATE = "LobbyState"; // Key used to show lobby status
+
+    // Player data keys
+    public static string KEY_NETWORK_CLIENT_ID = "NetworkClientID"; // Key used to store player network ID
 
     // Events to notify other systems about lobby actions
     public event EventHandler OnLeftLobby;
     public event EventHandler<LobbyEventArgs> OnJoinedLobby;
     public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
     public event EventHandler<LobbyListChangedEventArgs> OnLobbyListChanged;
+    public event EventHandler<LobbyEventArgs> OnGameStarted;
 
     // Custom event args classes to pass lobby data
     public class LobbyEventArgs : EventArgs {
@@ -77,7 +80,8 @@ public class LobbyManager : MonoBehaviour
                 IsPrivate = isPrivate, 
                 Player    = CreatePlayer(),
                 Data      = new Dictionary<string, DataObject> {
-                    { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                    { KEY_RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member,  "0") },
+                    { KEY_LOBBY_STATE, new DataObject(DataObject.VisibilityOptions.Public, "Waiting") }
                 }
             };
 
@@ -165,8 +169,8 @@ public class LobbyManager : MonoBehaviour
     // Polls the lobby state periodically to check for updates or game start
     private async void HandleLobbyPolling() {
 
-        // If the player is presumably inside a lobby...
-        if (joinedLobby != null) {
+        // If the player is presumably inside a lobby and still in menu scene...
+        if (joinedLobby != null && !RelayManager.Instance.IsInRelay()) {
             lobbyPollTimer -= Time.deltaTime;
             if (lobbyPollTimer < 0f) {
                 lobbyPollTimer = 2f;
@@ -177,14 +181,21 @@ public class LobbyManager : MonoBehaviour
 
                 // 2 :: Handle cases where player was unexpectedly removed from the lobby
                 if (!IsPlayerInLobby()) {
-                    Debug.Log("[TEST LOBBY] Not in Lobby Anymore!");
                     OnLeftLobby?.Invoke(this, EventArgs.Empty);
                     joinedLobby = null;
                     return;
                 }
 
-                // TODO 
                 // 3 :: Check if the game has started, handling any relay needs
+                if (lobby.Data[KEY_RELAY_CODE].Value != "0") {
+                    // Start the game if the relay is set!
+                    if (!IsLobbyHost()) { // Host has already joined
+                        // Join relay and network, which automatically syncs network scenes and objects
+                        RelayManager.Instance.JoinRelay(lobby.Data[KEY_RELAY_CODE].Value);
+                        OnGameStarted?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+                        return;
+                    } 
+                }
                 
                 OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = lobby });
             }
@@ -269,20 +280,6 @@ public class LobbyManager : MonoBehaviour
         return null;
     }
 
-    // Returns the value of a field for a specific player by ID
-    public string GetPlayerFieldValueById(string playerId, string field)
-    {
-        foreach (var player in joinedLobby.Players)
-        {
-            if (player.Id == playerId && player.Data != null && player.Data.ContainsKey(field))
-            {
-                return player.Data[field].Value;
-            }
-        }
-
-        return null;
-    }
-
 
     /*
      * --- UTILITY METHODS ---
@@ -305,25 +302,12 @@ public class LobbyManager : MonoBehaviour
         return false;
     }
 
-    // Checks if there are any available lobbies (for UI or matchmaking logic)
-    private async Task<bool> AnyLobbiesExist()
-    {
-        try {
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-
-            return queryResponse.Results.Count > 0;
-        } catch (LobbyServiceException e) {
-            Debug.Log("[Lobby Error]" + e);
-            return false;
-        }
-    }
-
     /*
-     * --- GAME START LOGIC ---
+     * --- GAME LOGIC ---
      */
 
     // Starts the game if the player is host: creates a relay and updates the lobby with its code
-    private async void StartGame() {
+    public async void StartGame() {
         if (IsLobbyHost()) {
             try {
                 string relayCode = await RelayManager.Instance.CreateRelay();
@@ -331,11 +315,15 @@ public class LobbyManager : MonoBehaviour
                 // Update the lobby to share the relay code
                 Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
                     Data = new Dictionary<string, DataObject> {
-                        { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                        { KEY_RELAY_CODE,  new DataObject(DataObject.VisibilityOptions.Member, relayCode) },
+                        { KEY_LOBBY_STATE, new DataObject(DataObject.VisibilityOptions.Public, "Playing") }
                     }
                 });
 
                 joinedLobby = lobby;
+
+                // Signal game started event, in order to transition into the correct scene
+                OnGameStarted?.Invoke(this, new LobbyEventArgs { lobby = lobby });
             } catch (LobbyServiceException e) {
                 Debug.Log("[Lobby Error]" + e);
             }

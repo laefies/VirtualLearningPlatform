@@ -17,6 +17,7 @@ public class PlayerListItemUI : MonoBehaviour
     [SerializeField] private Image _kickButton;
 
     [SerializeField] private GameObject _lobbyHostOptions;
+    [SerializeField] private GameObject _hostIndicator;
 
     public void SetPlayer(Player player, bool isHostEntry) {
         this.player = player;
@@ -24,8 +25,9 @@ public class PlayerListItemUI : MonoBehaviour
         // Show the player name
         _playerNameTextfield.text = player.Data["PlayerName"].Value;
 
-        // If the player the item is presented to is the host, but the entry
-        // doesn't refer to them, show host options 
+        // Show a crown icon on the host entry to regular members of the lobby,
+        // and lobby management options to the host
+        _hostIndicator.SetActive(!LobbyManager.Instance.IsLobbyHost() &&  isHostEntry);
         _lobbyHostOptions.SetActive(LobbyManager.Instance.IsLobbyHost() && !isHostEntry);
     }
 
@@ -33,7 +35,8 @@ public class PlayerListItemUI : MonoBehaviour
         // Main color on the body
         gameObject.GetComponent<Image>().color = mainColor;
 
-        // Accent color for buttons
+        // Accent color for buttons and decorations
+        _hostIndicator.GetComponent<Image>().color  = secondaryColor;
         _transferButton.color = secondaryColor;
         _kickButton.color     = secondaryColor;
     }

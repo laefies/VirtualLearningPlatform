@@ -5,8 +5,8 @@ using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
-
 
 // Manages UI to handle lobby events.
 public class MainMenuUI : BodyLockedUI
@@ -30,16 +30,13 @@ public class MainMenuUI : BodyLockedUI
     [SerializeField] private Transform lobbyListContent; // Content panel where the lobbies are listed
     [SerializeField] private GameObject lobbyItemPrefab; // Prefab regarding an item of the lobby list
 
-    private List<GameObject> currentLobbyItems = new List<GameObject>();
-
     // Second Menu - Lobby waiting list 
     [SerializeField] private GameObject waitingRoom;
     [SerializeField] private GameObject playerList;
     [SerializeField] private Transform playerListContent; // Content panel where the players are listed
     [SerializeField] private GameObject playerItemPrefab; // Prefab regarding an item of the player list
 
-    private List<GameObject> currentPlayerItems = new List<GameObject>();
-
+    [SerializeField] private Button startButton;
 
     void Start() {
         // Call base initialization
@@ -87,7 +84,6 @@ public class MainMenuUI : BodyLockedUI
     // After creating a lobby or picking from the list, direct to waiting room interface
     void HandleJoinedLobby(object sender, LobbyManager.LobbyEventArgs e) {
         HandleMenuVisibility();
-        ClearLobbyItems();
     }
 
     // If leaving a lobby, direct back to lobby choice room interface
@@ -119,17 +115,14 @@ public class MainMenuUI : BodyLockedUI
             lobbyItem.SetLobby(lobby);
 
             // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
-            lobbyItem.SetColor(mainListColors[i % mainListColors.Length]);
-            
-            // Add to tracking list
-            currentLobbyItems.Add(lobbyItemGO);
+            lobbyItem.SetColor(mainListColors[i % mainListColors.Length], 
+                             accentListColors[i % accentListColors.Length]);            
         }
     }
 
     // Clears all lobby items from view
     void ClearLobbyItems() {
-        foreach (GameObject item in currentLobbyItems) { Destroy(item); }
-        currentLobbyItems.Clear();
+        foreach (Transform child in lobbyListContent.transform) Destroy(child.gameObject);
     }
 
     /*
@@ -144,7 +137,9 @@ public class MainMenuUI : BodyLockedUI
         UpdatePlayerList(lobby);
 
         // Game Selection
-
+        
+        // A game can only be started by the host
+        startButton.interactable = LobbyManager.Instance.IsLobbyHost();
     }
 
     // Visually updates the list of players in the lobby
@@ -166,17 +161,13 @@ public class MainMenuUI : BodyLockedUI
 
             // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
             playerItem.SetColor(mainListColors[i % mainListColors.Length], 
-                              accentListColors[i % accentListColors.Length]);
-            
-            // Add to tracking list
-            currentPlayerItems.Add(playerItemGO);
+                              accentListColors[i % accentListColors.Length]);            
         }
     }
 
     // Clears all lobby items from view
     void ClearPlayerItems() {
-        foreach (GameObject item in currentPlayerItems) { Destroy(item); }
-        currentPlayerItems.Clear();
+        foreach (Transform child in playerListContent.transform) Destroy(child.gameObject);
     }
 
 
@@ -199,7 +190,10 @@ public class MainMenuUI : BodyLockedUI
         LobbyManager.Instance.LeaveLobby();
     }
 
-
+    // Called by clicking the "start" button, to start the chosen game
+    public void StartGame() {
+        LobbyManager.Instance.StartGame();
+    }
 
     // TODO REMOVE AFTER TESTING
     void Update() {
@@ -208,6 +202,7 @@ public class MainMenuUI : BodyLockedUI
         if (Input.GetKeyDown(KeyCode.N)) CreateLobby();
         if (Input.GetKeyDown(KeyCode.R)) RefreshLobbies();
         if (Input.GetKeyDown(KeyCode.L)) LeaveLobby();
+        if (Input.GetKeyDown(KeyCode.S)) StartGame();
     }
 
 }

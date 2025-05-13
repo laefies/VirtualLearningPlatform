@@ -12,11 +12,24 @@ using Unity.Netcode;
 
 public class RelayManager : MonoBehaviour
 {
-    [SerializeField] private GameObject objectManager;
     public static RelayManager Instance{ get; private set;}
 
     private void Awake() {
         Instance = this;
+    }
+
+    public bool IsInRelay()
+    {
+        var nm = NetworkManager.Singleton;
+
+        if (nm == null || !nm.IsListening)
+            return false;
+
+        var transport = nm.GetComponent<UnityTransport>();
+        if (transport == null)
+            return false;
+
+        return nm.IsHost || nm.IsClient;
     }
 
     public async Task<string> CreateRelay(int nPlayers = 3)
@@ -31,14 +44,13 @@ public class RelayManager : MonoBehaviour
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            // Start host and prepate object networking
+            // Start host
             NetworkManager.Singleton.StartHost();
-            Instantiate(objectManager).GetComponent<NetworkObject>().Spawn();
 
             // Return join code
             return joinCode;
         } catch (RelayServiceException e) {
-            Debug.Log("Relay Error:" + e);
+            Debug.Log("[Relay Error] " + e);
             return null;
         }
     }
@@ -56,7 +68,7 @@ public class RelayManager : MonoBehaviour
             // Start client
             NetworkManager.Singleton.StartClient();
         } catch (RelayServiceException e) {
-            Debug.Log("Relay Error:" + e);
+            Debug.Log("[Relay Error] " + e);
         }
     }
 

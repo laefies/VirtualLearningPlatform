@@ -11,9 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main/MainMenu.unity
     guid: dc9317550f60cc444a31cce77c682d6f
-  - enabled: 0
-    path: Assets/Scenes/MultiplayerTests.unity
-    guid: bf1d716c47b928a49974913160b428f5
+  - enabled: 1
+    path: Assets/Scenes/Rooms/SolarPanelTest.unity
+    guid: 3d7b62689c8b8234b8c6ccb47ea7a976
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: be2dfd4e545ad4e4cbdd3097b0b417e2,
       type: 2}
