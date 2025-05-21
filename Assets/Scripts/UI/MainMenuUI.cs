@@ -7,10 +7,18 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using TMPro;
 
 // Manages UI to handle lobby events.
 public class MainMenuUI : BodyLockedUI
 {
+    // Messages » Headers / Info Subheaderz
+    private const string GAME_MENU_HEADER_STARTABLE   = "Choose a Lesson!";
+    private const string GAME_MENU_HEADER_UNSTARTABLE = "Waiting for Host!";
+
+    private const string GAME_MENU_SUBHEADER_SOLO     = "You're not in a lobby! Pick a lesson to explore on your own.";
+    private const string GAME_MENU_SUBHEADER_NON_HOST = "Waiting for host! Meanwhile, feel free to browse the list.";
+    private const string GAME_MENU_SUBHEADER_HOST     = "Choose a lesson - everyone in the lobby will join you!";
 
     private Color[] mainListColors = new Color[] {
         new Color(0.639f, 0.741f, 0.922f), // ≈ #A3BDEB
@@ -24,19 +32,21 @@ public class MainMenuUI : BodyLockedUI
         new Color(0.851f, 0.510f, 0.380f)  //≈ #d98261
     };
 
+    // Game Menu - Game listing + starting
+    [SerializeField] private TMPro.TextMeshProUGUI gameMenuHeader;
+    [SerializeField] private TMPro.TextMeshProUGUI gameMenuSubheader;
+    [SerializeField] private Button startButton;
 
-    // First Menu - Lobby creation + listing 
+    // Lobby Menu - Lobby creation + listing 
     [SerializeField] private GameObject lobbyMenu;       
     [SerializeField] private Transform lobbyListContent; // Content panel where the lobbies are listed
     [SerializeField] private GameObject lobbyItemPrefab; // Prefab regarding an item of the lobby list
 
-    // Second Menu - Lobby waiting list 
-    [SerializeField] private GameObject waitingRoom;
+    // Player Menu - Lobby waiting list 
     [SerializeField] private GameObject playerList;
     [SerializeField] private Transform playerListContent; // Content panel where the players are listed
     [SerializeField] private GameObject playerItemPrefab; // Prefab regarding an item of the player list
 
-    [SerializeField] private Button startButton;
 
     void Start() {
         // Call base initialization
@@ -49,7 +59,7 @@ public class MainMenuUI : BodyLockedUI
 
         // Subscribe to Lobby related events
         LobbyManager.Instance.OnLobbyListChanged  += UpdateLobbyList;
-        LobbyManager.Instance.OnJoinedLobbyUpdate += UpdateWaitingRoom;
+        LobbyManager.Instance.OnJoinedLobbyUpdate += HandleJoinedLobbyUpdate;
         LobbyManager.Instance.OnJoinedLobby       += HandleJoinedLobby;
         LobbyManager.Instance.OnLeftLobby         += HandleLeftLobby;
 
@@ -60,37 +70,46 @@ public class MainMenuUI : BodyLockedUI
     void OnDestroy() {
         // Unsubscribe from Lobby related events
         LobbyManager.Instance.OnLobbyListChanged  -= UpdateLobbyList;
-        LobbyManager.Instance.OnJoinedLobbyUpdate -= UpdateWaitingRoom;
+        LobbyManager.Instance.OnJoinedLobbyUpdate -= HandleJoinedLobbyUpdate;
         LobbyManager.Instance.OnJoinedLobby       -= HandleJoinedLobby;
         LobbyManager.Instance.OnLeftLobby         -= HandleLeftLobby;
 
-        // Clean up any remaining lobby items
+        // Clean up any remaining lobby & player items
         ClearLobbyItems();
         ClearPlayerItems();
     }
 
-    // Swap visible menu
+    // Swap visible menu & call header/subheader handling method for the main game menu
     void HandleMenuVisibility() {
         bool inLobby = LobbyManager.Instance.IsPlayerInLobby();
-        lobbyMenu.SetActive(!inLobby);
-        waitingRoom.SetActive(inLobby);
-        playerList.SetActive(inLobby);
+        lobbyMenu.SetActive(!inLobby);    // Not in a lobby? » Show available lobbies list
+        playerList.SetActive(inLobby);    //     in a lobby? » Show players in the current lobby 
+
+        HandleGameMenuState();
     }
 
     /*
      * --- HANDLE MENU FLOW ---
      */
 
-    // After creating a lobby or picking from the list, direct to waiting room interface
+    // Called when a lobby is created or picked from the lobby list
     void HandleJoinedLobby(object sender, LobbyManager.LobbyEventArgs e) {
-        HandleMenuVisibility();
+        HandleMenuVisibility();      // Swap menus to show player list;
+        UpdatePlayerList(e.lobby);   // Show lobby players on screen; 
+        ClearLobbyItems();           // Clear lobby list as its not visible;
     }
 
-    // If leaving a lobby, direct back to lobby choice room interface
+    // Called when a lobby is left
     void HandleLeftLobby(object sender, EventArgs e) {
-        HandleMenuVisibility();
-        ClearPlayerItems();
-        RefreshLobbies();
+        HandleMenuVisibility();      // Swap menus to show lobby list;
+        RefreshLobbies();            // Show existing lobbies on screen;
+        ClearPlayerItems();          // Clear player list as its not visible;
+    }
+
+    // Continuously called while in a lobby
+    void HandleJoinedLobbyUpdate(object sender, LobbyManager.LobbyEventArgs e) {
+        UpdatePlayerList(e.lobby);   // Update lobby information through all menus
+        HandleGameMenuState();       // Swap header/subheader messages
     }
 
     /*
@@ -128,19 +147,25 @@ public class MainMenuUI : BodyLockedUI
     /*
      * --- WAITING ROOM MENU ---
      */
+    
+    // Visually updates header and subheader of the game menu, and handles button interaction
+    void HandleGameMenuState() {
+        // Check if the player is in a lobby
+        bool inLobby = LobbyManager.Instance.IsPlayerInLobby();
 
-    // Enables visualization of information regarding joined lobby
-    void UpdateWaitingRoom(object sender, LobbyManager.LobbyEventArgs e) {
-        Lobby lobby = e.lobby; 
-
-        // Update the list of players in the same lobby
-        UpdatePlayerList(lobby);
-
-        // Game Selection
-        
-        // A game can only be started by the host
-        startButton.interactable = LobbyManager.Instance.IsLobbyHost();
+        gameMenuHeader.text    = (!inLobby || LobbyManager.Instance.IsLobbyHost()) ? GAME_MENU_HEADER_STARTABLE 
+                                                                                   : GAME_MENU_HEADER_UNSTARTABLE;
+        gameMenuSubheader.text = (!inLobby) ? GAME_MENU_SUBHEADER_SOLO 
+                                            : ( (LobbyManager.Instance.IsLobbyHost()) ? GAME_MENU_SUBHEADER_HOST
+                                                                                      : GAME_MENU_SUBHEADER_NON_HOST );
+        // A game can only be started if:
+        //   1. User is playing alone    2. User is hosting the lobby they are in
+        startButton.interactable = !inLobby || LobbyManager.Instance.IsLobbyHost();
     }
+
+    /*
+     * --- PLAYER MENU ---
+     */
 
     // Visually updates the list of players in the lobby
     void UpdatePlayerList(Lobby lobby) {
@@ -192,7 +217,9 @@ public class MainMenuUI : BodyLockedUI
 
     // Called by clicking the "start" button, to start the chosen game
     public void StartGame() {
-        LobbyManager.Instance.StartGame();
+        if (!LobbyManager.Instance.IsPlayerInLobby() || LobbyManager.Instance.IsLobbyHost()) {
+            LobbyManager.Instance.StartGame();
+        }
     }
 
     // TODO REMOVE AFTER TESTING

@@ -48,10 +48,10 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log("Spawning onto network! => Client " + GetComponent<NetworkObject>().OwnerClientId);
  
             // Rename player object with the device identifier
-            LobbyManager.Instance.UpdatePlayerData(
-                LobbyManager.KEY_NETWORK_CLIENT_ID, 
-                GetComponent<NetworkObject>().OwnerClientId.ToString()
-            );
+            // LobbyManager.Instance.UpdatePlayerData(
+            //     LobbyManager.KEY_NETWORK_CLIENT_ID, 
+            //     GetComponent<NetworkObject>().OwnerClientId.ToString()
+            // );
         }
     }
 

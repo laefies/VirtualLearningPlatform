@@ -308,25 +308,29 @@ public class LobbyManager : MonoBehaviour
 
     // Starts the game if the player is host: creates a relay and updates the lobby with its code
     public async void StartGame() {
-        if (IsLobbyHost()) {
-            try {
-                string relayCode = await RelayManager.Instance.CreateRelay();
+        try {
+            string relayCode = await RelayManager.Instance.CreateRelay();
 
-                // Update the lobby to share the relay code
-                Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
+            Lobby lobby = null;
+
+            // If in a lobby, information regarding the relay code must be 
+            // shared across all players, so they can join the relay and server
+            if (IsLobbyHost()) {
+                lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
                     Data = new Dictionary<string, DataObject> {
                         { KEY_RELAY_CODE,  new DataObject(DataObject.VisibilityOptions.Member, relayCode) },
-                        { KEY_LOBBY_STATE, new DataObject(DataObject.VisibilityOptions.Public, "Playing") }
+                        { KEY_LOBBY_STATE, new DataObject(DataObject.VisibilityOptions.Public, "Ingame") }
                     }
                 });
 
                 joinedLobby = lobby;
-
-                // Signal game started event, in order to transition into the correct scene
-                OnGameStarted?.Invoke(this, new LobbyEventArgs { lobby = lobby });
-            } catch (LobbyServiceException e) {
-                Debug.Log("[Lobby Error]" + e);
             }
+
+            // Signal game started event, in order to transition into the correct scene
+            OnGameStarted?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+            
+        } catch (LobbyServiceException e) {
+            Debug.Log("[Lobby Error]" + e);
         }
     }
 }
