@@ -292,7 +292,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604abf4cf0c6286459151de022830310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuSceneName: MainMenu
+  menuScene: {fileID: 11400000, guid: c1c07a7a5f2eb9743b50acc5b8fb8d90, type: 2}
+  testScene: {fileID: 11400000, guid: 59319f25f6c86214b9483b59cba6eb27, type: 2}
 --- !u!1001 &1840797263
 PrefabInstance:
   m_ObjectHideFlags: 0

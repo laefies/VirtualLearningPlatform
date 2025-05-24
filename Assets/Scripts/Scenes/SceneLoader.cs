@@ -1,16 +1,27 @@
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
 using Unity.Netcode;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
     // Singleton instance for global access
     public static SceneLoader Instance { get; private set; }
 
-    // Uitlity variables
-    [SerializeField] private string menuSceneName = "MainMenu";
-    private string currentScene;
+    // Uitlity variables regarding current scene and the Main Menu scene
+    [SerializeField] private SceneInfo menuScene;
+    private SceneInfo currentScene;
+    // TODO :: DELETE AFTER IMPLEMENTING UI
+    [SerializeField] private SceneInfo testScene;
+
+    // Event to notify other systems about scene actions
+    public event EventHandler<SceneEventArgs> OnSceneLoaded;
+
+    // Custom event args classes to pass scene data
+    public class SceneEventArgs : EventArgs {
+        public SceneInfo sceneInfo;
+    }
 
     void Awake()
     {
@@ -23,9 +34,17 @@ public class SceneLoader : MonoBehaviour
         // Subscribe to Lobby related events
         LobbyManager.Instance.OnGameStarted += HandleGameStart;
 
-        // Start with menu scene
-        currentScene = menuSceneName;
-        SceneManager.LoadScene(menuSceneName, LoadSceneMode.Additive);
+        // Start by showing the player the Menu Scene
+        StartCoroutine(LoadMenuScene());
+    }
+
+    public void NotifySceneLoad() {
+        OnSceneLoaded?.Invoke(this, new SceneEventArgs { sceneInfo = currentScene });      
+    }
+
+    // Transition into the chosen game
+    void HandleGameStart(object sender, LobbyManager.LobbyEventArgs e) {
+        StartCoroutine(TransitionToScene(testScene));
     }
 
     void OnDestroy() {
@@ -33,29 +52,32 @@ public class SceneLoader : MonoBehaviour
         LobbyManager.Instance.OnGameStarted -= HandleGameStart;
     }
 
-    // Transition into the chosen game
-    void HandleGameStart(object sender, LobbyManager.LobbyEventArgs e) {
-        StartCoroutine(TransitionToScene("SolarPanelTest"));
-    }
-
     /*
      * --- TRANSITION COROUTINES ---
      */
 
-    private IEnumerator TransitionToScene(string sceneName)
+    private IEnumerator LoadMenuScene()
     {
-        Debug.Log($"Starting transition to {sceneName}");
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(menuScene.sceneName, LoadSceneMode.Additive);
+        yield return loadOp;
+        this.currentScene = menuScene;
+        NotifySceneLoad();
+    }
+
+    private IEnumerator TransitionToScene(SceneInfo newScene)
+    {
+        Debug.Log($"[Scene Loader] Starting transition to {newScene.displayName}");
         
         // First, the current scene must be unloaded
-        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentScene);
+        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentScene.sceneName);
         while (!unloadOperation.isDone) { yield return null; }
         
         // Then, the new game scene is loaded by the server, ensuring synchronization
-        if (NetworkManager.Singleton.IsServer)
-        {
-            NetworkManager.Singleton.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        if (NetworkManager.Singleton.IsServer) {
+            NetworkManager.Singleton.SceneManager.LoadScene(newScene.sceneName, LoadSceneMode.Single);
         }
 
-        currentScene = sceneName;
+        // Save reference to the new scene
+        this.currentScene = newScene;
     }
 }

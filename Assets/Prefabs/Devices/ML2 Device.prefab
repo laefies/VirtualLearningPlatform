@@ -186,7 +186,7 @@ PrefabInstance:
     - target: {fileID: 865075385244835223, guid: 5eccbf4be2c00e94689ee8062e4e7276,
         type: 3}
       propertyPath: m_Name
-      value: ML2 Device Variant
+      value: ML2 Device
       objectReference: {fileID: 0}
     - target: {fileID: 1591053059546818195, guid: 5eccbf4be2c00e94689ee8062e4e7276,
         type: 3}

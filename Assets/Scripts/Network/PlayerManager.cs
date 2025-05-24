@@ -24,6 +24,7 @@ public class PlayerManager : NetworkBehaviour
 
         // Initialize the global device state
         DeviceManager.Instance.Initialize(info);
+        //HandleDeviceConfiguration();
     }
 
     // Returns the DeviceInfo that corresponds to the current device model
@@ -39,4 +40,21 @@ public class PlayerManager : NetworkBehaviour
         // Should no match is found, the first entry (Simulator) is returned;
         return supportedDevices[0];
     }
+
+    public override void OnNetworkSpawn()
+    {
+        NetworkManager.SceneManager.OnSceneEvent += OnNetworkSceneEvent;
+        base.OnNetworkSpawn();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        NetworkManager.SceneManager.OnSceneEvent -= OnNetworkSceneEvent;
+        base.OnNetworkDespawn();
+    }
+
+    private void OnNetworkSceneEvent(SceneEvent sceneEvent) {
+        if (sceneEvent.SceneEventType == SceneEventType.LoadComplete) SceneLoader.Instance.NotifySceneLoad();
+    }
+
 }
