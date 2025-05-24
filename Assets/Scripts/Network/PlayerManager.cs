@@ -2,17 +2,12 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
 
+// Responsible for identifying the current device and instantiating the corresponding player prefab. 
 public class PlayerManager : NetworkBehaviour
 {
-    [System.Serializable]
-    public class DeviceMapping
-    {
-        public string deviceIdentifier;
-        public GameObject devicePrefab;
-    }
-
-    [SerializeField] private GameObject defaultDevicePrefab;
-    [SerializeField] private List<DeviceMapping> deviceMappings = new List<DeviceMapping>();
+    // List of all supported devices in the application:
+    //   The first element (index 0) corresponds to the VR Simulator.
+    [SerializeField] private List<DeviceInfo> supportedDevices = new List<DeviceInfo>();
 
     void Awake()
     {
@@ -21,53 +16,27 @@ public class PlayerManager : NetworkBehaviour
 
     void Start() 
     {
-        // Get both prefab and device identifier
-        (GameObject devicePrefab, string deviceName) = GetPlayerPrefabAndDeviceName();
-        Debug.Log("Starting! Device recognized as '" + deviceName + "'.");
+        // Detect the current device or fallback to default
+        DeviceInfo info = GetDeviceInfo();
 
-        // Instantiate the device prefab
-        GameObject deviceInstance = Instantiate(devicePrefab, transform);
+        // Instantiate the device-specific player prefab as a child of this manager
+        GameObject deviceInstance = Instantiate(info.playerPrefab, transform);
+
+        // Initialize the global device state
+        DeviceManager.Instance.Initialize(info);
     }
 
-    private (GameObject, string) GetPlayerPrefabAndDeviceName()
+    // Returns the DeviceInfo that corresponds to the current device model
+    private DeviceInfo GetDeviceInfo()
     {
-        foreach (var mapping in deviceMappings)
-        {
-            if (SystemInfo.deviceModel.Contains(mapping.deviceIdentifier))
-                return (mapping.devicePrefab, mapping.deviceIdentifier);
+        // Goes through supported devices and compares 
+        // it to the system info provided by the device;
+        foreach (DeviceInfo info in supportedDevices) {
+            if (SystemInfo.deviceModel.Contains(info.deviceName))
+                return info;
         }
 
-        return (defaultDevicePrefab, "Test Device");
+        // Should no match is found, the first entry (Simulator) is returned;
+        return supportedDevices[0];
     }
-
-
-    public override void OnNetworkSpawn()
-    {
-        if (IsOwner)
-        {
-            Debug.Log("Spawning onto network! => Client " + GetComponent<NetworkObject>().OwnerClientId);
- 
-            // Rename player object with the device identifier
-            // LobbyManager.Instance.UpdatePlayerData(
-            //     LobbyManager.KEY_NETWORK_CLIENT_ID, 
-            //     GetComponent<NetworkObject>().OwnerClientId.ToString()
-            // );
-        }
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        Debug.Log("Despawning from network! => Client " + GetComponent<NetworkObject>().OwnerClientId);
-
-        if (IsHost) {
-            string playerID = LobbyManager.Instance.GetPlayerIdByFieldValue(
-                LobbyManager.KEY_NETWORK_CLIENT_ID, 
-                GetComponent<NetworkObject>().OwnerClientId.ToString()
-            );
-            if (playerID != null) LobbyManager.Instance.RemoveFromLobby(playerID);
-        }
-
-    }
-
-
 }

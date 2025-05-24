@@ -12,7 +12,7 @@ using TMPro;
 // Manages UI to handle lobby events.
 public class MainMenuUI : BodyLockedUI
 {
-    // Messages » Headers / Info Subheaderz
+    // Messages » Headers / Info Subheaders
     private const string GAME_MENU_HEADER_STARTABLE   = "Choose a Lesson!";
     private const string GAME_MENU_HEADER_UNSTARTABLE = "Waiting for Host!";
 
@@ -33,20 +33,22 @@ public class MainMenuUI : BodyLockedUI
     };
 
     // Game Menu - Game listing + starting
+    [Header("Game Menu Components")]
     [SerializeField] private TMPro.TextMeshProUGUI gameMenuHeader;
     [SerializeField] private TMPro.TextMeshProUGUI gameMenuSubheader;
     [SerializeField] private Button startButton;
 
     // Lobby Menu - Lobby creation + listing 
+    [Header("Lobby Menu Components")]
     [SerializeField] private GameObject lobbyMenu;       
     [SerializeField] private Transform lobbyListContent; // Content panel where the lobbies are listed
     [SerializeField] private GameObject lobbyItemPrefab; // Prefab regarding an item of the lobby list
 
     // Player Menu - Lobby waiting list 
+    [Header("Player Menu Components")]
     [SerializeField] private GameObject playerList;
     [SerializeField] private Transform playerListContent; // Content panel where the players are listed
     [SerializeField] private GameObject playerItemPrefab; // Prefab regarding an item of the player list
-
 
     void Start() {
         // Call base initialization

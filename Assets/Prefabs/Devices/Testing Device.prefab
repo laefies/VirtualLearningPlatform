@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 1200121077458976709}
   - component: {fileID: 5850792439973283057}
   - component: {fileID: 2182021318243736338}
+  - component: {fileID: 4126492565466534557}
   m_Layer: 0
   m_Name: Testing Device
   m_TagString: Untagged
@@ -228,6 +229,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   cameraTransform: {fileID: 1938004087177720402}
+--- !u!114 &4126492565466534557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2148610529626539581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e1645b0fa6fc954fbc48268d7e346df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7020239398902986148
 GameObject:
   m_ObjectHideFlags: 0

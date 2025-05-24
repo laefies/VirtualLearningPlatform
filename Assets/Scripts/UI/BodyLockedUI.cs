@@ -6,6 +6,7 @@ public class BodyLockedUI : MonoBehaviour
 {
     private Camera _player;
 
+    [Header("Lock Behaviour Parameters")]
     [SerializeField] private float MAX_DIST_X = 0f;
     [SerializeField] private float MAX_DIST_Y = 1f;
     [SerializeField] private float MAX_DIST_Z = 0.375f;
@@ -36,7 +37,7 @@ public class BodyLockedUI : MonoBehaviour
         if (needsCorrection)
         {
             Vector3 targetPosition = _player.transform.position + offsetFromPlayer;
-            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
+            transform.position     = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
         }
     }
 
