@@ -6,11 +6,10 @@ using MagicLeap.OpenXR.Features.MarkerUnderstanding;
 using System;
 
 /// <summary> Manages the detection of markers using MagicLeap2's features. </summary>
-public class ML2DetectionManager : MonoBehaviour
+public class ML2DetectionManager : DeviceSubsystemManager
 {
     /// <summary> Reference to the original transform point, needed for coordinate space conversion. </summary>
     private Transform _origin;
-
     /// <summary> Reference to MagicLeap's detection feature. </summary>
     private MagicLeapMarkerUnderstandingFeature _markerFeature;
 
@@ -20,9 +19,11 @@ public class ML2DetectionManager : MonoBehaviour
     /// <summary> Prepares everything needed for marker detection. </summary>
     private void Start()
     {
+
         // 1. Verifying correct XR implementation - if the origin exists and if marker detection is available
         XROrigin xrOrigin = FindAnyObjectByType<XROrigin>();
         _markerFeature    = OpenXRSettings.Instance.GetFeature<MagicLeapMarkerUnderstandingFeature>();
+        Debug.Log("AAAA, SPAWNED");
 
         if (xrOrigin == null || _markerFeature == null || !_markerFeature.enabled)
         {
@@ -44,11 +45,16 @@ public class ML2DetectionManager : MonoBehaviour
         
         // 3. Saving device origin coordinates
         _origin = xrOrigin.CameraFloorOffsetObject.transform;
+
+        // 4. Setting handled subsystem type
+        this._managedSubsystemType = SubsystemType.MarkerDetection;
     }
 
     /// <summary> Updates the marker detector and processes all (if any) detected markers. </summary>
-    private void Update()
+    protected override void HandleSubsystem()
     {
+        Debug.Log("AAA, Handling");
+
         _markerFeature.UpdateMarkerDetectors();
         if (_markerDetector.Status == MagicLeap.OpenXR.Features.MarkerUnderstanding.MarkerDetectorStatus.Ready)
         {
@@ -63,6 +69,8 @@ public class ML2DetectionManager : MonoBehaviour
         foreach (var markerData in _markerDetector.Data)
         {
             if (!markerData.MarkerPose.HasValue) continue;
+
+            Debug.Log("AAA, Found");
 
             NetworkObjectManager.Instance.ProcessMarkerServerRpc(
                 new MarkerInfo {

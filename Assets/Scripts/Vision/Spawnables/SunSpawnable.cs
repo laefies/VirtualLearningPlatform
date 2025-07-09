@@ -38,13 +38,17 @@ public class SunSpawnable : MonoBehaviour
         _lastSeen = 0f;
         gameObject.SetActive(true); 
 
-        if (!_isGrabbed) {
+        if (!_isGrabbed)
+        {
 
-            if (_withinDock) {
+            if (_withinDock)
+            {
                 _rb.MovePosition(Vector3.Lerp(transform.position, markerInfo.Pose.position, Time.deltaTime * positionLerpSpeed));
                 _rb.MoveRotation(Quaternion.Slerp(transform.rotation, markerInfo.Pose.rotation, Time.deltaTime * rotationLerpSpeed));
                 transform.localScale = Vector3.one * markerInfo.Size;
-            } else {
+            }
+            else
+            {
                 checkDockStatus();
             }
         }

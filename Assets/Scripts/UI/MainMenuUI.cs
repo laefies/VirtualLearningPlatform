@@ -231,7 +231,7 @@ public class MainMenuUI : BodyLockedUI
         if (Input.GetKeyDown(KeyCode.N)) CreateLobby();
         if (Input.GetKeyDown(KeyCode.R)) RefreshLobbies();
         if (Input.GetKeyDown(KeyCode.L)) LeaveLobby();
-        if (Input.GetKeyDown(KeyCode.S)) StartGame();
+        if (Input.GetKeyDown(KeyCode.G)) StartGame();
     }
 
 }

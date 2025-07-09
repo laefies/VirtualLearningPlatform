@@ -67,17 +67,23 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator TransitionToScene(SceneInfo newScene)
     {
         Debug.Log($"[Scene Loader] Starting transition to {newScene.displayName}");
-        
+
         // First, the current scene must be unloaded
         AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentScene.sceneName);
         while (!unloadOperation.isDone) { yield return null; }
-        
+
         // Then, the new game scene is loaded by the server, ensuring synchronization
-        if (NetworkManager.Singleton.IsServer) {
+        if (NetworkManager.Singleton.IsServer)
+        {
             NetworkManager.Singleton.SceneManager.LoadScene(newScene.sceneName, LoadSceneMode.Single);
         }
 
         // Save reference to the new scene
         this.currentScene = newScene;
+
+        while (SceneManager.GetActiveScene().name != newScene.sceneName) { yield return null; }
+
+        Debug.Log($"[Scene Loader] Scene {newScene.sceneName} is now active.");
+        NotifySceneLoad();
     }
 }

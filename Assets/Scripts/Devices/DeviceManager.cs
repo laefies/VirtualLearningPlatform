@@ -21,34 +21,27 @@ public class DeviceManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start() {
-        SceneLoader.Instance.OnSceneLoaded += PrepareDeviceForScene;
-    }
+    void Start()     { SceneLoader.Instance.OnSceneLoaded += PrepareDeviceForScene; }
+    void OnDestroy() { SceneLoader.Instance.OnSceneLoaded -= PrepareDeviceForScene; }
 
-    void OnDestroy() {
-        SceneLoader.Instance.OnSceneLoaded -= PrepareDeviceForScene;
-    }
-
-    // Initializes the DeviceManager with the specified DeviceInfo.
-    // Called during startup.
+    // Called during startup - assigns the manager to a specified DeviceInfo.
     public void Initialize(DeviceInfo info)
     {
         _deviceInfo = info;
         Debug.Log("[Device Manager] Starting! Device recognized as '" + info.deviceName + "'.");
     }
 
-    // Returns true if the current device is categorized as AR.
-    public bool IsAR() => _deviceInfo?.deviceType == DeviceType.AR;
-
-    // Returns true if the current device is categorized as VR.
-    public bool IsVR() => _deviceInfo?.deviceType == DeviceType.VR;
+    // Returns true if the current device is categorized as AR;
+    public bool IsAR() => _deviceInfo?.deviceType == DeviceType.AR;    
 
     void PrepareDeviceForScene(object sender, SceneLoader.SceneEventArgs e) {
         Debug.Log("[Device Manager] Preparing device for new scene => '" + e.sceneInfo.displayName + "'.");
 
-        if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null) {
+        // If the current device is not AR (meaning its VR or Simulator), a backdrop should
+        // be shown to the user to provide a better visual environment and immersion.
+        Debug.Log("Is AR" + !IsAR());
+        if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null)
             Instantiate(e.sceneInfo.vrEnvironmentPrefab);
-        }
     }
 
 }

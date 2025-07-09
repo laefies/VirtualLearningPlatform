@@ -19,6 +19,10 @@ public class BodyLockedUI : MonoBehaviour
         _player = FindObjectOfType<Camera>();
         if (_player != null)
         {
+            // TODO Delete
+            if (!DeviceManager.Instance.IsAR())
+                 transform.position = new Vector3(transform.position.x, 1.13f, transform.position.z);
+
             offsetFromPlayer = transform.position - _player.transform.position;
         }
     }
@@ -37,6 +41,10 @@ public class BodyLockedUI : MonoBehaviour
         if (needsCorrection)
         {
             Vector3 targetPosition = _player.transform.position + offsetFromPlayer;
+
+            // TODO Delete
+            if (!DeviceManager.Instance.IsAR()) targetPosition.y = 1.13f;
+
             transform.position     = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
         }
     }

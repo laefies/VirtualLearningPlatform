@@ -44,6 +44,7 @@ sysinfo.txt
 /NuGet/
 /Assets/Packages/
 /Assets/Packages.meta
+/Assets/Fries*
 
 # NuGet for Unity specific
 /Assets/NuGet.config

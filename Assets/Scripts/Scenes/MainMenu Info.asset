@@ -16,4 +16,5 @@ MonoBehaviour:
   sceneDescription: '-'
   sceneName: MainMenu
   requiredSubsystems: 0
-  vrEnvironmentPrefab: {fileID: 0}
+  vrEnvironmentPrefab: {fileID: 8556302698627607510, guid: 88db3b1886940d94dacd3fe480810acd,
+    type: 3}

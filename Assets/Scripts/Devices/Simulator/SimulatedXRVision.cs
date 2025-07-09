@@ -69,7 +69,7 @@ public class SimulatedXRVision : MonoBehaviour
                 new MarkerInfo {
                     Id   = "Solar Panel",
                     Pose = new Pose(
-                        transform.position + transform.forward * 0.25f, 
+                        cameraTransform.position + cameraTransform.forward * 0.4f, 
                         Quaternion.identity            
                     ),
                     Size = 0.05f

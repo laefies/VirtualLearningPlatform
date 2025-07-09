@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 3
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
@@ -46,7 +46,7 @@ PlayerSettings:
   defaultScreenHeight: 768
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
-  m_StereoRenderingPath: 0
+  m_StereoRenderingPath: 2
   m_ActiveColorSpace: 1
   unsupportedMSAAFallback: 0
   m_SpriteBatchVertexThreshold: 300
@@ -138,9 +138,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   bundleVersion: 0.1.0
   preloadedAssets:
-  - {fileID: 8341431168519544842, guid: 9b14d2c58fcc11c478a7d4714b7bfdcc, type: 2}
-  - {fileID: 11400000, guid: be2dfd4e545ad4e4cbdd3097b0b417e2, type: 2}
-  - {fileID: 6420639534199576227, guid: 2f577fa2d7a008f4c959a1be810e3988, type: 2}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -173,7 +171,7 @@ PlayerSettings:
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 29
   AndroidTargetSdkVersion: 0
-  AndroidPreferredInstallLocation: 1
+  AndroidPreferredInstallLocation: 0
   aotOptions: 
   stripEngineCode: 1
   iPhoneStrippingLevel: 0
@@ -260,7 +258,7 @@ PlayerSettings:
   useCustomGradlePropertiesTemplate: 0
   useCustomGradleSettingsTemplate: 0
   useCustomProguardFile: 0
-  AndroidTargetArchitectures: 8
+  AndroidTargetArchitectures: 10
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
@@ -807,7 +805,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: USE_ML_OPENXR;MAGICLEAP;USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;DOTWEEN
+    Android: USE_ML_OPENXR;MAGICLEAP;USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;DOTWEEN;ISDK_OPENXR_HAND
     EmbeddedLinux: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
     GameCoreScarlett: DOTWEEN
     GameCoreXboxOne: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
@@ -817,7 +815,7 @@ PlayerSettings:
     PS5: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
     QNX: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
     Stadia: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
-    Standalone: USE_ML_OPENXR;MAGICLEAP;USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;DOTWEEN
+    Standalone: USE_ML_OPENXR;MAGICLEAP;USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;DOTWEEN;ISDK_OPENXR_HAND
     VisionOS: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
     WebGL: USE_ML_OPENXR;MAGICLEAP;DOTWEEN
     Windows Store Apps: USE_INPUT_SYSTEM_POSE_CONTROL;USE_STICK_CONTROL_THUMBSTICKS;DOTWEEN

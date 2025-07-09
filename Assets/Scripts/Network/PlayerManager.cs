@@ -32,7 +32,8 @@ public class PlayerManager : NetworkBehaviour
     {
         // Goes through supported devices and compares 
         // it to the system info provided by the device;
-        foreach (DeviceInfo info in supportedDevices) {
+        foreach (DeviceInfo info in supportedDevices)
+        {
             if (SystemInfo.deviceModel.Contains(info.deviceName))
                 return info;
         }
