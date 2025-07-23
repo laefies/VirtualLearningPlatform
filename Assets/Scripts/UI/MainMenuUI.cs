@@ -53,6 +53,8 @@ public class MainMenuUI : BodyLockedUI
     void Start() {
         // Call base initialization
         base.Start();
+                Debug.Log("[MENU START]");
+
 
         // Prepare Visualization
         ClearLobbyItems();
@@ -224,7 +226,6 @@ public class MainMenuUI : BodyLockedUI
         }
     }
 
-    // TODO REMOVE AFTER TESTING
     void Update() {
         base.Update();
 

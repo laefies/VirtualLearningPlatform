@@ -333,8 +333,8 @@ public class ML2CameraManager : MonoBehaviour
                     new DetectionRequest
                     {
                         frameData       = Convert.ToBase64String(_frameTexture?.EncodeToJPG(20)),
-                        intrinsicParams = intrinsic,
-                        extrinsicParams = extrinsic
+                        // intrinsicParams = intrinsic,
+                        // extrinsicParams = extrinsic
                     }
                 );
             }

@@ -8073,7 +8073,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9210520278221756287}
   m_Layer: 0
-  m_Name: Bedroom(Clone)(Clone)
+  m_Name: Simple Bedroom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

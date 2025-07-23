@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: MQ3 Device
   m_EditorClassIdentifier: 
   deviceName: Oculus Quest
-  deviceType: 0
+  deviceType: 1
   playerPrefab: {fileID: 1888926882335728892, guid: 8c0edc00d6c166a488b2e36c9fcfd612,
     type: 3}

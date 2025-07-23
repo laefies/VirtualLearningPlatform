@@ -12,30 +12,24 @@ using Unity.XR.CoreUtils;
 public class DetectionRequest
 {
     public string frameData;
-    public IntrinsicParameters intrinsicParams;
-    public ExtrinsicParameters extrinsicParams;
 }
 
 [Serializable]
 public class DetectionResponse
 {
     public List<Detection> detections;
-    public IntrinsicParameters intrinsicParams;
-    public ExtrinsicParameters extrinsicParams;
 }
 
 public class Detection
 {
     public string class_id;
-    public List<List<int>> corners;
+    public List<List<float>> corners;
 }
-
 
 public class Detector : MonoBehaviour
 {
     [SerializeField] private string serverUrl  = "wss://supreme-quail-united.ngrok-free.app";
     [SerializeField] private float requestRate = .5f;
-    private Transform _origin;
 
     private WebSocket websocket;
 
@@ -47,22 +41,25 @@ public class Detector : MonoBehaviour
 
     public static Detector Instance{ get; private set;}
 
+    public event EventHandler<DetectionEventArgs> OnDetectionReceived;
+
+    public class DetectionEventArgs : EventArgs {
+        public DetectionResponse response;
+    }
+
     private void Awake() {
         Instance = this;
-
     }
 
     void Start()
     {
         ConnectToServer();
-        XROrigin xrOrigin = FindAnyObjectByType<XROrigin>();
-        _origin = xrOrigin.CameraFloorOffsetObject.transform;
     }
 
     public bool IsAvailable() {
         if (!isConnected) return false;
 
-        return (DateTime.UtcNow - lastSentTime).TotalSeconds >= requestRate;
+        return !awaitingResponse;
     }
 
     async void Update()
@@ -73,15 +70,16 @@ public class Detector : MonoBehaviour
         websocket.DispatchMessageQueue();
         #endif
 
-            if (lastResponse != null)
-            {
-                DetectionResponse toHandle = lastResponse;
-                lastResponse = null;
-                foreach (var detection in toHandle.detections)
-                {
-                    HandleDetection(detection, toHandle.intrinsicParams, toHandle.extrinsicParams);
-                }
-            }
+        if (lastResponse != null)
+        {
+            DetectionResponse toHandle = lastResponse;
+            lastResponse = null;
+
+            if (toHandle?.detections == null || toHandle.detections.Count == 0)
+                return;
+
+            OnDetectionReceived?.Invoke(this, new DetectionEventArgs { response = toHandle });
+        }
 
     }
 
@@ -101,10 +99,10 @@ public class Detector : MonoBehaviour
             isConnected = false;
         };
 
-        websocket.OnMessage += (bytes) => 
+        websocket.OnMessage += (bytes) =>
         {
             awaitingResponse = false;
-            lastResponse = JsonConvert.DeserializeObject<DetectionResponse>(Encoding.UTF8.GetString(bytes));            
+            lastResponse     = JsonConvert.DeserializeObject<DetectionResponse>(Encoding.UTF8.GetString(bytes));
         };
 
         websocket.OnError += (e) =>
@@ -122,50 +120,14 @@ public class Detector : MonoBehaviour
         }
     }
 
-    private void HandleDetection(Detection detection, IntrinsicParameters intrinsicParams, ExtrinsicParameters extrinsicParams) {
-        // TODO Python
-        if (detection.corners.Count != 4) return;
-
-        Vector3 sum = Vector3.zero;
-        List<Vector3> cornerPositions = new List<Vector3>();
-                        
-        foreach (var point in detection.corners)
-        {
-            Vector3 cornerPos = CameraUtilities.CastRayFromScreenToWorldPoint(
-                 intrinsicParams, extrinsicParams, new Vector2(point[0], point[1])
-            );
-            cornerPositions.Add(cornerPos);
-            sum += cornerPos;
-        }
-
-        Vector3 center = sum / cornerPositions.Count;
-        Debug.Log("Center Sem Transform: " + center);
-        Debug.Log("Center Com Transform: " + _origin.TransformPoint(center));
-        Vector3 centerTest = _origin.TransformPoint(center);
-
-        Vector2 topLeftPixel    = new Vector2(0, 0);
-        Vector2 bottomLeftPixel = new Vector2(0, 360);
-
-        Debug.Log("Top Pixel   \n" + CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, topLeftPixel));
-        Debug.Log("Bottom Left \n" + CameraUtilities.CastRayFromScreenToWorldPoint(intrinsicParams, extrinsicParams, bottomLeftPixel));
-
-        NetworkObjectManager.Instance.ProcessMarkerServerRpc(
-             new MarkerInfo {
-                 Id   = detection.class_id,
-                 Pose = new Pose(new Vector3(center.x, 1.06f, center.z), Quaternion.identity),
-                 Size = 0.05f
-             }
-        );
-    }
-
-
     public async void SendMessageAsync(DetectionRequest request)
     {
         if (websocket.State == WebSocketState.Open && IsAvailable())
-        {
+        {            
             string jsonMessage = JsonConvert.SerializeObject(request);
-            await websocket.Send(Encoding.UTF8.GetBytes(jsonMessage));
             awaitingResponse = true;
+
+            await websocket.Send(Encoding.UTF8.GetBytes(jsonMessage));
             lastSentTime = DateTime.UtcNow;
         }
     }

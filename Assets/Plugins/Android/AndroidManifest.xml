@@ -14,4 +14,5 @@
   <uses-permission android:name="com.magicleap.permission.SPATIAL_ANCHOR" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="com.magicleap.permission.SPATIAL_MAPPING" />
+  <uses-permission android:name="com.magicleap.permission.DEPTH_CAMERA" />
 </manifest>
