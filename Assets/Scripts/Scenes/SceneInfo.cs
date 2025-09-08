@@ -5,6 +5,9 @@ public enum SubsystemRequirements
 {
     None = 0,
     MarkerDetection   = 1 << 0,
+    VoiceInput        = 1 << 1, // 0010
+    HandTracking      = 1 << 2, // 0100
+    SpatialMapping    = 1 << 3  // 1000
 }
 
 [CreateAssetMenu(menuName = "Scene Info")]
@@ -16,7 +19,10 @@ public class SceneInfo : ScriptableObject
     public string displayName;
 
     // Description of the simulation, shown to the player in menus
-    public string sceneDescription;
+    //public string displayDescription;
+
+    // Icon of the experience, shown to the player in menus
+    public Sprite displayIcon;
 
     [Header("Setup Details and Requirements")]
     // Actual name of the scene, as saved in the Unity project

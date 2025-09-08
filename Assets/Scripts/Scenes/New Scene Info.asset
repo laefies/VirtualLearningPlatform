@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1758fdf348d7375479485f879a3fcb29, type: 3}
-  m_Name: SunAppConfiguration
+  m_Script: {fileID: 11500000, guid: ac7b12d8cad6645428dee7516aae0780, type: 3}
+  m_Name: New Scene Info
   m_EditorClassIdentifier: 
-  detectionModelId: 
-  MarkerMappings:
-  - MarkerId: Solar Panel
-    SpawnablePrefab: {fileID: 5244820236726262426, guid: f015ba1b2b6c9804fa11bb65249dbac5,
-      type: 3}
+  displayName: 
+  sceneDescription: 
+  sceneName: 
+  requiredSubsystems: 0
+  vrEnvironmentPrefab: {fileID: 0}

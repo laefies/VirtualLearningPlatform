@@ -62,7 +62,7 @@ public class LobbyManager : MonoBehaviour
     {
         await UnityServices.InitializeAsync();
         AuthenticationService.Instance.SignedIn += async () => {
-            isAuthenticated = true; 
+            isAuthenticated = true;
             RefreshLobbyList();
         };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();

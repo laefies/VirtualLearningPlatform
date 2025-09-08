@@ -8,9 +8,6 @@ using System.Linq;
 [CreateAssetMenu(fileName = "DetectionConfiguration", menuName = "Configuration/DetectionConfig")]
 public class DetectionConfiguration : ScriptableObject
 {
-    public MarkerType MarkerType = MarkerType.Aruco;
-    public ArucoType ArucoDictionary = ArucoType.Dictionary_5x5_50;
-    public bool EstimateArucoLength = true;
 
     /// <summary>  Represents a mapping between a marker ID and its corresponding spawnable prefab. </summary>
     [System.Serializable]
@@ -22,9 +19,11 @@ public class DetectionConfiguration : ScriptableObject
         /// <summary> The prefab to spawn when said marker is detected. </summary>
         public GameObject SpawnablePrefab;
     }
+    public string detectionModelId;
 
     /// <summary> List of marker-to-prefab mappings, allowing configuration via Inspector. </summary>
     public List<MarkerMapping> MarkerMappings;
+
 
     /// <summary> Auxiliar internal dictionary to optimize lookups. </summary>
     private Dictionary<string, GameObject> _markerLookup;
