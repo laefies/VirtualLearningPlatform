@@ -72,7 +72,7 @@ public class SimulatedXRVision : MonoBehaviour
                         cameraTransform.position + cameraTransform.forward * 0.4f, 
                         Quaternion.identity            
                     ),
-                    Size = 0.05f
+                    Size = 0.035f
                 }
             );
         }

@@ -55,15 +55,14 @@ public class SunInteractable : Interactable
                    UpdateSolarPowerOutput(); }
                    
         UpdateBeam();
-       // Debug.Log("Power Output Value is " + _power.Value);
     }
 
     private void UpdateBeam() {
-        MarkerInfo panel = spawnable.GetMarkerInfo();
+        Transform panel = spawnable.transform;
 
         _beam.enabled = true;
         _beam.SetPosition(0, transform.position);
-        _beam.SetPosition(1, panel.Pose.position);
+        _beam.SetPosition(1, panel.position);
 
         _beam.endWidth = Mathf.Max(0.05f * (1f - _light.Value), 0.03f);
 
@@ -75,7 +74,7 @@ public class SunInteractable : Interactable
     // Method to calculate power output
     private void UpdateSolarPowerOutput() {
         float dirNormIrr = 800f * Mathf.Exp(-3f * _light.Value);
-        float incFactor  = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
+        float incFactor  = Mathf.Cos((90 - _angle.Value) * Mathf.Deg2Rad);
 
         _power.Value = dirNormIrr * incFactor * _panelArea * _panelEffic; 
     }
@@ -83,11 +82,10 @@ public class SunInteractable : Interactable
     // Methods relating to incidence angle
     private void GetIncidenceAngle()
     {
-        MarkerInfo panel     = spawnable.GetMarkerInfo();
-        Vector3 panelNormal  = panel.Pose.rotation * -Vector3.forward;
-        Vector3 sunDirection = (transform.position - panel.Pose.position).normalized;
+        Transform panel = spawnable.transform;
+        Vector3 sunDirection = transform.position - panel.position;
 
-        _angle.Value = Mathf.Round(Vector3.Angle(panelNormal, sunDirection));
+        _angle.Value = Mathf.Round(Mathf.Atan2(sunDirection.y, sunDirection.x) * Mathf.Rad2Deg);
     }
 
     // Methods relating to light percentage / cloud visibility

@@ -6,46 +6,47 @@ public class Spawnable : NetworkBehaviour
 {
     private NetworkVariable<bool> _isDocked = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<MarkerInfo> _marker = new NetworkVariable<MarkerInfo>(
-        new MarkerInfo()
-        {
-            Id = "Default", Pose = new Pose(Vector3.zero, Quaternion.identity), Size = 1.0f
-        },
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server);
-
+        new MarkerInfo() {
+            Id = "Default",
+            Pose = new Pose(Vector3.zero, Quaternion.identity),
+            Size = 1.0f },
+        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public Toggle dockToggle;
     public Transform dockableTransforms;
+    public GameObject vrProxy;
 
-    void Start() {
-        _isDocked.OnValueChanged += (oldValue, newValue) => {
-            dockToggle.isOn = newValue;
-        };
-        //gameObject.SetActive(false);
+    void Start()
+    {
+        _isDocked.OnValueChanged += (oldValue, newValue) => { dockToggle.isOn = newValue; };
+
+        vrProxy.SetActive(!DeviceManager.Instance.IsAR());
+
+        if (!DeviceManager.Instance.IsAR())
+        {
+            // In the case of VR users, the object is simulated in an optimal position 
+            // for the user - in front of them.
+            Transform camera = FindObjectOfType<Camera>().transform;
+            MoveSpawnable(new Pose(camera.position + camera.forward * 0.4f, Quaternion.identity), 0.035f);
+        }
     }
 
-    public void ChangeDockStatus(bool newDockState) {
+    public void ChangeDockStatus(bool newDockState)
+    {
         if (_isDocked.Value == newDockState) return;
 
         ChangeDockStatusServerRpc(newDockState);
     }
 
-    public MarkerInfo GetMarkerInfo()
+    [ClientRpc]
+    public void UpdateSpawnableClientRpc(MarkerInfo markerInfo, ClientRpcParams clientRpcParams = default)
     {
-        return _marker.Value;
+        MoveSpawnable(markerInfo.Pose, markerInfo.Size);
     }
 
-    public void UpdateTransform(MarkerInfo markerInfo)
+    void MoveSpawnable(Pose pose, float size)
     {
-        if (IsServer)
-            _marker.Value = markerInfo;
-    }
-
-    void Update() {
-        if (!IsOwner) return;
-
-        transform.SetPositionAndRotation(_marker.Value.Pose.position, _marker.Value.Pose.rotation);
-        transform.localScale = Vector3.one * _marker.Value.Size;
-        //gameObject.SetActive(true);
+        transform.SetPositionAndRotation(pose.position, pose.rotation);
+        transform.localScale = Vector3.one * size;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -66,5 +67,4 @@ public class Spawnable : NetworkBehaviour
     {
         NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
     }
-
 }

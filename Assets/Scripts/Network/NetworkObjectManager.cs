@@ -4,8 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
-public class NetworkObjectManager : NetworkBehaviour
-{
+public class NetworkObjectManager : NetworkBehaviour {
     public DetectionConfiguration config;
     private Dictionary<string, Spawnable> _tracked = new Dictionary<string, Spawnable>();
 
@@ -15,28 +14,28 @@ public class NetworkObjectManager : NetworkBehaviour
         Instance = this;
     }
 
-    void Start()
-    {
+    void Start() {
         config.Initialize();
     }
 
-    public async void ProcessMarker(MarkerInfo markerInfo)
-    {
+    public async void ProcessMarker(MarkerInfo markerInfo) {
         if (IsClient) ProcessMarkerServerRpc(markerInfo);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void ProcessMarkerServerRpc(MarkerInfo markerInfo)
+    public void ProcessMarkerServerRpc(MarkerInfo markerInfo, ServerRpcParams serverRpcParams = default)
     {
-        if (!IsServer) return;
+        // Check if there is an associated Prefab for the current scene
+        if (config.GetPrefab(markerInfo.Id) == null)  return;
 
-        if (config.GetPrefab(markerInfo.Id) == null)
-            return;
+       // Spawn the object on the network (makes object shared by all objects)
+        if (!_tracked.ContainsKey(markerInfo.Id)) SpawnObject(markerInfo);
 
-        if (!_tracked.ContainsKey(markerInfo.Id))
-            SpawnObject(markerInfo);
-
-        UpdateObject(markerInfo);
+       // For the client that called this RPC, locally place the object in its correct position
+       _tracked[markerInfo.Id].UpdateSpawnableClientRpc( markerInfo,
+                       new ClientRpcParams { Send = new ClientRpcSendParams { 
+         TargetClientIds = new ulong[] { serverRpcParams.Receive.SenderClientId } } } 
+       );
     }
 
     private void SpawnObject(MarkerInfo markerInfo)
@@ -48,8 +47,4 @@ public class NetworkObjectManager : NetworkBehaviour
         _tracked[markerInfo.Id] = spawnedObject.GetComponent<Spawnable>();
     }
 
-    private void UpdateObject(MarkerInfo markerInfo)
-    {        
-        _tracked[markerInfo.Id].UpdateTransform(markerInfo);
-    }
 }

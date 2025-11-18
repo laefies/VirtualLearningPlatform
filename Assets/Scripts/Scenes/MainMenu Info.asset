@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MainMenu Info
   m_EditorClassIdentifier: 
   displayName: '-'
-  sceneDescription: '-'
+  displayIcon: {fileID: 0}
   sceneName: MainMenu
   requiredSubsystems: 0
-  vrEnvironmentPrefab: {fileID: 8556302698627607510, guid: 88db3b1886940d94dacd3fe480810acd,
+  vrEnvironmentPrefab: {fileID: 8556302698627607510, guid: a97fa1f03bf701d4887f44e64db1eeeb,
     type: 3}
