@@ -36,16 +36,17 @@ public class SunInteractable : Interactable
 
         _light.OnValueChanged += (oldValue, newValue) => { 
             _lightSlider.SetValueWithoutNotify(newValue);
-            _lightText.text = $"{Mathf.Round(newValue * 100)}%";
+            _lightText.text = $"{ Mathf.Round(newValue * 100) }%";
             UpdateCloudVisibility();
         }; 
 
         _angle.OnValueChanged += (oldValue, newValue) => {
-            _angleText.text = $"{newValue}°";
+            // MyImage.Color == Color.white ? Color.green : Color.white
+            _angleText.text = (newValue <= 90) ? $"{ newValue }°" : "-";
         };
 
         _power.OnValueChanged += (oldValue, newValue) => {
-            _powerText.text = $"{Mathf.Round(newValue * 10f) / 10f}W";
+            _powerText.text = $"{ Mathf.Round( Mathf.Max(0, newValue) * 10f ) / 10f }W";
         };
     }
 
@@ -74,7 +75,7 @@ public class SunInteractable : Interactable
     // Method to calculate power output
     private void UpdateSolarPowerOutput() {
         float dirNormIrr = 800f * Mathf.Exp(-3f * _light.Value);
-        float incFactor  = Mathf.Cos((90 - _angle.Value) * Mathf.Deg2Rad);
+        float incFactor  = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
 
         _power.Value = dirNormIrr * incFactor * _panelArea * _panelEffic; 
     }
@@ -82,10 +83,20 @@ public class SunInteractable : Interactable
     // Methods relating to incidence angle
     private void GetIncidenceAngle()
     {
-        Transform panel = spawnable.transform;
-        Vector3 sunDirection = transform.position - panel.position;
+      
+        /* The goal is to achieve:
+        *   Sun directly above solar panel                → 0°
+        *   Sun leveled with the panel ("on the horizon") → 90°
+        *   Sun anywhere "above horizon"                  → ]0°,  90°[
+        *   Sun anywhere "under horizon"                  → ]0°, -90°[  */
 
-        _angle.Value = Mathf.Round(Mathf.Atan2(sunDirection.y, sunDirection.x) * Mathf.Rad2Deg);
+        // Direction vector from panel to sun, in the panel's local space
+        Transform panel = spawnable.transform;
+        Vector3 sunDirection = panel.InverseTransformDirection((transform.position - panel.position).normalized);
+
+        //                                       v Calculates elevation angle from horizontal
+        _angle.Value = Mathf.Round(90f - Mathf.Asin(sunDirection.y) * Mathf.Rad2Deg);
+        //                                                                  ^ converts from radians to degrees
     }
 
     // Methods relating to light percentage / cloud visibility
