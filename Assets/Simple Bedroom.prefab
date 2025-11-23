@@ -3225,7 +3225,7 @@ WheelCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_ProvidesContacts: 0
 --- !u!1 &3405778502807774730
 GameObject:
@@ -3422,7 +3422,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.85, y: 49.1, z: -84}
+  m_LocalScale: {x: 3.85, y: 49.1, z: 84}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9210520278221756287}
@@ -3567,7 +3567,7 @@ WheelCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_ProvidesContacts: 0
 --- !u!1 &3816916929138298925
 GameObject:
@@ -5328,7 +5328,7 @@ WheelCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_ProvidesContacts: 0
 --- !u!1 &5855418406341200762
 GameObject:
@@ -5442,7 +5442,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -17.400002, y: 0, z: 35.70933}
-  m_LocalScale: {x: 3.85, y: 49.1, z: -84}
+  m_LocalScale: {x: 3.85, y: 49.1, z: 84}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9210520278221756287}
@@ -6897,7 +6897,7 @@ WheelCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_ProvidesContacts: 0
 --- !u!1 &7304871213164843029
 GameObject:
@@ -7302,7 +7302,7 @@ WheelCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_ProvidesContacts: 0
 --- !u!1 &7690704936376183639
 GameObject:

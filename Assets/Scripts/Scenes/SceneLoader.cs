@@ -44,7 +44,7 @@ public class SceneLoader : MonoBehaviour
     private void HandleSceneLoaded(SceneInfo newScene) {
         if (currentScene == null || newScene.sceneName != currentScene.sceneName)
         {
-            Debug.Log($"[Scene Loader] Successful transition to '{newScene.displayName}'");
+            Debug.Log($"[Scene Loader] Scene successfully changed to '{newScene.displayName}'");
 
             currentScene = newScene;
             OnSceneLoaded?.Invoke(this, new SceneEventArgs { sceneInfo = newScene });     
@@ -74,7 +74,7 @@ public class SceneLoader : MonoBehaviour
 
     private IEnumerator TransitionToScene(SceneInfo newScene)
     {
-        Debug.Log($"[Scene Loader] Starting transition to '{newScene.displayName}'");
+        // Debug.Log($"[Scene Loader] Starting transition to '{newScene.displayName}'");
 
         // First, the current scene must be unloaded
         AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentScene.sceneName);

@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1140049194
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 3451364668
+  InScenePlacedSourceGlobalObjectIdHash: 1140049194
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -98,9 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351854b4205b0d04d8e2beb03e3d6e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDevicePrefab: {fileID: 2148610529626539581, guid: e3a860ec6703c634295fcbbd9b37698e,
-    type: 3}
-  deviceMappings:
-  - deviceIdentifier: Magic Leap 2
-    devicePrefab: {fileID: 1888926882335728892, guid: f897651ef7e4c1545b6eaf152d6f2621,
-      type: 3}
+  supportedDevices:
+  - {fileID: 11400000, guid: ff07bf6cffc3e284bbbf0c4d02d9d297, type: 2}
+  - {fileID: 11400000, guid: 1bd71a03ea443c04f9e53f6fbec33250, type: 2}
+  - {fileID: 11400000, guid: 53382101c6a8cc44392ebb7ed6fbe27b, type: 2}

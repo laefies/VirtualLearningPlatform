@@ -4,28 +4,32 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Unity.Netcode;
+using Unity.Mathematics;
 
 [RequireComponent(typeof(LineRenderer))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(MeshRenderer))]
 public class SunInteractable : Interactable
 {
-    private static float _panelArea  = 2f;    // m2
     private static float _panelEffic = 0.18f; // 18%
+    private static float _panelArea  = 2f;    // m2
 
+    private static float MIN_POWER = 0f;
+    private static float MAX_POWER = 800f * _panelArea * _panelEffic;
 
     private NetworkVariable<float> _angle = new NetworkVariable<float>(90f,  NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _light = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _power = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-
     private LineRenderer _beam;
     [SerializeField] private Text _angleText;
-    [SerializeField] private Text _lightText;
+
     [SerializeField] private Text _powerText;
+    [SerializeField] private Transform _powerPointer;
+
+    [SerializeField] private Text _lightText;
     [SerializeField] private Slider _lightSlider;
     [SerializeField] private Transform cloudParent;
-
 
     // Inherited methods - component preparation and updating
     public override void PrepareComponents()
@@ -41,12 +45,15 @@ public class SunInteractable : Interactable
         }; 
 
         _angle.OnValueChanged += (oldValue, newValue) => {
-            // MyImage.Color == Color.white ? Color.green : Color.white
             _angleText.text = (newValue <= 90) ? $"{ newValue }°" : "-";
         };
 
         _power.OnValueChanged += (oldValue, newValue) => {
-            _powerText.text = $"{ Mathf.Round( Mathf.Max(0, newValue) * 10f ) / 10f }W";
+            float power = Mathf.Max(MIN_POWER, newValue);
+            _powerText.text = $"{ Mathf.Round( power * 10f ) / 10f }W";
+
+            float pointerRotation = math.remap( MIN_POWER, MAX_POWER, 120, -120, power );
+            _powerPointer.localRotation = Quaternion.Euler(0, 0, pointerRotation);
         };
     }
 
@@ -61,7 +68,7 @@ public class SunInteractable : Interactable
     private void UpdateBeam() {
         Transform panel = spawnable.transform;
 
-        _beam.enabled = true;
+        _beam.enabled = _angle.Value <= 90;
         _beam.SetPosition(0, transform.position);
         _beam.SetPosition(1, panel.position);
 
@@ -74,7 +81,7 @@ public class SunInteractable : Interactable
 
     // Method to calculate power output
     private void UpdateSolarPowerOutput() {
-        float dirNormIrr = 800f * Mathf.Exp(-3f * _light.Value);
+        float dirNormIrr = 800f * Mathf.Exp(-3f * _light.Value); 
         float incFactor  = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
 
         _power.Value = dirNormIrr * incFactor * _panelArea * _panelEffic; 

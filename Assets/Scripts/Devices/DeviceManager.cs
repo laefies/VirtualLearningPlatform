@@ -20,7 +20,7 @@ public class DeviceManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     // Subscribe / Unsubscribe from scene events
