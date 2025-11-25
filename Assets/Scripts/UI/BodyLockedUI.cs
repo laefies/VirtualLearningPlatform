@@ -45,7 +45,7 @@ public class BodyLockedUI : MonoBehaviour
             // TODO Delete
             if (!DeviceManager.Instance.IsAR()) targetPosition.y = 1.13f;
 
-            transform.position     = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
         }
     }
 

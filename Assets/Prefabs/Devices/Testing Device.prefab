@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 5850792439973283057}
   - component: {fileID: 2182021318243736338}
   - component: {fileID: 4126492565466534557}
+  - component: {fileID: 938010814900017803}
   - component: {fileID: 987463937818534987}
   - component: {fileID: 350241543780471298}
   m_Layer: 0
@@ -243,6 +244,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1645b0fa6fc954fbc48268d7e346df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &938010814900017803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2148610529626539581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a8b1fa770e835418b8fa13bdb3fd39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  INVALID_MATERIAL: {fileID: 2100000, guid: 5dc89ae20f7f4554aa39488691615a7b, type: 2}
+  PREVIEW_LAYER: 6
+  LIFT_STEP: 0.001
+  MAX_STEP: 0.02
 --- !u!114 &987463937818534987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3269571728
+  GlobalObjectIdHash: 2500389646
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -376,11 +393,11 @@ MonoBehaviour:
   m_OnSelectExited:
     m_PersistentCalls:
       m_Calls: []
-  rayOrigin: {fileID: 1128710864141142144}
-  rayDistance: 100
   rayColor: {r: 1, g: 1, b: 1, a: 1}
   rayColorHit: {r: 0.5748665, g: 0.6124588, b: 0.8301887, a: 1}
   rayColorSelected: {r: 0.25888216, g: 0.3195532, b: 0.6792453, a: 1}
+  rayOrigin: {fileID: 1128710864141142144}
+  rayDistance: 100
   scrollSpeed: 0.1
 --- !u!1 &8385265114756558855
 GameObject:

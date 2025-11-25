@@ -3,6 +3,7 @@ using Unity.Netcode;
 
 // Responsible for storing information regarding the device, and handle its subsystems.
 [RequireComponent(typeof(NetworkObject))]
+[RequireComponent(typeof(VirtualPlacementSystem))]
 public class DeviceManager : MonoBehaviour
 {
     // Singleton instance for global access

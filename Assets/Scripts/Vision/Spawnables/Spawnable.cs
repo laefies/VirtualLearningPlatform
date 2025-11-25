@@ -26,7 +26,7 @@ public class Spawnable : NetworkBehaviour
             // In the case of VR users, the object is simulated in an optimal position 
             // for the user - in front of them.
             Transform camera = FindObjectOfType<Camera>().transform;
-            MoveSpawnable(new Pose(camera.position + camera.forward * 0.4f, Quaternion.identity), 0.035f);
+            // MoveSpawnable(new Pose(camera.position + camera.forward * 0.4f, Quaternion.identity), 0.035f);
         }
     }
 

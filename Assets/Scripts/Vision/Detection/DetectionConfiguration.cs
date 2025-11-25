@@ -38,4 +38,16 @@ public class DetectionConfiguration : ScriptableObject
     /// <param name="markerId">ID of the marker to look up.</param>
     /// <returns>Associated prefab (or null if no mapping exists).</returns>
     public GameObject GetPrefab(string markerId) => _markerLookup.TryGetValue(markerId, out var prefab) ? prefab : null;
+
+    /// <summary> Gets the prefab associated with a certain index. </summary>
+    /// <param name="markerId">Index of the marker to look up.</param>
+    /// <returns>Associated prefab (or null if no mapping exists).</returns>
+    public GameObject GetPrefab(int index) => index >= 0 && index < MarkerMappings.Count ? MarkerMappings[index].SpawnablePrefab : null;
+
+    /// <summary> Gets the ID associated with a certain index. </summary>
+    /// <param name="markerId">Index of the marker to look up.</param>
+    /// <returns>Associated ID (or null if no mapping exists).</returns>
+    public string GetIdentificator(int index) => index >= 0 && index < MarkerMappings.Count ? MarkerMappings[index].MarkerId : null;
+
+    public int GetObjectCount() => MarkerMappings.Count;
 }

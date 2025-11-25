@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class SimulatedXRInteraction : XRBaseInteractor
 {
     // State machine
-    private enum InteractionState { Idle, HoveringUI, HoveringObject, GrabbingObject, DraggingSlider }
+    private enum InteractionState { Idle, Placing, HoveringUI, HoveringObject, GrabbingObject, DraggingSlider }
     private InteractionState currentState = InteractionState.Idle;
 
     // Serialized fields
@@ -55,8 +55,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
     private void InitializeEventSystem()
     {
         eventSystem = EventSystem.current;
-        if (eventSystem == null)
-        {
+        if (eventSystem == null) {
             GameObject eventSystemObj = new GameObject("EventSystem");
             eventSystem = eventSystemObj.AddComponent<EventSystem>();
             eventSystemObj.AddComponent<StandaloneInputModule>();
@@ -66,23 +65,47 @@ public class SimulatedXRInteraction : XRBaseInteractor
 
     void Update()
     {
+        // Check for placing mode toggle, as it interrupts any state
+        if (Input.GetMouseButtonDown(2)) { TransitionToPlacing(); }
+
         // Create raycast
         RaycastHit physicsHit;
         Ray ray = new Ray(rayOrigin.position, -rayOrigin.forward);
         bool hitPhysics = Physics.Raycast(ray, out physicsHit, rayDistance);
         RaycastResult? uiHit = PerformUIRaycast(ray);
 
-        // Determine if the ray hit any targets
+        // Determine if the ray hit any targets and check for state updates
         DetermineHitTarget(hitPhysics, physicsHit, uiHit);
-
-        // Update state machine
         UpdateStateMachine();
 
-        // Handle input based on the current state
+        // Handle input and update visualization based on the current state
         HandleInput(ray);
-
-        // Update visuals
         UpdateLineRenderer(ray);
+    }
+
+    private void TransitionToPlacing()
+    {
+        // Enter placing state if possible
+        if (VirtualPlacementSystem.Instance.InitPlacement()) {
+            // Clean up current state before transitioning
+            CleanupCurrentState();
+            currentState = InteractionState.Placing;
+        }
+    }
+
+    private void CleanupCurrentState()
+    {
+        if (grabbedObject != null) {
+            grabbedObject.interactionManager.SelectExit(this, grabbedObject);
+            grabbedObject = null;
+        }
+
+        if (activeSlider != null) {
+            activeSlider = null;
+        }
+
+        hoveredUIElement = null;
+        hoveredInteractable = null;
     }
 
     private void DetermineHitTarget(bool hitPhysics, RaycastHit physicsHit, RaycastResult? uiHit)
@@ -93,8 +116,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
         currentHitPoint = Vector3.zero;
 
         // Check UI hit first
-        if (uiHit.HasValue && uiHit.Value.gameObject != null)
-        {
+        if (uiHit.HasValue && uiHit.Value.gameObject != null) {
             currentHitDistance = uiHit.Value.distance;
             currentHitPoint = uiHit.Value.worldPosition;
 
@@ -103,19 +125,17 @@ public class SimulatedXRInteraction : XRBaseInteractor
             Selectable selectable = hitObject.GetComponent<Selectable>();
             Slider slider = hitObject.GetComponentInParent<Slider>();
             
-            if ((selectable != null && selectable.interactable) || slider != null)
-            {
+            if ((selectable != null && selectable.interactable) || slider != null) {
                 // Use the slider's gameObject if found, otherwise use the hit object
                 hoveredUIElement = slider != null ? slider.gameObject : hitObject;
             }
         }
 
-        // Check if physics hit is closer
-        if (hitPhysics && physicsHit.distance < currentHitDistance)
-        {
+        // Check if physics hit is closer: frontal one has priority
+        if (hitPhysics && physicsHit.distance < currentHitDistance) {
             currentHitDistance = physicsHit.distance;
             currentHitPoint = physicsHit.point;
-            hoveredUIElement = null; // Physics takes priority
+            hoveredUIElement = null;
             hoveredInteractable = physicsHit.collider.GetComponent<XRGrabInteractable>();
         }
     }
@@ -164,6 +184,10 @@ public class SimulatedXRInteraction : XRBaseInteractor
     {
         switch (currentState)
         {
+            case InteractionState.Placing:
+                HandlePlacingInput(ray);
+                break;
+
             case InteractionState.HoveringUI:
                 HandleUIInput();
                 break;
@@ -182,19 +206,38 @@ public class SimulatedXRInteraction : XRBaseInteractor
         }
     }
 
+    private void HandlePlacingInput(Ray ray)
+    {
+        VirtualPlacementSystem.Instance.UpdatePreview(currentHitPoint);
+
+        if (Input.GetMouseButtonDown(0)) {
+            if (VirtualPlacementSystem.Instance.ConfirmPlacement()) {
+                currentState = InteractionState.Idle;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1)) {
+            Debug.Log("Canceling object placement");
+            VirtualPlacementSystem.Instance.StopPlacement();
+            currentState = InteractionState.Idle;
+        }
+
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        if (scrollInput != 0) {
+            VirtualPlacementSystem.Instance.RotateBy(scrollInput * -100f);
+        }
+
+    }
+
     private void HandleUIInput() {
-        if (Input.GetMouseButtonDown(0) && hoveredUIElement != null)
-        {
-            // Check if it's a slider
+        if (Input.GetMouseButtonDown(0) && hoveredUIElement != null) {
+            // Check if it's a slider, as it has a non-binary handling
             Slider slider = hoveredUIElement.GetComponent<Slider>();
-            if (slider != null)
-            {
+            if (slider != null) {
                 activeSlider = slider;
                 startingMousePosition = Input.mousePosition;
                 currentState = InteractionState.DraggingSlider;
-            }
-            else
-            {
+            } else {
                 // Use ExecuteEvents to simulate a proper pointer click for other UI elements
                 ExecuteEvents.Execute(hoveredUIElement, pointerEventData, ExecuteEvents.pointerClickHandler);
             }
@@ -202,8 +245,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
     }
 
     private void HandleObjectInput(Ray ray) {
-        if (Input.GetMouseButtonDown(0) && hoveredInteractable != null)
-        {
+        if (Input.GetMouseButtonDown(0) && hoveredInteractable != null) {
             grabbedObject = hoveredInteractable;
             attachTransform.position = currentHitPoint;
             grabbedObject.interactionManager.SelectEnter(this, grabbedObject);
@@ -214,35 +256,31 @@ public class SimulatedXRInteraction : XRBaseInteractor
     private void HandleGrabbingInput(Ray ray) {
         // Handle scroll to adjust distance
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        if (scrollInput != 0)
-        {
+        if (scrollInput != 0) {
             currentGrabDistance += scrollInput * scrollSpeed;
             currentGrabDistance = Mathf.Clamp(currentGrabDistance, 0.1f, rayDistance);
             attachTransform.position = ray.origin + ray.direction * currentGrabDistance;
         }
 
         // Handle release
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (grabbedObject != null)
-            {
+        if (Input.GetMouseButtonUp(0)) {
+            if (grabbedObject != null) {
                 grabbedObject.interactionManager.SelectExit(this, grabbedObject);
                 grabbedObject = null;
             }
             currentState = InteractionState.Idle;
         }
+        
     }
 
-    private void HandleSliderInput()
-    {
+    private void HandleSliderInput() {
         if (activeSlider == null) return;
 
         float sensitivity = 0.5f;
         activeSlider.value += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime * 60f;
 
-        // Release on mouse up
-        if (Input.GetMouseButtonUp(0))
-        {
+        // Handle release
+        if (Input.GetMouseButtonUp(0)) {
             activeSlider = null;
             currentState = InteractionState.Idle;
         }
@@ -254,13 +292,10 @@ public class SimulatedXRInteraction : XRBaseInteractor
         RaycastResult? closestHit = null;
         float closestDistance = float.MaxValue;
 
-        foreach (Canvas canvas in canvases)
-        {
-            if (canvas.renderMode == RenderMode.WorldSpace)
-            {
+        foreach (Canvas canvas in canvases) {
+            if (canvas.renderMode == RenderMode.WorldSpace) {
                 RaycastResult? hit = RaycastWorldSpaceCanvas(canvas, ray);
-                if (hit.HasValue && hit.Value.distance < closestDistance)
-                {
+                if (hit.HasValue && hit.Value.distance < closestDistance) {
                     closestDistance = hit.Value.distance;
                     closestHit = hit;
                 }
@@ -275,20 +310,23 @@ public class SimulatedXRInteraction : XRBaseInteractor
         GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
         if (raycaster == null) return null;
 
+        /* 
+         * Note: "??" works as a null coalescing operator. The line can be written as:
+         *   if(canvas.worldCamera != null) cam = canvas.worldCamera;
+         *   else cam = Camera.main;
+         */
         Camera cam = canvas.worldCamera ?? Camera.main;
         if (cam == null) return null;
 
         Plane canvasPlane = new Plane(-canvas.transform.forward, canvas.transform.position);
-        if (canvasPlane.Raycast(ray, out float enter))
-        {
+        if (canvasPlane.Raycast(ray, out float enter)) {
             Vector3 hitPoint = ray.GetPoint(enter);
             Vector3 screenPoint = cam.WorldToScreenPoint(hitPoint);
             pointerEventData.position = screenPoint;
             raycastResults.Clear();
             raycaster.Raycast(pointerEventData, raycastResults);
 
-            if (raycastResults.Count > 0)
-            {
+            if (raycastResults.Count > 0) {
                 RaycastResult result = raycastResults[0];
                 result.distance = enter;
                 return result;
@@ -303,18 +341,16 @@ public class SimulatedXRInteraction : XRBaseInteractor
         if (!lineRenderer) return;
 
         Color color = GetRayColorForCurrentState();
-        float distance = currentState == InteractionState.GrabbingObject ? currentGrabDistance : currentHitDistance;
 
         lineRenderer.SetPosition(0, ray.origin);
-        lineRenderer.SetPosition(1, ray.origin + ray.direction * distance);
+        lineRenderer.SetPosition(1, ray.origin + ray.direction * currentHitDistance);
         lineRenderer.startColor = color;
         lineRenderer.endColor = new Color(color.r, color.g, color.b, 0.2f);
     }
 
     private Color GetRayColorForCurrentState()
     {
-        switch (currentState)
-        {
+        switch (currentState) {
             case InteractionState.GrabbingObject:
             case InteractionState.DraggingSlider:
                 return rayColorSelected;

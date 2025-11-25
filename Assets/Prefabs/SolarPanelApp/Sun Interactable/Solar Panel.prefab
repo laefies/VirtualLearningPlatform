@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 5976501683857516748}
   - component: {fileID: 1111766608381796826}
   - component: {fileID: 2837992440174186195}
+  - component: {fileID: 5569358868949657490}
   m_Layer: 0
   m_Name: Solar Panel
   m_TagString: Untagged
@@ -360,8 +361,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.2, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.18749997, y: 0.22499998, z: 0.18749997}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3213676077159589511}
   - {fileID: 3937485746550217851}
@@ -406,6 +407,27 @@ MonoBehaviour:
   - {fileID: 9125858937204066545}
   fadeDuration: 0.2
   fadeIn: 0
+--- !u!65 &5569358868949657490
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6465792687930454646}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.8475695, y: 0.1724397, z: 3.9907546}
+  m_Center: {x: -0.0000022252402, y: 0.07698189, z: 0.005775929}
 --- !u!1 &7461450353928420497
 GameObject:
   m_ObjectHideFlags: 0

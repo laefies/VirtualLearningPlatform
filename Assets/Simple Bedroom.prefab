@@ -5997,7 +5997,7 @@ GameObject:
   - component: {fileID: 973411354647886549}
   - component: {fileID: 6652416849243291378}
   - component: {fileID: 4892638269950605038}
-  - component: {fileID: 4860329523681555137}
+  - component: {fileID: 8785363033143308158}
   m_Layer: 0
   m_Name: Table Lamp
   m_TagString: Untagged
@@ -6099,8 +6099,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &4860329523681555137
-BoxCollider:
+--- !u!64 &8785363033143308158
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6117,9 +6117,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.028170666, y: 0.004510537, z: 0.033864822}
-  m_Center: {x: -0.0039175116, y: 0.0016781812, z: 0.0012749779}
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5621878023496371592, guid: bb4b727003dcaeb4699c4c46ef41ec8e, type: 3}
 --- !u!1 &6693959227323169949
 GameObject:
   m_ObjectHideFlags: 0
