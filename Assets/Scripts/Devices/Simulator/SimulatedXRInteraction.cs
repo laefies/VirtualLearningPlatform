@@ -217,7 +217,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
         }
 
         if (Input.GetMouseButtonDown(1)) {
-            Debug.Log("Canceling object placement");
+            Debug.Log("Cancelling object placement");
             VirtualPlacementSystem.Instance.StopPlacement();
             currentState = InteractionState.Idle;
         }

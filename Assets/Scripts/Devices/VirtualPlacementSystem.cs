@@ -2,20 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(VirtualPlacementInputActionHandler))]
 public class VirtualPlacementSystem : MonoBehaviour
 {
-    private GameObject objectPreview;
-    private int objectIndex;
-    private bool canPlace;
-
-    // Material handling for validation feedback
-    private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
-
-    [SerializeField] private Material INVALID_MATERIAL;
     [SerializeField] private int PREVIEW_LAYER = 6;
-    [SerializeField] private float LIFT_STEP = 0.001f;
     [SerializeField] private float MAX_STEP  = 0.02f;
+    [SerializeField] private float LIFT_STEP = 0.001f;
+    [SerializeField] private Material INVALID_MATERIAL;
 
+    private bool canPlace;
+    private int objectIndex;
+    private GameObject objectPreview;
+    private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
     public static VirtualPlacementSystem Instance{ get; private set;}
 
@@ -143,7 +141,7 @@ public class VirtualPlacementSystem : MonoBehaviour
         // Add RigidBody to detect collisions
         objectPreview.AddComponent<Rigidbody>();
 
-        // Store original materials and preparee layer rendering for visual feedback
+        // Store original materials and prepare layer rendering for visual feedback
         originalMaterials.Clear();
         Renderer[] renderers = objectPreview.GetComponentsInChildren<Renderer>();
         
