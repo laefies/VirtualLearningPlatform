@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3388b046508b2df47956bf15d4af7ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshManager: {fileID: 151023458811629539}
+  meshManager: {fileID: 0}
 --- !u!1 &3977839256162614865
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,7 +790,9 @@ MonoBehaviour:
     type: 3}
   rotateAction: {fileID: 7919540620969522168, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
-  positionAction: {fileID: 2934916792660361876, guid: c348712bda248c246b8c49b3db54643f,
+  aimPositionAction: {fileID: 9126875591944302883, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  aimRotationAction: {fileID: -3870559572202308136, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
 --- !u!114 &2710725233737990130
 MonoBehaviour:

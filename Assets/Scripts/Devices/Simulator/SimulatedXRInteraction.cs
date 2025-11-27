@@ -3,6 +3,8 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Unity.XR.CoreUtils;
+using UnityEngine.XR.OpenXR;
 
 /// <summary>
 /// Simulates XR interaction for desktop using raycasts with a state machine pattern.

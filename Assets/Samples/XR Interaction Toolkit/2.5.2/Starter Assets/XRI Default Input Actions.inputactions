@@ -1600,7 +1600,7 @@
                     "name": "Object Placement Rotate",
                     "type": "Value",
                     "id": "b97ffce0-4523-48a5-9831-ec3c6a9cd94c",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -1613,15 +1613,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Object Placement Position",
-                    "type": "Value",
-                    "id": "17e50f2c-ea6f-4576-acf4-1ad810a6f7f9",
-                    "expectedControlType": "Vector3",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1814,11 +1805,11 @@
                 },
                 {
                     "name": "",
-                    "id": "56b3e7ed-bcb0-433b-9053-9af3edb17cbf",
-                    "path": "",
+                    "id": "ac8a5d5b-3d14-4908-93d1-2bbb2216afe6",
+                    "path": "<XRController>{RightHand}/{Primary2DAxis}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Generic XR Controller",
                     "action": "Object Placement Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1831,28 +1822,6 @@
                     "processors": "",
                     "groups": ";Generic XR Controller",
                     "action": "Object Placement Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c847bbf3-82ab-4cc4-8781-cf29f8cb33bc",
-                    "path": "<QuestProTouchController>{RightHand}/pointer/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Generic XR Controller",
-                    "action": "Object Placement Position",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "89fa1936-1f63-4dd2-8b13-d759e89bc2a0",
-                    "path": "<OculusTouchController>{RightHand}/pointer/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Generic XR Controller",
-                    "action": "Object Placement Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1920,7 +1889,7 @@
                     "name": "Grab Move",
                     "type": "Button",
                     "id": "cfb29d37-3db0-4e5d-a73b-7d48a19e279e",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

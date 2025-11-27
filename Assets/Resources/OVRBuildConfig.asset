@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9750be4705d3334280169223e171a48, type: 3}
-  m_Name: MQ3 Device
+  m_Script: {fileID: 11500000, guid: 20553fac56ec59645857c0732b787431, type: 3}
+  m_Name: OVRBuildConfig
   m_EditorClassIdentifier: 
-  deviceName: Oculus Quest
-  deviceType: 1
-  playerPrefab: {fileID: 6928839183593304227, guid: bc1f238003eee7649b6319c2f1cab404,
-    type: 3}

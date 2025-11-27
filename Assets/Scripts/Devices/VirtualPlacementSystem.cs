@@ -11,6 +11,7 @@ public class VirtualPlacementSystem : MonoBehaviour
     [SerializeField] private Material INVALID_MATERIAL;
 
     private bool canPlace;
+    private Pose lastValidPose;
     private int objectIndex;
     private GameObject objectPreview;
     private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
@@ -108,6 +109,9 @@ public class VirtualPlacementSystem : MonoBehaviour
             if (isValid) RestoreMaterials(); else ShowInvalidMaterial();
             canPlace = isValid;
         }
+
+        if (isValid) lastValidPose = new Pose(objectPreview.transform.position, objectPreview.transform.rotation);
+
     }
 
     bool IsColliding()
@@ -176,7 +180,7 @@ public class VirtualPlacementSystem : MonoBehaviour
             NetworkObjectManager.Instance.ProcessMarkerServerRpc( 
                 new MarkerInfo { 
                     Id = config.GetIdentificator(objectIndex), 
-                    Pose = new Pose(objectPreview.transform.position, objectPreview.transform.rotation), 
+                    Pose = lastValidPose,
                     Size = 0.05f 
                 } 
             );
