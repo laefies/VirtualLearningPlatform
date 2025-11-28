@@ -38,6 +38,9 @@ public class DeviceManager : MonoBehaviour
     // Returns true if the current device is categorized as AR;
     public bool IsAR() => _deviceInfo?.deviceType == DeviceType.AR;
 
+    // Returns true if the current device is categorized as VR;
+    public bool IsVR() => _deviceInfo?.deviceType == DeviceType.VR;
+
     void PrepareDeviceForScene(object sender, SceneLoader.SceneEventArgs e)
     {
         Debug.Log("[Device Manager] Preparing requirements for new scene...");
