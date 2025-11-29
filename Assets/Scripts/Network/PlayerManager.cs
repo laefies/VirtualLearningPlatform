@@ -24,7 +24,6 @@ public class PlayerManager : NetworkBehaviour
 
         // Initialize the global device state
         DeviceManager.Instance.Initialize(info);
-        //HandleDeviceConfiguration();
     }
 
     // Returns the DeviceInfo that corresponds to the current device model

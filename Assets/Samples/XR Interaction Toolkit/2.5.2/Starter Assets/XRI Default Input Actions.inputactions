@@ -480,7 +480,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Third",
+                    "name": "First",
                     "id": "afdcfbff-e241-4fdd-a6d1-23b0bf273360",
                     "path": "<XRController>{LeftHand}/pointerRotation",
                     "interactions": "",
