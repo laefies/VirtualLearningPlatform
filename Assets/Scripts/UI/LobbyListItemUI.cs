@@ -18,7 +18,7 @@ public class LobbyListItemUI : MonoBehaviour
     [SerializeField] private Image _bodyBackground;
     [SerializeField] private Image _statusBackground;
 
-    public void SetLobby(Lobby lobby) {
+    public void SetLobby(Lobby lobby) {        
         this.lobby = lobby;
 
         _lobbyNameTextfield.text   = lobby.Name;
@@ -35,6 +35,7 @@ public class LobbyListItemUI : MonoBehaviour
     }
 
     public async void HandleLobbyClick() {
+        if (lobby == null) return;
         await LobbyManager.Instance.JoinLobby(lobby);
     }
 

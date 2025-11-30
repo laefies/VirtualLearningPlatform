@@ -24,6 +24,7 @@ public class SunDockable : Dockable
     [SerializeField] private Text lightText;
     [SerializeField] private Slider lightSlider;
     [SerializeField] private Transform cloudParent;
+    [SerializeField] private Toggle dockToggle;
 
     [Header("Cloud Animation Settings")]
     [SerializeField] private float cloudRiseDistance = 1.5f;
@@ -107,8 +108,6 @@ public class SunDockable : Dockable
     {
         if (_beam == null || spawnable == null) return;
 
-
-        Debug.Log("Hi" + _light.Value);
         Transform panel = spawnable.transform;
         bool isAngleValid = _angle.Value <= 90;
 
@@ -128,6 +127,8 @@ public class SunDockable : Dockable
 
     private void CalculateSolarPowerOutput()
     {
+        if (!IsServer) return;
+
         float directNormalIrradiance = 800f * Mathf.Exp(-3f * _light.Value);
         float incidenceFactor = Mathf.Cos(_angle.Value * Mathf.Deg2Rad);
 
@@ -136,7 +137,7 @@ public class SunDockable : Dockable
 
     private void CalculateIncidenceAngle()
     {
-        if (spawnable == null) return;
+        if (!IsServer || spawnable == null) return;
 
         /* The goal is to achieve:
         *   Sun directly above solar panel                → 0°
@@ -208,4 +209,9 @@ public class SunDockable : Dockable
                 });
         }
     }
+
+    protected override void OnDockUpdated(bool isDocked) {
+        dockToggle.isOn = isDocked;
+    }
+
 }

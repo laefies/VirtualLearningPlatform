@@ -253,7 +253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5757bfa8b0702646962ca8235df67f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fullyFaceCamera: 1
   target: {fileID: 480603678748422880}
 --- !u!1 &372975200565426225
 GameObject:
@@ -1632,8 +1631,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfebcc9ea2a551a40ae19cd24d6fdc35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dockToggle: {fileID: 6652868458120728144}
-  dockableTransforms: {fileID: 480603678748422880}
   vrProxy: {fileID: 416156534055598637}
 --- !u!114 &-769438671722667509
 MonoBehaviour:
@@ -2234,7 +2231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5757bfa8b0702646962ca8235df67f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fullyFaceCamera: 1
   target: {fileID: 480603678748422880}
 --- !u!1 &7162242563325640260
 GameObject:
@@ -2940,7 +2936,7 @@ MonoBehaviour:
   m_SmoothRotation: 1
   m_SmoothRotationAmount: 8
   m_TightenRotation: 0.1
-  m_TrackScale: 1
+  m_TrackScale: 0
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
@@ -2995,6 +2991,7 @@ MonoBehaviour:
   lightText: {fileID: 7002422931290882331}
   lightSlider: {fileID: 372975201020529577}
   cloudParent: {fileID: 6876835028119570949}
+  dockToggle: {fileID: 6652868458120728144}
   cloudRiseDistance: 1.5
   cloudAppearDuration: 0.5
   cloudDisappearDuration: 0.2
@@ -3011,15 +3008,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
+  SyncRotAngleX: 0
+  SyncRotAngleY: 0
+  SyncRotAngleZ: 0
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -3183,7 +3180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5757bfa8b0702646962ca8235df67f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fullyFaceCamera: 1
   target: {fileID: 1048683976382161047}
 --- !u!1 &7960173326197450406
 GameObject:
@@ -3547,8 +3543,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
-      - m_Target: {fileID: 9153983655346065537}
-        m_TargetAssemblyTypeName: Spawnable, Assembly-CSharp
+      - m_Target: {fileID: 6604702308166811570}
+        m_TargetAssemblyTypeName: Dockable, Assembly-CSharp
         m_MethodName: ChangeDockStatus
         m_Mode: 0
         m_Arguments:

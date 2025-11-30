@@ -128,16 +128,18 @@ public class MainMenuUI : BodyLockedUI
         {
             Lobby lobby = e.lobbyList[i];
 
-            // Instantiate the lobby item prefab as a child of the content panel
-            GameObject lobbyItemGO = Instantiate(lobbyItemPrefab, lobbyListContent);
-            
-            // Assign the lobby data to the list item
-            LobbyListItemUI lobbyItem = lobbyItemGO.GetComponent<LobbyListItemUI>();
-            lobbyItem.SetLobby(lobby);
+            if (lobby != null) {
+                // Instantiate the lobby item prefab as a child of the content panel
+                GameObject lobbyItemGO = Instantiate(lobbyItemPrefab, lobbyListContent);
+                
+                // Assign the lobby data to the list item
+                LobbyListItemUI lobbyItem = lobbyItemGO.GetComponent<LobbyListItemUI>();
+                lobbyItem.SetLobby(lobby);
 
-            // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
-            lobbyItem.SetColor(mainListColors[i % mainListColors.Length], 
-                             accentListColors[i % accentListColors.Length]);            
+                // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
+                lobbyItem.SetColor(mainListColors[i % mainListColors.Length], 
+                                accentListColors[i % accentListColors.Length]);             
+            }
         }
     }
 
@@ -179,16 +181,18 @@ public class MainMenuUI : BodyLockedUI
         {
             Player player = lobby.Players[i];
 
-            // Instantiate the player item prefab as a child of the content panel
-            GameObject playerItemGO = Instantiate(playerItemPrefab, playerListContent);
-            
-            // Assign the player data to the list item
-            PlayerListItemUI playerItem = playerItemGO.GetComponent<PlayerListItemUI>();
-            playerItem.SetPlayer(player, lobby.HostId == player.Id); // Checks if hosting
+            if (player != null) {
+                // Instantiate the player item prefab as a child of the content panel
+                GameObject playerItemGO = Instantiate(playerItemPrefab, playerListContent);
+                
+                // Assign the player data to the list item
+                PlayerListItemUI playerItem = playerItemGO.GetComponent<PlayerListItemUI>();
+                playerItem.SetPlayer(player, lobby.HostId == player.Id); // Checks if hosting
 
-            // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
-            playerItem.SetColor(mainListColors[i % mainListColors.Length], 
-                              accentListColors[i % accentListColors.Length]);            
+                // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
+                playerItem.SetColor(mainListColors[i % mainListColors.Length], 
+                                accentListColors[i % accentListColors.Length]);            
+            } 
         }
     }
 

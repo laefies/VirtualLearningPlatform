@@ -41,8 +41,8 @@ public abstract class Interactable : NetworkBehaviour
     {
         float distance = Vector3.Distance(transform.position, spawnable.transform.position);
 
-        if (distance > spawnable.transform.localScale.x * dockTolMultiplier)
-            spawnable.ChangeDockStatus(false);
+        // if (distance > spawnable.transform.localScale.x * dockTolMultiplier)
+        //     spawnable.ChangeDockStatus(false);
     }
 
     void Update()

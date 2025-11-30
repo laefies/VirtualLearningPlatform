@@ -4,37 +4,27 @@ using Unity.Netcode;
 
 public class Spawnable : NetworkBehaviour
 {
-    private NetworkVariable<bool> _isDocked = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [Header("Marker Configuration")]
     private NetworkVariable<MarkerInfo> _marker = new NetworkVariable<MarkerInfo>(
         new MarkerInfo() {
             Id = "Default",
             Pose = new Pose(Vector3.zero, Quaternion.identity),
-            Size = 1.0f },
-        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    public Toggle dockToggle;
-    public Transform dockableTransforms;
+            Size = 1.0f
+        },
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
     public GameObject vrProxy;
 
-    void Start()
-    {
-        _isDocked.OnValueChanged += (oldValue, newValue) => { dockToggle.isOn = newValue; };
+    void Start() {
+        // Setup VR proxy visibility
+        if (vrProxy != null)
+            vrProxy.SetActive(!DeviceManager.Instance.IsAR());
 
-        vrProxy.SetActive(!DeviceManager.Instance.IsAR());
-
-        if (!DeviceManager.Instance.IsAR())
-        {
-            // In the case of VR users, the object is simulated in an optimal position 
-            // for the user - in front of them.
-            Transform camera = FindObjectOfType<Camera>().transform;
-            // MoveSpawnable(new Pose(camera.position + camera.forward * 0.4f, Quaternion.identity), 0.035f);
-        }
-    }
-
-    public void ChangeDockStatus(bool newDockState)
-    {
-        if (_isDocked.Value == newDockState) return;
-
-        ChangeDockStatusServerRpc(newDockState);
+        // TODO Position spawnable for VR users
+        // if (!DeviceManager.Instance.IsAR() && IsServer)
+        //     PositionForVRUser();
     }
 
     [ClientRpc]
@@ -47,13 +37,6 @@ public class Spawnable : NetworkBehaviour
     {
         transform.SetPositionAndRotation(pose.position, pose.rotation);
         transform.localScale = Vector3.one * size;
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void ChangeDockStatusServerRpc(bool newDockState)
-    {
-        dockableTransforms.SetParent(newDockState ? transform : null);
-        _isDocked.Value = newDockState;
     }
 
     [ServerRpc(RequireOwnership = false)]

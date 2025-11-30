@@ -7,14 +7,12 @@ public struct NetworkPose : INetworkSerializable
     public Vector3 position;
     public Quaternion rotation;
 
-    public NetworkPose(Vector3 position, Quaternion rotation)
-    {
+    public NetworkPose(Vector3 position, Quaternion rotation) {
         this.position = position;
         this.rotation = rotation;
     }
 
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-    {
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
         serializer.SerializeValue(ref position);
         serializer.SerializeValue(ref rotation);
     }
@@ -29,11 +27,17 @@ public abstract class Dockable : NetworkBehaviour {
     [SerializeField] protected XRGrabInteractable grabInteractable;
     [SerializeField] private float autoUndockDistanceMultiplier = 1.5f;
     [SerializeField] private bool enableAutoUndock = true;
+    
+    private NetworkVariable<bool> _isDocked = new NetworkVariable<bool>(
+        true,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     private NetworkVariable<NetworkPose> _relativePose = new NetworkVariable<NetworkPose>(
         new NetworkPose(Vector3.zero, Quaternion.identity),
         NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Owner
+        NetworkVariableWritePermission.Server
     );
 
     protected virtual void Awake()
@@ -59,6 +63,7 @@ public abstract class Dockable : NetworkBehaviour {
 
     private void SetupNetworkCallbacks() {
         _relativePose.OnValueChanged += OnRelativePoseChanged;
+        _isDocked.OnValueChanged     += OnDockStateChanged;
     }
 
     private void SetupGrabCallbacks()
@@ -73,9 +78,16 @@ public abstract class Dockable : NetworkBehaviour {
     {
         if (!IsOwner && spawnable != null) {
             transform.SetPositionAndRotation(
-                spawnable.transform.TransformPoint(newValue.position),
+                spawnable.transform.position + newValue.position,
                 spawnable.transform.rotation * newValue.rotation
             );
+        }
+    }
+
+    private void OnDockStateChanged(bool oldValue, bool newValue) {
+        if (spawnable != null) {
+            transform.SetParent(newValue ? spawnable.transform : null);
+            OnDockUpdated(newValue);
         }
     }
 
@@ -94,10 +106,11 @@ public abstract class Dockable : NetworkBehaviour {
     {
         if (spawnable == null) return;
 
-        spawnable.ReturnOwnershipServerRpc();
+        if (!IsServer)
+            spawnable.ReturnOwnershipServerRpc();
 
-        // if (enableAutoUndock)
-        //     CheckAutoUndock();
+        if (enableAutoUndock)
+            CheckAutoUndock();
 
         OnReleased(args.interactorObject);
     }
@@ -110,20 +123,39 @@ public abstract class Dockable : NetworkBehaviour {
         float undockThreshold = spawnable.transform.localScale.x * autoUndockDistanceMultiplier;
 
         if (distance > undockThreshold)
-            spawnable.ChangeDockStatus(false);
+            ChangeDockStatusServerRpc(false);
     }
 
     protected virtual void Update()
     {
         if (IsOwner && spawnable != null) {
-            _relativePose.Value = new NetworkPose(
-                spawnable.transform.InverseTransformPoint(transform.position),
-                Quaternion.Inverse(spawnable.transform.rotation) * transform.rotation
+            ChangeRelativePoseServerRpc( 
+                new NetworkPose(
+                    transform.position - spawnable.transform.position,
+                    Quaternion.Inverse(spawnable.transform.rotation) * transform.rotation
+                ) 
             );
         }
 
         UpdateComponents();
     }
+
+    public void ChangeDockStatus(bool shouldDock) {
+        if (_isDocked.Value == shouldDock) return;
+
+        ChangeDockStatusServerRpc(shouldDock);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangeDockStatusServerRpc(bool shouldDock) {
+        _isDocked.Value = shouldDock;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangeRelativePoseServerRpc(NetworkPose newPose) {
+        _relativePose.Value = newPose;
+    }
+
 
     // Abstract methods for derived classes
     public abstract void PrepareComponents();
@@ -132,5 +164,5 @@ public abstract class Dockable : NetworkBehaviour {
     // Virtual methods for optional override
     protected virtual void OnGrabbed(IXRSelectInteractor interactor) {}
     protected virtual void OnReleased(IXRSelectInteractor interactor) {}
-
+    protected virtual void OnDockUpdated(bool isDocked) {}
 }
