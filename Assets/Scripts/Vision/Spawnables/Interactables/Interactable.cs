@@ -1,26 +1,7 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.Netcode;
-
-public struct NetworkPose : INetworkSerializable
-{
-    public Vector3 position;
-    public Quaternion rotation;
-
-    public NetworkPose(Vector3 position, Quaternion rotation)
-    {
-        this.position = position;
-        this.rotation = rotation;
-    }
-
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
-        serializer.SerializeValue(ref position);
-        serializer.SerializeValue(ref rotation);
-    }
-
-    public Pose ToPose() => new Pose(position, rotation);
-}
-
+// TODO folder can prob go
 public abstract class Interactable : NetworkBehaviour
 {
     [SerializeField] private float dockTolMultiplier = 1.5f;

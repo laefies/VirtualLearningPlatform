@@ -16,6 +16,8 @@ public class SunInteractable : Interactable
 
     private static float MIN_POWER = 0f;
     private static float MAX_POWER = 800f * _panelArea * _panelEffic;
+    private static float BEAM_START_WIDTH = 0.07f; // 0.03f
+    private static float BEAM_END_WIDTH = 0.1f;  // 0.05f
 
     private NetworkVariable<float> _angle = new NetworkVariable<float>(90f,  NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<float> _light = new NetworkVariable<float>(1.0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -35,8 +37,8 @@ public class SunInteractable : Interactable
     public override void PrepareComponents()
     {
         _beam = GetComponent<LineRenderer>();
-        _beam.startWidth = 0.03f;
-        _beam.endWidth   = 0.05f;
+        _beam.startWidth = BEAM_START_WIDTH;
+        _beam.endWidth   = BEAM_END_WIDTH;
 
         _light.OnValueChanged += (oldValue, newValue) => { 
             _lightSlider.SetValueWithoutNotify(newValue);
@@ -72,7 +74,7 @@ public class SunInteractable : Interactable
         _beam.SetPosition(0, transform.position);
         _beam.SetPosition(1, panel.position);
 
-        _beam.endWidth = Mathf.Max(0.05f * (1f - _light.Value), 0.03f);
+        _beam.endWidth = Mathf.Max(BEAM_END_WIDTH * (1f - _light.Value), BEAM_START_WIDTH);
 
         Color currentColor = _beam.startColor;
         currentColor.a = 1f * (1f - _light.Value);
