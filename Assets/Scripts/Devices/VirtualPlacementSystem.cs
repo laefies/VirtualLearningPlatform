@@ -77,7 +77,7 @@ public class VirtualPlacementSystem : MonoBehaviour
 
         // Instantiate the object's preview
         objectPreview = Instantiate(spawnable.vrProxy);
-        objectPreview.transform.localScale = spawnable.vrProxy.transform.localScale * 0.05f;
+        objectPreview.transform.localScale = spawnable.vrProxy.transform.localScale * 0.075f;
         PreparePlacementPreview();
     }
 
@@ -181,7 +181,7 @@ public class VirtualPlacementSystem : MonoBehaviour
                 new MarkerInfo { 
                     Id = config.GetIdentificator(objectIndex), 
                     Pose = lastValidPose,
-                    Size = 0.05f 
+                    Size = 0.075f 
                 } 
             );
             return true;

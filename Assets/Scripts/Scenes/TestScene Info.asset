@@ -16,5 +16,5 @@ MonoBehaviour:
   displayIcon: {fileID: 21300000, guid: 73ccd0bf71ace6c41b7d5d524b4a0e80, type: 3}
   sceneName: SolarPanelTest
   requiredSubsystems: 1
-  vrEnvironmentPrefab: {fileID: 8556302698627607510, guid: a97fa1f03bf701d4887f44e64db1eeeb,
+  vrEnvironmentPrefab: {fileID: 8556302698627607510, guid: 257848f44e04d3249807571550dc6293,
     type: 3}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
 
 // Responsible for storing information regarding the device, and handle its subsystems.
 [RequireComponent(typeof(NetworkObject))]
@@ -30,29 +31,16 @@ public class DeviceManager : MonoBehaviour
 
 
     void PrepareDeviceForScene(object sender, SceneLoader.SceneEventArgs e) {
-        if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null) {
+        if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null)
             Instantiate(e.sceneInfo.vrEnvironmentPrefab);
-            GroundCharacterController();
-        }
     }
 
-    void GroundCharacterController() {
-        CharacterController controller = GetComponentInChildren<CharacterController>();
-        if (controller == null) return;
-        
-        RaycastHit hit;
-        float rayDistance = 100f;
-        Vector3 rayOrigin = transform.position + Vector3.up;
-        
-        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayDistance)) {
-            float groundOffset = controller.height / 2f + controller.skinWidth - controller.center.y;
-            transform.position = hit.point + Vector3.up * groundOffset;
+    void FixedUpdate() {
+        if (!IsAR()) {
+            CharacterController controller = GetComponentInChildren<CharacterController>();
+            if (controller != null && !controller.isGrounded) 
+                controller.Move( Vector3.down * 9.81f * Time.deltaTime );
         }
-        
-        // Force collisions to reset
-        controller.enabled = false;
-        controller.enabled = true;
-        controller.Move(Vector3.down * 0.1f);
     }
 
     public bool IsAR() => _deviceInfo?.deviceType == DeviceType.AR;
