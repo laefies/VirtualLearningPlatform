@@ -18,6 +18,7 @@ public class DeviceManager : MonoBehaviour
         }
 
         Instance = this;
+
     }    
 
     void Start() { SceneLoader.Instance.OnSceneLoaded += PrepareDeviceForScene; }
@@ -27,6 +28,9 @@ public class DeviceManager : MonoBehaviour
     public void Initialize(DeviceInfo info) {
         _deviceInfo = info;
         Debug.Log("[Device Manager] Starting! Device recognized as '" + info.deviceName + "'.");
+
+        Camera cam = Camera.main;
+        cam.cullingMask &= ~LayerMask.GetMask("Hidden");
     }
 
 

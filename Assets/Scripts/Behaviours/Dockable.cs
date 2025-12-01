@@ -156,7 +156,6 @@ public abstract class Dockable : NetworkBehaviour {
         _relativePose.Value = newPose;
     }
 
-
     // Abstract methods for derived classes
     public abstract void PrepareComponents();
     public abstract void UpdateComponents();

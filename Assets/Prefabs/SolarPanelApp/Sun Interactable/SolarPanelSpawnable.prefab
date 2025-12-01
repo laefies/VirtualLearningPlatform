@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7452586671507937838}
   - component: {fileID: 943162807705033245}
   - component: {fileID: 1635427379308402587}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 1711857944289901574}
   - component: {fileID: 8662136508340732535}
   - component: {fileID: 4405047495117578421}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6876835028119570949}
   - component: {fileID: 7653543831637632938}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Clouds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 372975200565426230}
   - component: {fileID: 372975200565426228}
   - component: {fileID: 372975200565426231}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,7 +341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 372975201020529576}
   - component: {fileID: 372975201020529577}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Light Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,7 +445,7 @@ GameObject:
   - component: {fileID: 372975201202870335}
   - component: {fileID: 372975201202870333}
   - component: {fileID: 372975201202870332}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -518,7 +518,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 372975201881969998}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Handle Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +557,7 @@ GameObject:
   - component: {fileID: 372975201950146495}
   - component: {fileID: 372975201950146493}
   - component: {fileID: 372975201950146492}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -647,7 +647,7 @@ GameObject:
   - component: {fileID: 7299959620407114401}
   - component: {fileID: 4582090457488159080}
   - component: {fileID: 8053428419418256273}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Power Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,7 +740,7 @@ GameObject:
   - component: {fileID: 4803083564378495270}
   - component: {fileID: 153782323651432193}
   - component: {fileID: 1799380605957046320}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Angle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -817,7 +817,7 @@ GameObject:
   - component: {fileID: 4705721873080085877}
   - component: {fileID: 8450532601453253480}
   - component: {fileID: 7002422931290882331}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Slider Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -910,7 +910,7 @@ GameObject:
   - component: {fileID: 7967919054299563288}
   - component: {fileID: 6864156868196292573}
   - component: {fileID: 3486992743767057725}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Off Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -983,7 +983,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6206888504293089454}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1018,7 +1018,7 @@ GameObject:
   - component: {fileID: 1010255659454689380}
   - component: {fileID: 3729167992222456421}
   - component: {fileID: 5457885241537398902}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Handle Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1093,7 +1093,7 @@ GameObject:
   - component: {fileID: 7796692996903178391}
   - component: {fileID: 1053617072213649776}
   - component: {fileID: 6991598662239429999}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Border Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1169,7 +1169,7 @@ GameObject:
   - component: {fileID: 99354614193241615}
   - component: {fileID: 1724734295742386414}
   - component: {fileID: 3683151952182892421}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1252,7 +1252,7 @@ GameObject:
   - component: {fileID: 5955754258397055164}
   - component: {fileID: 5968743146256277969}
   - component: {fileID: 7376260924191377765}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1337,7 +1337,7 @@ GameObject:
   - component: {fileID: 6831338400273874608}
   - component: {fileID: 8659215738678747186}
   - component: {fileID: 5316156730978424151}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1459,7 +1459,7 @@ GameObject:
   - component: {fileID: 4723746218419809129}
   - component: {fileID: 8006345882518959515}
   - component: {fileID: 1529553042512407310}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: On Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1533,7 +1533,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3174900762659749983}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1573,7 +1573,7 @@ GameObject:
   - component: {fileID: -8818095321665529211}
   - component: {fileID: 9153983655346065537}
   - component: {fileID: -769438671722667509}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SolarPanelSpawnable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1675,7 +1675,7 @@ GameObject:
   - component: {fileID: 2394586452264503386}
   - component: {fileID: 5359226318974446884}
   - component: {fileID: 3321588340861389310}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1761,7 +1761,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3359315326439926073}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1796,7 +1796,7 @@ GameObject:
   - component: {fileID: 6790922751561198940}
   - component: {fileID: 8609364237913812304}
   - component: {fileID: 6484695168667894536}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1879,7 +1879,7 @@ GameObject:
   - component: {fileID: 1110287312171729063}
   - component: {fileID: 1073290726585223469}
   - component: {fileID: 8770079653073430739}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Off Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1955,7 +1955,7 @@ GameObject:
   - component: {fileID: 7641339829396862011}
   - component: {fileID: 4361909992811923864}
   - component: {fileID: 2162354238740826606}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2038,7 +2038,7 @@ GameObject:
   - component: {fileID: 1392960953155060226}
   - component: {fileID: 5775764916489962674}
   - component: {fileID: 3222700509836844685}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2114,7 +2114,7 @@ GameObject:
   - component: {fileID: 1218744718698220509}
   - component: {fileID: 5593734450826513346}
   - component: {fileID: 4870658949286682575}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2196,7 +2196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6841877712765825841}
   - component: {fileID: 3480200576346973718}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Interface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2243,7 +2243,7 @@ GameObject:
   - component: {fileID: 2779675657934997361}
   - component: {fileID: 6810683087327640228}
   - component: {fileID: 5539482474203678871}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2318,7 +2318,7 @@ GameObject:
   - component: {fileID: 154134625288075067}
   - component: {fileID: 9223032542047223615}
   - component: {fileID: 3093910914888787484}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2394,7 +2394,7 @@ GameObject:
   - component: {fileID: 574927424697491161}
   - component: {fileID: 3794658841092796452}
   - component: {fileID: 4063145367468703596}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Power
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2470,7 +2470,7 @@ GameObject:
   - component: {fileID: 416611154706546944}
   - component: {fileID: 768195448973718128}
   - component: {fileID: 1433952375808333995}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Power
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2554,7 +2554,7 @@ GameObject:
   - component: {fileID: 524804762410137166}
   - component: {fileID: 6604702308166811570}
   - component: {fileID: 2492635494950357020}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sun (Dockable)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3035,7 +3035,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3950880433928666095}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud Section
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3071,7 +3071,7 @@ GameObject:
   - component: {fileID: 3001771310210263226}
   - component: {fileID: 7275688120760775475}
   - component: {fileID: 4919014197835855379}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: On Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3145,7 +3145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8440293189582812659}
   - component: {fileID: 8555840412852950247}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Energy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3192,7 +3192,7 @@ GameObject:
   - component: {fileID: 4182094219945491198}
   - component: {fileID: 2521162176495720843}
   - component: {fileID: 4293159042623981473}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Handle Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3268,7 +3268,7 @@ GameObject:
   - component: {fileID: 3329298440284242279}
   - component: {fileID: 8118270150797125877}
   - component: {fileID: 2164911980616325606}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Power Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3362,7 +3362,7 @@ GameObject:
   - component: {fileID: 4840928176311452066}
   - component: {fileID: 6981820387166382790}
   - component: {fileID: 3372058965094008297}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Angle Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3457,7 +3457,7 @@ GameObject:
   - component: {fileID: 2815192775550007596}
   - component: {fileID: 3571782186343141845}
   - component: {fileID: 6602351715562127270}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3623,7 +3623,7 @@ GameObject:
   - component: {fileID: 32452698210000868}
   - component: {fileID: 2807668971658771240}
   - component: {fileID: 5525482771410592576}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cloud (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3703,10 +3703,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4936399857557466382}
     m_Modifications:
+    - target: {fileID: 856465678935909443, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423881349217547429, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2381975702731883137, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2837992440174186195, guid: ac6721eccb60b9046be838731a97de30,
         type: 3}
       propertyPath: fadeIn
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565793041590085073, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5976501683857516748, guid: ac6721eccb60b9046be838731a97de30,
         type: 3}
@@ -3782,6 +3802,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Solar Panel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6465792687930454646, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7461450353928420497, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9125858937204066545, guid: ac6721eccb60b9046be838731a97de30,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

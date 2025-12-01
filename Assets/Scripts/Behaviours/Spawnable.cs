@@ -15,22 +15,33 @@ public class Spawnable : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
+    private Transform[] allTransforms;
     public GameObject vrProxy;
 
-    void Start() {
+    void Start()
+    {
+        // TODO Get dockables, do union when changing visibility
+        StoreChildren();
+        PrepareSpawnable();
+    }
+
+    void StoreChildren()
+    {
+        if (allTransforms == null)
+            allTransforms = GetComponentsInChildren<Transform>(includeInactive: true);
+    }
+
+
+    void PrepareSpawnable()
+    {
         // Setup VR proxy visibility
         if (vrProxy != null)
             vrProxy.SetActive(!DeviceManager.Instance.IsAR());
 
-        // TODO Position spawnable for VR users
-        // if (!DeviceManager.Instance.IsAR() && IsServer)
-        //     PositionForVRUser();
-    }
-
-    [ClientRpc]
-    public void UpdateSpawnableClientRpc(MarkerInfo markerInfo, ClientRpcParams clientRpcParams = default)
-    {
-        MoveSpawnable(markerInfo.Pose, markerInfo.Size);
+        // Make spawnable immediately visible for VR users
+        if (!DeviceManager.Instance.IsAR()) {
+            ChangeVisibility(true);
+        }        
     }
 
     void MoveSpawnable(Pose pose, float size)
@@ -39,15 +50,35 @@ public class Spawnable : NetworkBehaviour
         transform.localScale = Vector3.one * size;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void RequestOwnershipServerRpc(ServerRpcParams rpcParams = default)
+    void ChangeVisibility(bool visible)
     {
+        if (allTransforms == null) StoreChildren();
+
+        int targetLayer = LayerMask.NameToLayer(visible ? "Default" : "Hidden");
+        if (gameObject.layer == targetLayer) return;
+
+        foreach (Transform innerTransform in allTransforms)
+            innerTransform.gameObject.layer = targetLayer;
+    }
+
+    [ClientRpc]
+    public void MoveSpawnableClientRpc(MarkerInfo markerInfo, ClientRpcParams clientRpcParams = default) {
+        MoveSpawnable(markerInfo.Pose, markerInfo.Size);
+    }
+
+    [ClientRpc]
+    public void ChangeVisibilityClientRpc(bool visible, ClientRpcParams clientRpcParams = default) {
+        Debug.Log("Made visible by RPC");
+        ChangeVisibility(visible);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestOwnershipServerRpc(ServerRpcParams rpcParams = default) {
         NetworkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
     }
 
     [ServerRpc]
-    public void ReturnOwnershipServerRpc()
-    {
+    public void ReturnOwnershipServerRpc() {
         NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
     }
 }
