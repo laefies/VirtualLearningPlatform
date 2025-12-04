@@ -28,21 +28,16 @@ public class NetworkObjectManager : NetworkBehaviour {
         // Check if there is an associated Prefab for the current scene
         if (config.GetPrefab(markerInfo.Id) == null)  return;
 
-       // Spawn the object on the network (makes object shared by all objects)
+        // Spawn the object on the network (makes object shared by all objects)
         if (!_tracked.ContainsKey(markerInfo.Id)) {
             SpawnObject(markerInfo);
-            _tracked[markerInfo.Id].MoveSpawnableClientRpc( markerInfo,
-                            new ClientRpcParams { Send = new ClientRpcSendParams { 
-                TargetClientIds = new ulong[] { serverRpcParams.Receive.SenderClientId } } } 
-            );
-
         }
 
-       // For the client that called this RPC, locally place the object in its correct position
-       _tracked[markerInfo.Id].ChangeVisibilityClientRpc( true,
-                       new ClientRpcParams { Send = new ClientRpcSendParams { 
-         TargetClientIds = new ulong[] { serverRpcParams.Receive.SenderClientId } } } 
-       );
+        // For the client that called this RPC, locally place the object in its correct position
+        _tracked[markerInfo.Id].UpdateSpawnableClientRpc( markerInfo,
+                        new ClientRpcParams { Send = new ClientRpcSendParams { 
+            TargetClientIds = new ulong[] { serverRpcParams.Receive.SenderClientId } } } 
+        );
     }
 
     private void SpawnObject(MarkerInfo markerInfo)

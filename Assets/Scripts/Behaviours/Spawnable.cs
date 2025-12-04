@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using UnityEngine.XR.Interaction.Toolkit; 
 
 public class Spawnable : NetworkBehaviour
 {
@@ -18,9 +19,8 @@ public class Spawnable : NetworkBehaviour
     private Transform[] allTransforms;
     public GameObject vrProxy;
 
-    void Start()
+    void Awake()
     {
-        // TODO Get dockables, do union when changing visibility
         StoreChildren();
         PrepareSpawnable();
     }
@@ -31,17 +31,13 @@ public class Spawnable : NetworkBehaviour
             allTransforms = GetComponentsInChildren<Transform>(includeInactive: true);
     }
 
-
     void PrepareSpawnable()
     {
         // Setup VR proxy visibility
-        if (vrProxy != null)
-            vrProxy.SetActive(!DeviceManager.Instance.IsAR());
+        vrProxy?.SetActive(!DeviceManager.Instance.IsAR());
 
-        // Make spawnable immediately visible for VR users
-        if (!DeviceManager.Instance.IsAR()) {
-            ChangeVisibility(true);
-        }        
+        // Spawnable is immediately visible by VR users, while AR users must first spot it
+        ChangeVisibility(!DeviceManager.Instance.IsAR() && DeviceManager.Instance.IsVR(), true);
     }
 
     void MoveSpawnable(Pose pose, float size)
@@ -50,26 +46,35 @@ public class Spawnable : NetworkBehaviour
         transform.localScale = Vector3.one * size;
     }
 
-    void ChangeVisibility(bool visible)
+    void ChangeVisibility(bool visible) { ChangeVisibility(visible, false); }
+
+    void ChangeVisibility(bool visible, bool force)
     {
         if (allTransforms == null) StoreChildren();
 
         int targetLayer = LayerMask.NameToLayer(visible ? "Default" : "Hidden");
-        if (gameObject.layer == targetLayer) return;
+        if (!force && targetLayer == gameObject.layer) return;
 
-        foreach (Transform innerTransform in allTransforms)
-            innerTransform.gameObject.layer = targetLayer;
+        foreach (Transform t in allTransforms) {
+            GameObject go = t.gameObject;
+
+            // Toggle components to block interaction:
+            //  - UI (Image, RawImage, TextMeshProUGUI, etc.);
+            //  - XR Interactables (grab, poke, ray);
+            //  - Colliders;
+            foreach (Graphic g in go.GetComponents<Graphic>()) g.enabled = visible;
+            foreach (Collider c in go.GetComponents<Collider>()) c.enabled = visible;
+            foreach (XRBaseInteractable i in go.GetComponents<XRBaseInteractable>()) i.enabled = visible;
+            
+            // Update layer
+            go.layer = targetLayer;
+        }
     }
 
     [ClientRpc]
-    public void MoveSpawnableClientRpc(MarkerInfo markerInfo, ClientRpcParams clientRpcParams = default) {
+    public void UpdateSpawnableClientRpc(MarkerInfo markerInfo, ClientRpcParams clientRpcParams = default) {
         MoveSpawnable(markerInfo.Pose, markerInfo.Size);
-    }
-
-    [ClientRpc]
-    public void ChangeVisibilityClientRpc(bool visible, ClientRpcParams clientRpcParams = default) {
-        Debug.Log("Made visible by RPC");
-        ChangeVisibility(visible);
+        ChangeVisibility(true);
     }
 
     [ServerRpc(RequireOwnership = false)]
