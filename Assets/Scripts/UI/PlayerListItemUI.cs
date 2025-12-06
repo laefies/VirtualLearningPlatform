@@ -28,7 +28,7 @@ public class PlayerListItemUI : MonoBehaviour
         // Show a crown icon on the host entry to regular members of the lobby,
         // and lobby management options to the host
         _hostIndicator.SetActive(isHostEntry);
-        _lobbyHostOptions.SetActive(LobbyManager.Instance.IsLobbyHost() && !isHostEntry);
+        _lobbyHostOptions.SetActive(LobbyManager.Instance.IsHost && !isHostEntry);
     }
 
     public void SetColor(Color mainColor, Color secondaryColor) {
@@ -42,10 +42,10 @@ public class PlayerListItemUI : MonoBehaviour
     }
 
     public async void HandleTransferOwnershipClick() {
-        LobbyManager.Instance.MigrateLobbyHost(player.Id);
+        LobbyManager.Instance.TransferHostAsync(player.Id);
     }
 
     public async void HandleKickPlayerClick() {
-        LobbyManager.Instance.RemoveFromLobby(player.Id);
+        await LobbyManager.Instance.KickPlayerAsync(player.Id);
     }
 }

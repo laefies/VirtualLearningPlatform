@@ -4683,14 +4683,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c5a26d5bef7f24d8e7d7fe07dff710, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardDistance: 1.5
-  heightOffset: -0.3
-  tiltAngle: 15
-  maxDistance: 2
-  maxRotationAngle: 90
-  lerpSpeed: 2
-  headPositionAction: {fileID: 0}
-  headRotationAction: {fileID: 0}
+  _forwardDistance: 0.375
+  _heightOffset: 0.03
+  _tiltAngle: -15
+  _maxDistance: 0.4
+  _maxRotationAngle: 45
+  _lerpSpeed: 2
+  _allowManualReposition: 1
   gameMenuHeader: {fileID: 1500150185}
   gameMenuSubheader: {fileID: 1885952034}
   startButton: {fileID: 710599824}
@@ -6068,6 +6067,22 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063256338636810204, guid: 96577fdd0ab31b442a4dad3ba40a338b,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 2063256338636810204, guid: 96577fdd0ab31b442a4dad3ba40a338b,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 2063256338636810204, guid: 96577fdd0ab31b442a4dad3ba40a338b,
+        type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2264940668636803509, guid: 96577fdd0ab31b442a4dad3ba40a338b,
         type: 3}

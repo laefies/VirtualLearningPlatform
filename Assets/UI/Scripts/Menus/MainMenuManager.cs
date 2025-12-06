@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 
 /// <summary>
 /// Orchestrates the main menu flow and manages panel visibility.
@@ -25,27 +27,27 @@ public class MainMenuManager : FollowPlayerUI
     {
         if (LobbyManager == null) return;
 
-        LobbyManager.OnJoinedLobby += HandleJoinedLobby;
-        LobbyManager.OnLeftLobby   += HandleLeftLobby;
+        LobbyManager.OnLobbyJoined += HandleLobbyJoined;
+        LobbyManager.OnLobbyLeft   += HandleLobbyLeft;
     }
 
     private void UnsubscribeFromEvents()
     {
         if (LobbyManager == null) return;
         
-        LobbyManager.OnJoinedLobby -= HandleJoinedLobby;
-        LobbyManager.OnLeftLobby   -= HandleLeftLobby;
+        LobbyManager.OnLobbyJoined -= HandleLobbyJoined;
+        LobbyManager.OnLobbyLeft   -= HandleLobbyLeft;
     }
 
 
-    private void HandleJoinedLobby(object sender, LobbyManager.LobbyEventArgs e) { UpdatePanelVisibility(); }
-    private void HandleLeftLobby(object sender, EventArgs e) { UpdatePanelVisibility(); }
+    private void HandleLobbyJoined(Lobby lobby) { UpdatePanelVisibility(); }
+    private void HandleLobbyLeft() { UpdatePanelVisibility(); }
 
     private void UpdatePanelVisibility()
     {
         if (LobbyManager == null) return;
 
-        bool inLobby = LobbyManager.IsPlayerInLobby();
+        bool inLobby = LobbyManager.IsInLobby;
 
         lobbyBrowserPanel?.SetActive(!inLobby);
         lobbyDetailsPanel?.SetActive( inLobby);

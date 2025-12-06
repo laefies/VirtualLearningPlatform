@@ -8,4 +8,5 @@ using UnityEngine.UI;
 /// </summary>
 public class LobbyListItem : MonoBehaviour
 {
+
 }

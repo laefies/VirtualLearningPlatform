@@ -37,7 +37,7 @@ public class Spawnable : NetworkBehaviour
         vrProxy?.SetActive(!DeviceManager.Instance.IsAR());
 
         // Spawnable is immediately visible by VR users, while AR users must first spot it
-        ChangeVisibility(!DeviceManager.Instance.IsAR() && DeviceManager.Instance.IsVR(), true);
+        ChangeVisibility(!DeviceManager.Instance.IsAR(), true);
     }
 
     void MoveSpawnable(Pose pose, float size)

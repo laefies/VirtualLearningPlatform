@@ -43,6 +43,9 @@ public class DeviceManager : MonoBehaviour
         cam.cullingMask &= ~LayerMask.GetMask("Hidden");
     }
 
+    public string GetDeviceName() {
+        return _deviceInfo.deviceName;
+    }
 
     void PrepareDeviceForScene(object sender, SceneLoader.SceneEventArgs e) {
         if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null)

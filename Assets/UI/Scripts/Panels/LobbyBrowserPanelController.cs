@@ -19,46 +19,46 @@ public class LobbyBrowserPanelController : MonoBehaviour
     private LobbyManager LobbyManager => LobbyManager.Instance;
     private readonly List<GameObject> activeLobbyItems = new List<GameObject>();
 
-    private void OnEnable()
+    private async void OnEnable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnLobbyListChanged += HandleLobbyListChanged;
+            LobbyManager.OnLobbyListRefreshed += HandleLobbyListRefreshed;
 
         createLobbyButton?.onClick.AddListener(OnCreateLobbyClicked);
-        refreshLobbiesButton?.onClick.AddListener(OnRefreshLobbiesClicked);
+        refreshLobbiesButton?.onClick.AddListener(OnRefreshLobbyListClicked);
 
-        LobbyManager?.RefreshLobbyList();
+        await LobbyManager?.RefreshLobbyListAsync();
     }
 
     private void OnDisable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnLobbyListChanged -= HandleLobbyListChanged;
+            LobbyManager.OnLobbyListRefreshed -= HandleLobbyListRefreshed;
 
         createLobbyButton?.onClick.RemoveListener(OnCreateLobbyClicked);
-        refreshLobbiesButton?.onClick.RemoveListener(OnRefreshLobbiesClicked);
+        refreshLobbiesButton?.onClick.RemoveListener(OnRefreshLobbyListClicked);
 
         ClearLobbyList();
     }
 
     private void OnDestroy() { ClearLobbyList(); }
 
-    private void HandleLobbyListChanged(object sender, LobbyManager.LobbyListChangedEventArgs e)
+    private void HandleLobbyListRefreshed(List<Lobby> lobbyList)
     {
-        DisplayLobbies(e.lobbyList);
+        DisplayLobbies(lobbyList);
     }
 
-    private void DisplayLobbies(List<Lobby> lobbies)
+    private void DisplayLobbies(List<Lobby> lobbyList)
     {
         ClearLobbyList();
 
-        foreach (Lobby lobby in lobbies) {
+        foreach (Lobby lobby in lobbyList) {
             if (lobby == null) continue;
 
             GameObject lobbyItemObject = Instantiate(lobbyItemPrefab, lobbyListContainer);
             activeLobbyItems.Add(lobbyItemObject);
             
-            if (lobbyItemObject.TryGetComponent<LobbyListItemUI>(out LobbyListItemUI lobbyItem)) 
+            if (lobbyItemObject.TryGetComponent<LobbyListItemUI>(out LobbyListItemUI lobbyItem))
                 lobbyItem.SetLobby(lobby);
         }
     }
@@ -71,7 +71,10 @@ public class LobbyBrowserPanelController : MonoBehaviour
         activeLobbyItems.Clear();
     }
 
-    private async void OnCreateLobbyClicked() { await LobbyManager?.CreateLobby(); }
-    private async void OnRefreshLobbiesClicked() { LobbyManager?.RefreshLobbyList(); }
+    private async void OnCreateLobbyClicked() { 
+        await LobbyManager?.CreateLobbyAsync($"{DeviceManager.Instance.GetDeviceName()} User"); 
+    }
+
+    private async void OnRefreshLobbyListClicked() { LobbyManager?.RefreshLobbyListAsync(); }
 
 }

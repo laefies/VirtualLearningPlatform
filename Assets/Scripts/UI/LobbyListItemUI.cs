@@ -23,7 +23,7 @@ public class LobbyListItemUI : MonoBehaviour
 
         _lobbyNameTextfield.text   = lobby.Name;
         _playerInfoTextfield.text  = $"{lobby.Players.Count}/{lobby.MaxPlayers} Players";
-        _lobbyStatusTextfield.text = lobby.Data[LobbyManager.KEY_LOBBY_STATE].Value;
+        _lobbyStatusTextfield.text = LobbyManager.Instance.GetLobbyStatus(lobby);
     }
 
     public void SetColor(Color mainColor, Color secondaryColor) {
@@ -36,7 +36,7 @@ public class LobbyListItemUI : MonoBehaviour
 
     public async void HandleLobbyClick() {
         if (lobby == null) return;
-        await LobbyManager.Instance.JoinLobby(lobby);
+        await LobbyManager.Instance.JoinLobbyAsync(lobby, DeviceManager.Instance.GetDeviceName() + " User");
     }
 
     async void Update() {

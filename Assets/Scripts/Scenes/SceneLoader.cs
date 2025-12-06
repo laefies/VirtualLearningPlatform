@@ -3,6 +3,8 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -34,7 +36,7 @@ public class SceneLoader : MonoBehaviour
     void Start()
     {
         // Subscribe to Lobby related events
-        LobbyManager.Instance.OnGameStarted += HandleGameStart;
+        LobbyManager.Instance.OnExperienceStarted += HandleGameStart;
 
         // Start by showing the player the Menu Scene
         StartCoroutine(LoadMenuScene());
@@ -52,13 +54,13 @@ public class SceneLoader : MonoBehaviour
     }
 
     // Transition into the chosen game
-    void HandleGameStart(object sender, LobbyManager.LobbyEventArgs e) {
+    void HandleGameStart(Lobby lobby) {
         StartCoroutine(TransitionToScene(testScene));
     }
 
     // Unsubscribe from Lobby related events
     void OnDestroy() {
-        LobbyManager.Instance.OnGameStarted -= HandleGameStart;
+        LobbyManager.Instance.OnExperienceStarted -= HandleGameStart;
     }
 
     /*

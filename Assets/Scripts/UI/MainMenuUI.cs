@@ -60,21 +60,21 @@ public class MainMenuUI : FollowPlayerUI
         HandleMenuVisibility();
 
         // Subscribe to Lobby related events
-        LobbyManager.Instance.OnLobbyListChanged  += UpdateLobbyList;
-        LobbyManager.Instance.OnJoinedLobbyUpdate += HandleJoinedLobbyUpdate;
-        LobbyManager.Instance.OnJoinedLobby       += HandleJoinedLobby;
-        LobbyManager.Instance.OnLeftLobby         += HandleLeftLobby;
+        LobbyManager.Instance.OnLobbyListRefreshed  += UpdateLobbyList;
+        LobbyManager.Instance.OnLobbyUpdated += HandleJoinedLobbyUpdate;
+        LobbyManager.Instance.OnLobbyJoined       += HandleJoinedLobby;
+        LobbyManager.Instance.OnLobbyLeft         += HandleLeftLobby;
 
         // Authenticate into Unity Services
-        LobbyManager.Instance.Authenticate();
+        LobbyManager.Instance.AuthenticateAsync();
     }
 
     void OnDestroy() {
         // Unsubscribe from Lobby related events
-        LobbyManager.Instance.OnLobbyListChanged  -= UpdateLobbyList;
-        LobbyManager.Instance.OnJoinedLobbyUpdate -= HandleJoinedLobbyUpdate;
-        LobbyManager.Instance.OnJoinedLobby       -= HandleJoinedLobby;
-        LobbyManager.Instance.OnLeftLobby         -= HandleLeftLobby;
+        LobbyManager.Instance.OnLobbyListRefreshed  -= UpdateLobbyList;
+        LobbyManager.Instance.OnLobbyUpdated -= HandleJoinedLobbyUpdate;
+        LobbyManager.Instance.OnLobbyJoined       -= HandleJoinedLobby;
+        LobbyManager.Instance.OnLobbyLeft         -= HandleLeftLobby;
 
         // Clean up any remaining lobby & player items
         ClearLobbyItems();
@@ -83,7 +83,7 @@ public class MainMenuUI : FollowPlayerUI
 
     // Swap visible menu & call header/subheader handling method for the main game menu
     void HandleMenuVisibility() {
-        bool inLobby = LobbyManager.Instance.IsPlayerInLobby();
+        bool inLobby = LobbyManager.Instance.IsInLobby;
         lobbyMenu.SetActive(!inLobby);    // Not in a lobby? » Show available lobbies list
         playerList.SetActive(inLobby);    //     in a lobby? » Show players in the current lobby 
 
@@ -95,22 +95,22 @@ public class MainMenuUI : FollowPlayerUI
      */
 
     // Called when a lobby is created or picked from the lobby list
-    void HandleJoinedLobby(object sender, LobbyManager.LobbyEventArgs e) {
+    void HandleJoinedLobby(Lobby lobby) {
         HandleMenuVisibility();      // Swap menus to show player list;
-        UpdatePlayerList(e.lobby);   // Show lobby players on screen; 
+        UpdatePlayerList(lobby);   // Show lobby players on screen; 
         ClearLobbyItems();           // Clear lobby list as its not visible;
     }
 
     // Called when a lobby is left
-    void HandleLeftLobby(object sender, EventArgs e) {
+    void HandleLeftLobby() {
         HandleMenuVisibility();      // Swap menus to show lobby list;
         RefreshLobbies();            // Show existing lobbies on screen;
         ClearPlayerItems();          // Clear player list as its not visible;
     }
 
     // Continuously called while in a lobby
-    void HandleJoinedLobbyUpdate(object sender, LobbyManager.LobbyEventArgs e) {
-        UpdatePlayerList(e.lobby);   // Update lobby information through all menus
+    void HandleJoinedLobbyUpdate(Lobby lobby) {
+        UpdatePlayerList(lobby);   // Update lobby information through all menus
         HandleGameMenuState();       // Swap header/subheader messages
     }
 
@@ -119,14 +119,14 @@ public class MainMenuUI : FollowPlayerUI
      */
 
     // Visually updates the list of lobbies the player can join
-    void UpdateLobbyList(object sender, LobbyManager.LobbyListChangedEventArgs e) {
+    void UpdateLobbyList(List<Lobby> lobbyList) {
         // Clear existing lobby items first
         ClearLobbyItems();
         
         // Create new lobby items for each lobby in the list
-        for (int i = 0; i < e.lobbyList.Count; i++)
+        for (int i = 0; i < lobbyList.Count; i++)
         {
-            Lobby lobby = e.lobbyList[i];
+            Lobby lobby = lobbyList[i];
 
             if (lobby != null) {
                 // Instantiate the lobby item prefab as a child of the content panel
@@ -155,16 +155,16 @@ public class MainMenuUI : FollowPlayerUI
     // Visually updates header and subheader of the game menu, and handles button interaction
     void HandleGameMenuState() {
         // Check if the player is in a lobby
-        bool inLobby = LobbyManager.Instance.IsPlayerInLobby();
+        bool inLobby = LobbyManager.Instance.IsInLobby;
 
-        gameMenuHeader.text    = (!inLobby || LobbyManager.Instance.IsLobbyHost()) ? GAME_MENU_HEADER_STARTABLE 
+        gameMenuHeader.text    = (!inLobby || LobbyManager.Instance.IsHost) ? GAME_MENU_HEADER_STARTABLE 
                                                                                    : GAME_MENU_HEADER_UNSTARTABLE;
         gameMenuSubheader.text = (!inLobby) ? GAME_MENU_SUBHEADER_SOLO 
-                                            : ( (LobbyManager.Instance.IsLobbyHost()) ? GAME_MENU_SUBHEADER_HOST
+                                            : ( LobbyManager.Instance.IsHost ? GAME_MENU_SUBHEADER_HOST
                                                                                       : GAME_MENU_SUBHEADER_NON_HOST );
         // A game can only be started if:
         //   1. User is playing alone    2. User is hosting the lobby they are in
-        startButton.interactable = !inLobby || LobbyManager.Instance.IsLobbyHost();
+        startButton.interactable = !inLobby || LobbyManager.Instance.IsHost;
     }
 
     /*
@@ -207,24 +207,24 @@ public class MainMenuUI : FollowPlayerUI
      */
 
     // Called by clicking the "refresh" button, to update lobby list
-    public void RefreshLobbies() {
-        LobbyManager.Instance.RefreshLobbyList();
+    public async void RefreshLobbies() {
+        await LobbyManager.Instance.RefreshLobbyListAsync();
     }
 
     // Called by clicking the "+" button, to create a new lobby
     public async void CreateLobby() {
-        await LobbyManager.Instance.CreateLobby("Lobby" + UnityEngine.Random.Range(10, 99));
+        await LobbyManager.Instance.CreateLobbyAsync(DeviceManager.Instance.GetDeviceName() + " User");
     }
 
     // Called by clicking the "back" button, to return to lobby list
-    public void LeaveLobby() {
-        LobbyManager.Instance.LeaveLobby();
+    public async void LeaveLobby() {
+        LobbyManager.Instance.LeaveLobbyAsync();
     }
 
     // Called by clicking the "start" button, to start the chosen game
-    public void StartGame() {
-        if (!LobbyManager.Instance.IsPlayerInLobby() || LobbyManager.Instance.IsLobbyHost()) {
-            LobbyManager.Instance.StartGame();
+    public async void StartGame() {
+        if (!LobbyManager.Instance.IsInLobby || LobbyManager.Instance.IsHost) {
+            await LobbyManager.Instance.StartExperienceAsync();
         }
     }
 
