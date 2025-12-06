@@ -718,6 +718,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1645b0fa6fc954fbc48268d7e346df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  headPositionAction: {fileID: 7862207684358717888, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  headRotationAction: {fileID: -530380113134220495, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
 --- !u!114 &2250483191902108686
 MonoBehaviour:
   m_ObjectHideFlags: 0

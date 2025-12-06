@@ -3,7 +3,11 @@ guid: 9e1645b0fa6fc954fbc48268d7e346df
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - headPositionAction: {fileID: 7862207684358717888, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  - headRotationAction: {fileID: -530380113134220495, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

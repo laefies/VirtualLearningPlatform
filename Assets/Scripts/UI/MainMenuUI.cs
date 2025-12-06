@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using TMPro;
 
 // Manages UI to handle lobby events.
-public class MainMenuUI : BodyLockedUI
+public class MainMenuUI : FollowPlayerUI
 {
     // Messages » Headers / Info Subheaders
     private const string GAME_MENU_HEADER_STARTABLE   = "Choose a Lesson!";

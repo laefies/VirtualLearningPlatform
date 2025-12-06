@@ -48,6 +48,8 @@ public class LobbyManager : MonoBehaviour
 
     private void Awake() {
         Instance = this;
+
+        // Authenticate();
     }
 
     async void Update() {
@@ -73,7 +75,7 @@ public class LobbyManager : MonoBehaviour
      */
 
     // Creates a new lobby with options and adds the player
-    public async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 4, bool isPrivate = false)
+    public async Task<Lobby> CreateLobby(string lobbyName = "Lobby", int nPlayers = 10, bool isPrivate = false)
     {
         if (!IsPlayerInLobby()) {
             CreateLobbyOptions options = new CreateLobbyOptions { 
@@ -251,33 +253,6 @@ public class LobbyManager : MonoBehaviour
                   new PlayerDataObject( PlayerDataObject.VisibilityOptions.Member, "Not Connected") }
             }
         }; 
-    }
-
-    // Updates player activity status, and handles any necessary ownership transference
-    public async void UpdatePlayerData(string field, string newValue) {
-
-        joinedLobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, 
-        new UpdatePlayerOptions {
-            Data = new Dictionary<string, PlayerDataObject> {
-                { field, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, newValue) }
-            }
-        });
-
-    }
-
-    // Returns a player ID that matches a certain key-value serach
-    public string GetPlayerIdByFieldValue(string field, string value) {
-        foreach (var player in joinedLobby.Players)
-        {
-            if (player.Data != null && player.Data.ContainsKey(field)) {
-                if (player.Data[field].Value == value)
-                {
-                    return player.Id;
-                }
-            }
-        }
-
-        return null;
     }
 
 
