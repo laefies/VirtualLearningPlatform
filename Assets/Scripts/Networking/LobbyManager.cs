@@ -40,7 +40,7 @@ public class LobbyManager : MonoBehaviour
     private const float POLL_INTERVAL = 1.5f;
     
     // Lobby settings
-    private const int DEFAULT_MAX_PLAYERS = 10;
+    private const int DEFAULT_MAX_PLAYERS = 1;
     private const int LOBBY_QUERY_LIMIT   = 30;
     #endregion
 
@@ -123,10 +123,7 @@ public class LobbyManager : MonoBehaviour
             _isAuthenticated = true;
 
             Debug.Log($"[Lobby Management] Successfully authenticated.");
-            
-            // Initial lobby list refresh
-            await RefreshLobbyListAsync();
-            
+                        
             return true;
         }
         catch (Exception e)
@@ -166,10 +163,13 @@ public class LobbyManager : MonoBehaviour
         try
         {
             _lobbyCounter++; 
-            string lobbyName = $"{playerName}'s Group #{_lobbyCounter}";
+            string lobbyName = $"{playerName}'s";
             
             // Defaults to "None" if no experience is selected yet
             string experience = string.IsNullOrEmpty(experienceName) ? NO_EXPERIENCE_SELECTED : experienceName;
+
+            // Determine initial status based on max players
+            string initialStatus = maxPlayers == 1 ? STATUS_FULL : STATUS_WAITING;
 
             var options = new CreateLobbyOptions
             {
@@ -178,7 +178,7 @@ public class LobbyManager : MonoBehaviour
                 Data = new Dictionary<string, DataObject>
                 {
                     { KEY_EXPERIENCE_NAME, new DataObject(DataObject.VisibilityOptions.Public, experience) },
-                    { KEY_LOBBY_STATUS, new DataObject(DataObject.VisibilityOptions.Public, STATUS_WAITING) },
+                    { KEY_LOBBY_STATUS, new DataObject(DataObject.VisibilityOptions.Public, initialStatus) },
                     { KEY_RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, "") }
                 }
             };
@@ -207,7 +207,7 @@ public class LobbyManager : MonoBehaviour
     /// Joins an existing lobby.
     /// </summary>
     /// <param name="lobby">The lobby to join</param>
-    /// <param name="playerName">Display name for the joining player</param>
+    /// <param name="playerName">Display name for the joining player (optional)</param>
     public async Task<bool> JoinLobbyAsync(Lobby lobby, string playerName)
     {
         if (!_isAuthenticated)
@@ -230,6 +230,9 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
+            
+            // Update status to Full if lobby is now at capacity
+            await UpdateLobbyStatusBasedOnCapacity();
             
             ResetTimers();
             
@@ -332,6 +335,10 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(_currentLobby.Id, playerId);
+            
+            // Update status after kicking - lobby may no longer be full
+            await UpdateLobbyStatusBasedOnCapacity();
+            
             Debug.Log($"[Lobby Management] Kicked player {playerId}");
             return true;
         }
@@ -371,6 +378,44 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.LogError($"[Lobby Management] Failed to transfer host: {e.Message}");
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Updates the lobby status based on current capacity.
+    /// Sets status to Full if at max capacity, otherwise Waiting (if not already in progress).
+    /// </summary>
+    private async Task UpdateLobbyStatusBasedOnCapacity()
+    {
+        if (!IsHost || !IsInLobby) return;
+
+        // Don't change status if experience is already in progress
+        string currentStatus = GetLobbyStatus(_currentLobby);
+        if (currentStatus == STATUS_IN_PROGRESS) return;
+
+        bool isFull = _currentLobby.Players.Count >= _currentLobby.MaxPlayers;
+        string newStatus = isFull ? STATUS_FULL : STATUS_WAITING;
+
+        // Only update if status actually changed
+        if (currentStatus == newStatus) return;
+
+        try
+        {
+            var options = new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject>
+                {
+                    { KEY_LOBBY_STATUS, new DataObject(DataObject.VisibilityOptions.Public, newStatus) }
+                }
+            };
+
+            _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
+            Debug.Log($"[Lobby Management] Updated lobby status to '{newStatus}'");
+            OnLobbyUpdated?.Invoke(_currentLobby);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogError($"[Lobby Management] Failed to update lobby status: {e.Message}");
         }
     }
     #endregion
@@ -615,13 +660,14 @@ public class LobbyManager : MonoBehaviour
     /// <summary>
     /// Gets the current status of a given lobby.
     /// </summary>
-    public string GetLobbyStatus(Lobby lobby)
+    public string GetLobbyStatus(Lobby lobby) 
     {
-        if (!lobby.Data.ContainsKey(KEY_LOBBY_STATUS))
+        if (lobby == null || !lobby.Data.ContainsKey(KEY_LOBBY_STATUS))
             return null;
 
         return lobby.Data[KEY_LOBBY_STATUS].Value;
     }
+
 
     /// <summary>
     /// Gets a player's display name from the current lobby.

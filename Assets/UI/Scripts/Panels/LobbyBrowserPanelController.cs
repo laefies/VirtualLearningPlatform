@@ -12,7 +12,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Button createLobbyButton;
-    [SerializeField] private Button refreshLobbiesButton;
+    [SerializeField] private Button refreshLobbyListButton;
     [SerializeField] private Transform lobbyListContainer;
     [SerializeField] private GameObject lobbyItemPrefab;
 
@@ -25,7 +25,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
             LobbyManager.OnLobbyListRefreshed += HandleLobbyListRefreshed;
 
         createLobbyButton?.onClick.AddListener(OnCreateLobbyClicked);
-        refreshLobbiesButton?.onClick.AddListener(OnRefreshLobbyListClicked);
+        refreshLobbyListButton?.onClick.AddListener(OnRefreshLobbyListClicked);
 
         await LobbyManager?.RefreshLobbyListAsync();
     }
@@ -36,7 +36,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
             LobbyManager.OnLobbyListRefreshed -= HandleLobbyListRefreshed;
 
         createLobbyButton?.onClick.RemoveListener(OnCreateLobbyClicked);
-        refreshLobbiesButton?.onClick.RemoveListener(OnRefreshLobbyListClicked);
+        refreshLobbyListButton?.onClick.RemoveListener(OnRefreshLobbyListClicked);
 
         ClearLobbyList();
     }
@@ -58,7 +58,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
             GameObject lobbyItemObject = Instantiate(lobbyItemPrefab, lobbyListContainer);
             activeLobbyItems.Add(lobbyItemObject);
             
-            if (lobbyItemObject.TryGetComponent<LobbyListItemUI>(out LobbyListItemUI lobbyItem))
+            if (lobbyItemObject.TryGetComponent<LobbyListItem>(out LobbyListItem lobbyItem))
                 lobbyItem.SetLobby(lobby);
         }
     }
@@ -72,7 +72,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
     }
 
     private async void OnCreateLobbyClicked() { 
-        await LobbyManager?.CreateLobbyAsync($"{DeviceManager.Instance.GetDeviceName()} User"); 
+        await LobbyManager?.CreateLobbyAsync(PlayerManager.Instance.PlayerName); 
     }
 
     private async void OnRefreshLobbyListClicked() { LobbyManager?.RefreshLobbyListAsync(); }

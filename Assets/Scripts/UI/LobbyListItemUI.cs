@@ -36,7 +36,7 @@ public class LobbyListItemUI : MonoBehaviour
 
     public async void HandleLobbyClick() {
         if (lobby == null) return;
-        await LobbyManager.Instance.JoinLobbyAsync(lobby, DeviceManager.Instance.GetDeviceName() + " User");
+        await LobbyManager.Instance.JoinLobbyAsync(lobby, PlayerManager.Instance.PlayerName);
     }
 
     async void Update() {

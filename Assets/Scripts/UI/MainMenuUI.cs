@@ -64,9 +64,6 @@ public class MainMenuUI : FollowPlayerUI
         LobbyManager.Instance.OnLobbyUpdated += HandleJoinedLobbyUpdate;
         LobbyManager.Instance.OnLobbyJoined       += HandleJoinedLobby;
         LobbyManager.Instance.OnLobbyLeft         += HandleLeftLobby;
-
-        // Authenticate into Unity Services
-        LobbyManager.Instance.AuthenticateAsync();
     }
 
     void OnDestroy() {
@@ -213,7 +210,7 @@ public class MainMenuUI : FollowPlayerUI
 
     // Called by clicking the "+" button, to create a new lobby
     public async void CreateLobby() {
-        await LobbyManager.Instance.CreateLobbyAsync(DeviceManager.Instance.GetDeviceName() + " User");
+        await LobbyManager.Instance.CreateLobbyAsync(PlayerManager.Instance.PlayerName);
     }
 
     // Called by clicking the "back" button, to return to lobby list
