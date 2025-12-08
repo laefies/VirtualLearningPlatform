@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using Nova;
+using NovaSamples.UIControls;
 using UnityEngine.Events;
 using Unity.Services.Lobbies.Models;
 
@@ -24,8 +25,8 @@ public class LobbyBrowserPanelController : MonoBehaviour
         if (LobbyManager != null)
             LobbyManager.OnLobbyListRefreshed += HandleLobbyListRefreshed;
 
-        createLobbyButton?.onClick.AddListener(OnCreateLobbyClicked);
-        refreshLobbyListButton?.onClick.AddListener(OnRefreshLobbyListClicked);
+        createLobbyButton?.AddListener(OnCreateLobbyClicked);
+        refreshLobbyListButton?.AddListener(OnRefreshLobbyListClicked);
 
         await LobbyManager?.RefreshLobbyListAsync();
     }
@@ -35,8 +36,8 @@ public class LobbyBrowserPanelController : MonoBehaviour
         if (LobbyManager != null)
             LobbyManager.OnLobbyListRefreshed -= HandleLobbyListRefreshed;
 
-        createLobbyButton?.onClick.RemoveListener(OnCreateLobbyClicked);
-        refreshLobbyListButton?.onClick.RemoveListener(OnRefreshLobbyListClicked);
+        createLobbyButton?.RemoveListener(OnCreateLobbyClicked);
+        refreshLobbyListButton?.RemoveListener(OnRefreshLobbyListClicked);
 
         ClearLobbyList();
     }
@@ -76,5 +77,12 @@ public class LobbyBrowserPanelController : MonoBehaviour
     }
 
     private async void OnRefreshLobbyListClicked() { LobbyManager?.RefreshLobbyListAsync(); }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.N)) LobbyManager?.CreateLobbyAsync(PlayerManager.Instance.PlayerName);
+        if (Input.GetKeyDown(KeyCode.R)) LobbyManager?.RefreshLobbyListAsync();
+        if (Input.GetKeyDown(KeyCode.L)) LobbyManager?.LeaveLobbyAsync();
+        if (Input.GetKeyDown(KeyCode.G)) LobbyManager?.StartExperienceAsync();
+    }
 
 }

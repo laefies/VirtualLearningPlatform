@@ -5,9 +5,11 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine.XR.OpenXR;
+using Nova; // Add Nova namespace
 
 /// <summary>
 /// Simulates XR interaction for desktop using raycasts with a state machine pattern.
+/// Now supports Nova UI!
 /// </summary>
 public class SimulatedXRInteraction : XRBaseInteractor
 {
@@ -33,11 +35,19 @@ public class SimulatedXRInteraction : XRBaseInteractor
     private float currentHitDistance;
     private Vector3 startingMousePosition;
 
+    // Nova UI state
+    private bool hoveredNovaUI;
+    private const uint NovaControlID = 0; // Unique ID for our Nova interaction
+
     // Components
     private LineRenderer lineRenderer;
     private EventSystem eventSystem;
     private PointerEventData pointerEventData;
     private List<RaycastResult> raycastResults = new List<RaycastResult>();
+
+    // Nova interaction
+    private Interaction.Update novaInteractionUpdate;
+    private Ray currentRay;
 
     private void Awake()
     {
@@ -73,8 +83,12 @@ public class SimulatedXRInteraction : XRBaseInteractor
         // Create raycast
         RaycastHit physicsHit;
         Ray ray = new Ray(rayOrigin.position, -rayOrigin.forward);
+        currentRay = ray;
         bool hitPhysics = Physics.Raycast(ray, out physicsHit, rayDistance);
         RaycastResult? uiHit = PerformUIRaycast(ray);
+
+        // Check Nova UI and send interaction
+        Interaction.Point(new Interaction.Update(ray, controlID: 0), Input.GetMouseButton(0));
 
         // Determine if the ray hit any targets and check for state updates
         DetermineHitTarget(hitPhysics, physicsHit, uiHit);
@@ -108,6 +122,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
 
         hoveredUIElement = null;
         hoveredInteractable = null;
+        hoveredNovaUI = false;
     }
 
     private void DetermineHitTarget(bool hitPhysics, RaycastHit physicsHit, RaycastResult? uiHit)
@@ -117,7 +132,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
         currentHitDistance = rayDistance;
         currentHitPoint = Vector3.zero;
 
-        // Check UI hit first
+        // Check standard UI hit
         if (uiHit.HasValue && uiHit.Value.gameObject != null) {
             currentHitDistance = uiHit.Value.distance;
             currentHitPoint = uiHit.Value.worldPosition;
@@ -149,20 +164,20 @@ public class SimulatedXRInteraction : XRBaseInteractor
         switch (currentState)
         {
             case InteractionState.Idle:
-                if (hoveredUIElement != null)
+                if (hoveredNovaUI || hoveredUIElement != null)
                     nextState = InteractionState.HoveringUI;
                 else if (hoveredInteractable != null)
                     nextState = InteractionState.HoveringObject;
                 break;
 
             case InteractionState.HoveringUI:
-                if (hoveredUIElement == null)
+                if (hoveredUIElement == null && !hoveredNovaUI)
                     nextState = hoveredInteractable != null ? InteractionState.HoveringObject : InteractionState.Idle;
                 break;
 
             case InteractionState.HoveringObject:
                 if (hoveredInteractable == null)
-                    nextState = hoveredUIElement != null ? InteractionState.HoveringUI : InteractionState.Idle;
+                    nextState = (hoveredUIElement != null || hoveredNovaUI) ? InteractionState.HoveringUI : InteractionState.Idle;
                 break;
 
             case InteractionState.GrabbingObject:
@@ -231,7 +246,18 @@ public class SimulatedXRInteraction : XRBaseInteractor
 
     }
 
-    private void HandleUIInput() {
+    private void HandleUIInput() 
+    {
+        // Nova UI is handled automatically by the Interaction.Point call in CheckAndSendNovaInteraction
+        // We don't need to do anything extra here for Nova - it handles all click, drag, and gesture events internally
+        
+        // If we're hovering Nova UI, don't process standard Unity UI
+        if (hoveredNovaUI)
+        {
+            return;
+        }
+
+        // Handle standard Unity UI
         if (Input.GetMouseButtonDown(0) && hoveredUIElement != null) {
             // Check if it's a slider, as it has a non-binary handling
             Slider slider = hoveredUIElement.GetComponent<Slider>();
@@ -312,11 +338,6 @@ public class SimulatedXRInteraction : XRBaseInteractor
         GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
         if (raycaster == null) return null;
 
-        /* 
-         * Note: "??" works as a null coalescing operator. The line can be written as:
-         *   if(canvas.worldCamera != null) cam = canvas.worldCamera;
-         *   else cam = Camera.main;
-         */
         Camera cam = canvas.worldCamera ?? Camera.main;
         if (cam == null) return null;
 

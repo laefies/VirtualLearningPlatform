@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using Nova;
+using NovaSamples.UIControls;
 using Unity.Services.Lobbies.Models;
 
 /// <summary>
@@ -10,15 +10,15 @@ public class LobbyListItem : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Button joinLobbyButton;
-    [SerializeField] private TextMeshProUGUI lobbyNameText;
-    [SerializeField] private TextMeshProUGUI playerCountText;
+    [SerializeField] private TextBlock lobbyNameText;
+    [SerializeField] private TextBlock playerCountText;
     [SerializeField] private Label statusLabel;
 
     private Lobby lobby;
     private LobbyManager LobbyManager => LobbyManager.Instance;
 
-    private void Awake()  { joinLobbyButton?.onClick.AddListener(OnItemClicked); }
-    private void OnDestroy() { joinLobbyButton?.onClick.RemoveListener(OnItemClicked); }
+    private void Awake()  { joinLobbyButton?.AddListener(OnItemClicked); }
+    private void OnDestroy() { joinLobbyButton?.RemoveListener(OnItemClicked); }
 
     public void SetLobby(Lobby lobbyData)
     {
@@ -37,10 +37,10 @@ public class LobbyListItem : MonoBehaviour
         statusLabel?.ApplyStyle(lobbyStatus);
 
         if (lobbyNameText != null) 
-            lobbyNameText.text = lobby.Name;
+            lobbyNameText.Text = lobby.Name;
 
         if (playerCountText != null) 
-            playerCountText.text = $"Players {currentPlayers}/{maxPlayers}";
+            playerCountText.Text = $"Players {currentPlayers}/{maxPlayers}";
         
         if (joinLobbyButton != null)
             joinLobbyButton.interactable = currentPlayers < maxPlayers;

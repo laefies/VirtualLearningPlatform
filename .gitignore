@@ -75,4 +75,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 /VLPTest
+/[Aa]ssets/Nova
+
 # End of https://www.toptal.com/developers/gitignore/api/unity

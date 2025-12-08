@@ -40,7 +40,7 @@ public class LobbyManager : MonoBehaviour
     private const float POLL_INTERVAL = 1.5f;
     
     // Lobby settings
-    private const int DEFAULT_MAX_PLAYERS = 1;
+    private const int DEFAULT_MAX_PLAYERS = 10;
     private const int LOBBY_QUERY_LIMIT   = 30;
     #endregion
 
