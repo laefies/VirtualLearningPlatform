@@ -685,5 +685,16 @@ public class LobbyManager : MonoBehaviour
 
         return null;
     }
+
+    /// <summary>
+    /// Checks if the given player ID belongs to the host of the current lobby.
+    /// </summary>
+    public bool IsPlayerHost(string playerId)
+    {
+        if (!IsInLobby || string.IsNullOrEmpty(playerId))
+            return false;
+
+        return _currentLobby.HostId == playerId;
+    }
     #endregion
 }

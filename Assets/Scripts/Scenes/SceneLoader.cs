@@ -59,7 +59,7 @@ public class SceneLoader : MonoBehaviour
     }
 
     // Unsubscribe from Lobby related events
-    void OnDestroy() {
+    void OnDisable() {
         LobbyManager.Instance.OnExperienceStarted -= HandleGameStart;
     }
 

@@ -16,13 +16,13 @@ public class Label : MonoBehaviour
     [SerializeField] private UIBlock2D labelBody;
     [SerializeField] private TextBlock labelText;
 
-    public bool ApplyStyle(string styleName) 
+    public LabelStyle ApplyStyle(string styleName) 
     {
         if (styleSet == null || labelBody == null || labelText == null) 
-            return false;
+            return null;
 
         LabelStyle style = styleSet.GetStyle(styleName);
-        if (style == null) return false;
+        if (style == null) return null;
 
         labelText.Text  = style.styleName;
         labelText.Color = style.textColor;
@@ -33,6 +33,6 @@ public class Label : MonoBehaviour
     
         labelBody.Border.Color = style.mainColor;
 
-        return true;
+        return style;
     }
 }

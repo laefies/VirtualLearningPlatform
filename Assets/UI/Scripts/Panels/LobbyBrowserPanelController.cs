@@ -77,12 +77,4 @@ public class LobbyBrowserPanelController : MonoBehaviour
     }
 
     private async void OnRefreshLobbyListClicked() { LobbyManager?.RefreshLobbyListAsync(); }
-
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.N)) LobbyManager?.CreateLobbyAsync(PlayerManager.Instance.PlayerName);
-        if (Input.GetKeyDown(KeyCode.R)) LobbyManager?.RefreshLobbyListAsync();
-        if (Input.GetKeyDown(KeyCode.L)) LobbyManager?.LeaveLobbyAsync();
-        if (Input.GetKeyDown(KeyCode.G)) LobbyManager?.StartExperienceAsync();
-    }
-
 }

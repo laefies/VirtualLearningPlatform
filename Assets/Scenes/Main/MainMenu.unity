@@ -4391,17 +4391,17 @@ PrefabInstance:
     - target: {fileID: 5941991606851574205, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.00025
+      value: 0.0005
       objectReference: {fileID: 0}
     - target: {fileID: 5941991606851574205, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.00025
+      value: 0.0005
       objectReference: {fileID: 0}
     - target: {fileID: 5941991606851574205, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.00025
+      value: 0.0005
       objectReference: {fileID: 0}
     - target: {fileID: 5941991606851574205, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
@@ -4465,6 +4465,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8425454767083438834, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
+      propertyPath: _tiltAngle
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8425454767083438834, guid: e73ed2cb37b46af49b6bb3eec009bd23,
+        type: 3}
       propertyPath: _maxDistance
       value: 0.1
       objectReference: {fileID: 0}
@@ -4476,7 +4481,7 @@ PrefabInstance:
     - target: {fileID: 8425454767083438834, guid: e73ed2cb37b46af49b6bb3eec009bd23,
         type: 3}
       propertyPath: _forwardDistance
-      value: 0.5
+      value: 0.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

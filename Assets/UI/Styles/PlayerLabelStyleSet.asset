@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c35e219619ed2fe4a922e8a3f6198257, type: 3}
+  m_Name: PlayerLabelStyleSet
+  m_EditorClassIdentifier: 
+  styles:
+  - styleName: Owner
+    mainColor: {r: 0.8901961, g: 0.95686275, b: 0.49803922, a: 1}
+    textColor: {r: 0.972549, g: 1, b: 0.8117647, a: 1}
+    bodyAlpha: 0.1
+  - styleName: Member
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    bodyAlpha: 0.1

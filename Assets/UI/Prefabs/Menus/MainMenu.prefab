@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4922878742960739032}
+  - {fileID: 3036764408896521268}
   m_Father: {fileID: 5941991606851574205}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4312214301242704742
@@ -63,7 +64,7 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 704
+        Raw: 1432
         Type: 0
       Y:
         Raw: 780
@@ -289,7 +290,7 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 704
+        Raw: 1432
         Type: 0
       Y:
         Raw: 780
@@ -449,7 +450,7 @@ MonoBehaviour:
     LightingModel: 0
     ShadowCastingMode: 2
     ReceiveShadows: 1
-  PreviewSize: {x: 704, y: 780, z: 0}
+  PreviewSize: {x: 1432, y: 780, z: 0}
 --- !u!114 &6351291186104513226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,7 +487,102 @@ MonoBehaviour:
   _lerpSpeed: 2
   _allowManualReposition: 1
   lobbyBrowserPanel: {fileID: 5299087531208372974}
-  lobbyDetailsPanel: {fileID: 0}
+  lobbyDetailsPanel: {fileID: 2882146570072810498}
+--- !u!1001 &1862012714431941386
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6761637052805400201}
+    m_Modifications:
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 364
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4478904303233724168, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_Name
+      value: LobbyDetailsPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4478904303233724168, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892303936371613098, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: layout.Alignment.X
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6892303936371613098, guid: 0aaab74b6e7de6d47876d77204897490,
+        type: 3}
+      propertyPath: layout.Position.X.Raw
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0aaab74b6e7de6d47876d77204897490, type: 3}
+--- !u!1 &2882146570072810498 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4478904303233724168, guid: 0aaab74b6e7de6d47876d77204897490,
+    type: 3}
+  m_PrefabInstance: {fileID: 1862012714431941386}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3036764408896521268 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3743603520313069374, guid: 0aaab74b6e7de6d47876d77204897490,
+    type: 3}
+  m_PrefabInstance: {fileID: 1862012714431941386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8620566656887201254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -498,7 +594,7 @@ PrefabInstance:
     - target: {fileID: 3743603520313069374, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -364
       objectReference: {fileID: 0}
     - target: {fileID: 3743603520313069374, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}
@@ -549,6 +645,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LobbyBrowserPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4478904303233724168, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6892303936371613098, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}

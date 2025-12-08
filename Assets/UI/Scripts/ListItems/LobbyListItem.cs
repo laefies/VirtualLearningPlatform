@@ -32,7 +32,7 @@ public class LobbyListItem : MonoBehaviour
 
         int currentPlayers = lobby.Players?.Count ?? 0;
         int maxPlayers     = lobby.MaxPlayers;
-        string lobbyStatus = LobbyManager.GetLobbyStatus(lobby);
+        string lobbyStatus = LobbyManager?.GetLobbyStatus(lobby) ?? "";
 
         statusLabel?.ApplyStyle(lobbyStatus);
 

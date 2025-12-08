@@ -49,7 +49,7 @@ public class MainMenuManager : FollowPlayerUI
 
         bool inLobby = LobbyManager.IsInLobby;
 
-        //lobbyBrowserPanel?.SetActive(!inLobby);
-        //lobbyDetailsPanel?.SetActive( inLobby);
+        lobbyBrowserPanel?.SetActive(!inLobby);
+        lobbyDetailsPanel?.SetActive( inLobby);
     }
 }
