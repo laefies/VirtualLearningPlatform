@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.XR.CoreUtils;
 using UnityEngine.XR.Interaction.Toolkit;
-
+using Nova; 
 public class VirtualPlacementInputActionHandler : MonoBehaviour {
     private static float ROT_FACTOR = -2f;
     private static float RAY_DIST = 100f;
@@ -69,21 +69,35 @@ public class VirtualPlacementInputActionHandler : MonoBehaviour {
         HandleDuplicateInputs();
     }
 
-    void Update() {   
+    private Ray GetAimRay(float distance = 1)
+    {
+        Vector3 aimPos = aimPositionAction.action.ReadValue<Vector3>();
+        Quaternion aimRot = aimRotationAction.action.ReadValue<Quaternion>();
+
+        Transform originTransform = xrOrigin.CameraFloorOffsetObject.transform;
+        aimPos = originTransform.TransformPoint(aimPos);
+        aimRot = originTransform.rotation * aimRot;
+
+        return new Ray(aimPos, aimRot * Vector3.forward * distance);
+    }
+
+
+    void CheckNovaInteraction(bool confirming)
+    {
+        Interaction.Point(new Interaction.Update(GetAimRay(RAY_DIST), controlID: 0), confirming);
+    }
+
+    void Update() {  
         if (placing) {
-            Vector3 aimPos = aimPositionAction.action.ReadValue<Vector3>();
-            Quaternion aimRot = aimRotationAction.action.ReadValue<Quaternion>();
-
-            Transform originTransform = xrOrigin.CameraFloorOffsetObject.transform;
-            aimPos = originTransform.TransformPoint(aimPos);
-            aimRot = originTransform.rotation * aimRot;
-
             RaycastHit physicsHit;
-            bool hitPhysics = Physics.Raycast(new Ray(aimPos, aimRot * Vector3.forward), out physicsHit, RAY_DIST);    
+            bool hitPhysics = Physics.Raycast(GetAimRay(), out physicsHit, RAY_DIST);    
             if (hitPhysics) VirtualPlacementSystem.Instance.UpdatePreview(physicsHit.point);
 
             Vector2 rotateValue = rotateAction.action.ReadValue<Vector2>();
             if (rotateValue.x != 0) VirtualPlacementSystem.Instance?.RotateBy(rotateValue.x * ROT_FACTOR);
-        }     
+        } else {
+            if (xrOrigin != null)
+                CheckNovaInteraction(false);  
+        }   
     }
 }

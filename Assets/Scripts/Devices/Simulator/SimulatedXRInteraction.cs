@@ -131,7 +131,7 @@ public class SimulatedXRInteraction : XRBaseInteractor
         hoveredInteractable = null;
         currentHitDistance = rayDistance;
         currentHitPoint = Vector3.zero;
-
+        
         // Check standard UI hit
         if (uiHit.HasValue && uiHit.Value.gameObject != null) {
             currentHitDistance = uiHit.Value.distance;

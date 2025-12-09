@@ -321,7 +321,7 @@ Transform:
   m_GameObject: {fileID: 372429658572413329}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 38.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -361,8 +361,8 @@ MonoBehaviour:
         Raw: 704
         Type: 0
       Y:
-        Raw: 703
-        Type: 0
+        Raw: 1
+        Type: 1
       Z:
         Raw: 0
         Type: 0
@@ -478,7 +478,7 @@ MonoBehaviour:
       Z: 0
     AutoSize:
       X: 2
-      Y: 2
+      Y: 1
       Z: 0
     RotateSize: 0
     AspectRatio: {x: 0, y: 0, z: 0}
@@ -578,7 +578,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 559643357436515245, guid: d518f51ce19879f49b9188145e4d2263, type: 2}
+  - {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -812,8 +812,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Choose a lobby to join, or create your own.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d518f51ce19879f49b9188145e4d2263, type: 2}
-  m_sharedMaterial: {fileID: 559643357436515245, guid: d518f51ce19879f49b9188145e4d2263,
+  m_fontAsset: {fileID: 11400000, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
+  m_sharedMaterial: {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1496,7 +1496,7 @@ Transform:
   m_GameObject: {fileID: 2549440540196441289}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.5, y: 261, z: 0}
+  m_LocalPosition: {x: -12.5, y: 299.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3184,6 +3184,11 @@ PrefabInstance:
       propertyPath: texture
       value: 
       objectReference: {fileID: 2800000, guid: 148406cb594041f42b7c78354190b0ea, type: 3}
+    - target: {fileID: 7308945029447671938, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: hoverState.shadowOffset.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3393,7 +3398,7 @@ PrefabInstance:
     - target: {fileID: 4310017466034907642, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 185.82
+      value: 224.32
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466034907643, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
@@ -3562,13 +3567,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
+      propertyPath: layout.AutoSize.Y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
+        type: 3}
       propertyPath: layout.Size.X.Raw
       value: 656
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
       propertyPath: layout.Size.Y.Raw
-      value: 482
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
@@ -3578,6 +3588,11 @@ PrefabInstance:
     - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
       propertyPath: layout.Alignment.Y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
+        type: 3}
+      propertyPath: layout.Size.Y.Type
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466626043759, guid: db2faff79ba10e548bfcb494aed8ea16,
@@ -3613,7 +3628,7 @@ PrefabInstance:
     - target: {fileID: 4310017466626652065, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4310017466626652066, guid: db2faff79ba10e548bfcb494aed8ea16,
         type: 3}
@@ -3746,7 +3761,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 4310017466626652065, guid: db2faff79ba10e548bfcb494aed8ea16, type: 3}
     - {fileID: 1334257297776992555, guid: db2faff79ba10e548bfcb494aed8ea16, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6746938998057992536, guid: db2faff79ba10e548bfcb494aed8ea16, type: 3}

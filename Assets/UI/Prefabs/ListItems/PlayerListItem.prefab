@@ -672,6 +672,8 @@ GameObject:
   - component: {fileID: 6091518432120475722}
   - component: {fileID: 949895198974631763}
   - component: {fileID: 3403378016424381645}
+  - component: {fileID: -2590764594214043723}
+  - component: {fileID: -6254992224422184617}
   m_Layer: 0
   m_Name: PlayerListItem
   m_TagString: Untagged
@@ -1058,6 +1060,129 @@ MonoBehaviour:
   lobbyHostOptions: {fileID: 3008196563002903775}
   transferHostButton: {fileID: 6531630724244050754}
   kickPlayerButton: {fileID: 8684508090785205775}
+--- !u!114 &-2590764594214043723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071905773301738118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3f4c746b8110b48aa4d2258498c606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClicked:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &-6254992224422184617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071905773301738118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a84efcf7b4bdd814bbaca93707f0346e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetBlock: {fileID: 0}
+  targetLabel: {fileID: 0}
+  enableHoverEffects: 1
+  hoverDelay: 0
+  hoverState:
+    changeScale: 0
+    scale: {x: 1.05, y: 1.05, z: 1.05}
+    changeBackgroundColor: 0
+    backgroundColor: {r: 1, g: 1, b: 1, a: 0.2509804}
+    changeTextColor: 0
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    changeBorder: 1
+    showBorder: 1
+    borderColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+    borderWidth: 1
+    changeShadow: 1
+    showShadow: 1
+    shadowColor: {r: 0, g: 0, b: 0, a: 0.2509804}
+    shadowBlur: 40
+    shadowOffset: {x: 0, y: 0}
+    changeCornerRadius: 0
+    cornerRadius:
+      Raw: 0
+      Type: 0
+  enablePressedEffects: 0
+  pressedState:
+    changeScale: 0
+    scale: {x: 0.95, y: 0.95, z: 0.95}
+    changeBackgroundColor: 1
+    backgroundColor: {r: 1, g: 1, b: 1, a: 0.101960786}
+    changeTextColor: 0
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    changeBorder: 1
+    showBorder: 1
+    borderColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+    borderWidth: 1
+    changeShadow: 1
+    showShadow: 0
+    shadowColor: {r: 0, g: 0, b: 0, a: 0.3}
+    shadowBlur: 0
+    shadowOffset: {x: 0, y: 0}
+    changeCornerRadius: 0
+    cornerRadius:
+      Raw: 0
+      Type: 0
+  enableDisabledState: 0
+  disabledState:
+    changeScale: 0
+    scale: {x: 1, y: 1, z: 1}
+    changeBackgroundColor: 1
+    backgroundColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+    changeTextColor: 1
+    textColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    changeBorder: 0
+    showBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 1}
+    borderWidth: 2
+    changeShadow: 0
+    showShadow: 0
+    shadowColor: {r: 0, g: 0, b: 0, a: 0.3}
+    shadowBlur: 4
+    shadowOffset: {x: 0, y: 2}
+    changeCornerRadius: 0
+    cornerRadius:
+      Raw: 0
+      Type: 0
+  transitionSpeed: 0.2
+  useSmoothTransitions: 1
+  easingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.4208997
+      outSlope: 0.4208997
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.16250002
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hoverSound: {fileID: 0}
+  pressSound: {fileID: 0}
+  releaseSound: {fileID: 0}
+  audioVolume: 0.5
 --- !u!1 &8071471059046542036
 GameObject:
   m_ObjectHideFlags: 0

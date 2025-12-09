@@ -328,7 +328,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -43.33333, y: 0}
+  m_AnchoredPosition: {x: -42.75862, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &5639208464767792184
@@ -683,7 +683,7 @@ Transform:
   m_GameObject: {fileID: 2252496402248801421}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -130.85114, y: 0, z: 0}
+  m_LocalPosition: {x: -131.42584, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -964,8 +964,8 @@ GameObject:
   - component: {fileID: 6091518432120475722}
   - component: {fileID: 949895198974631763}
   - component: {fileID: 7958156888412786503}
-  - component: {fileID: 6548686780029081126}
   - component: {fileID: 2417246764730957028}
+  - component: {fileID: 6548686780029081126}
   m_Layer: 0
   m_Name: LobbyListItem
   m_TagString: Untagged
@@ -1350,22 +1350,6 @@ MonoBehaviour:
   OnClicked:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &6548686780029081126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3071905773301738118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a2d54220ffcc594481d9461d3e2420c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  joinLobbyButton: {fileID: 7958156888412786503}
-  lobbyNameText: {fileID: 5009996130031207827}
-  playerCountText: {fileID: 50578809968453810}
-  statusLabel: {fileID: 8245844614106036695}
 --- !u!114 &2417246764730957028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1474,6 +1458,22 @@ MonoBehaviour:
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
   audioVolume: 0.5
+--- !u!114 &6548686780029081126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071905773301738118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a2d54220ffcc594481d9461d3e2420c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joinLobbyButton: {fileID: 7958156888412786503}
+  lobbyNameText: {fileID: 5009996130031207827}
+  playerCountText: {fileID: 50578809968453810}
+  statusLabel: {fileID: 8245844614106036695}
 --- !u!1 &4306154557250840526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1533,7 +1533,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 559643357436515245, guid: d518f51ce19879f49b9188145e4d2263, type: 2}
+  - {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1767,8 +1767,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Players 2/4
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d518f51ce19879f49b9188145e4d2263, type: 2}
-  m_sharedMaterial: {fileID: 559643357436515245, guid: d518f51ce19879f49b9188145e4d2263,
+  m_fontAsset: {fileID: 11400000, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
+  m_sharedMaterial: {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
