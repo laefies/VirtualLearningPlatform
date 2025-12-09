@@ -2070,7 +2070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eac23ac7a3129784f993f31ba9144bf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leaveLobbyButton: {fileID: 5275810267052229678}
+  leaveLobbyButton: {fileID: 6112411330603251314}
   playerListContainer: {fileID: 4852464528434968631}
   playerItemPrefab: {fileID: 3071905773301738118, guid: ab51ece1553082e4e9b429aa5e6d1463,
     type: 3}
@@ -3102,16 +3102,16 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3213936896527142171}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5275810267052229678 stripped
+--- !u!114 &6112411330603251314 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7326586832748300597, guid: 11140e3d715ac55459554afbac113402,
+  m_CorrespondingSourceObject: {fileID: 8667625173784492905, guid: 11140e3d715ac55459554afbac113402,
     type: 3}
   m_PrefabInstance: {fileID: 3213936896527142171}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e8eaa600bb80d04992471d49e941b0b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f3f4c746b8110b48aa4d2258498c606, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &8684955261377318805

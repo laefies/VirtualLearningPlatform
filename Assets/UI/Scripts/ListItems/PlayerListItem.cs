@@ -1,6 +1,5 @@
 using UnityEngine;
 using Nova;
-using NovaSamples.UIControls;
 using Unity.Services.Lobbies.Models;
 
 public class PlayerListItem : MonoBehaviour
@@ -40,7 +39,7 @@ public class PlayerListItem : MonoBehaviour
         bool hasPlayerName = player.Data.TryGetValue("PlayerName", out var playerNameData);
         string playerName = hasPlayerName ? playerNameData.Value : "Unknown Player";
         
-        bool isHostEntry = !LobbyManager.IsPlayerHost(player.Id);
+        bool isHostEntry = LobbyManager.IsPlayerHost(player.Id);
         bool isLocalHost = LobbyManager.IsHost;
 
         playerNameText.Text = playerName;

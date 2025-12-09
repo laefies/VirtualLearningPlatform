@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Nova;
-using NovaSamples.UIControls;
 using UnityEngine.Events;
 using Unity.Services.Lobbies.Models;
 

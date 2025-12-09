@@ -28,18 +28,12 @@ public class SceneInfo : ScriptableObject
     // Actual name of the scene, as saved in the Unity project
     public string sceneName;
 
-    // Device subsystems needed for the game/lesson to run
-    public SubsystemRequirements requiredSubsystems = SubsystemRequirements.None;
-
     // Prefab environment to spawn for VR players (background/backdrop)
     public GameObject vrEnvironmentPrefab;
 
-    /* METHODS TO HANDLE REQUIRED SUBSYSTEMS MORE EFFICIENTLY */
-    public bool RequiresSubsystem(SubsystemType type)
-    {
-        return (requiredSubsystems & ToRequirement(type)) != 0;
-    }
-
+    /* METHODS TO HANDLE REQUIRED SUBSYSTEMS MORE EFFICIENTLY - TODO Might be reworked? */
+    public SubsystemRequirements requiredSubsystems = SubsystemRequirements.None;
+    public bool RequiresSubsystem(SubsystemType type) { return (requiredSubsystems & ToRequirement(type)) != 0; }
     private SubsystemRequirements ToRequirement(SubsystemType type)
     {
         return type switch

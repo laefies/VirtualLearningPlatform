@@ -1,6 +1,5 @@
 using UnityEngine;
 using Nova;
-using NovaSamples.UIControls;
 using Unity.Services.Lobbies.Models;
 
 /// <summary>
