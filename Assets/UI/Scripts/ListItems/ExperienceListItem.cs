@@ -29,13 +29,13 @@ public class ExperienceListItem : MonoBehaviour
         UpdateDisplay();
     }
 
-    public void SetSelected(bool isSelected)
+    public void SetState(bool isSelected, bool isInteractable)
     {
         if (selectExperienceToggle != null)
-            selectExperienceToggle.ToggledOn = isSelected;
-
-        if (isSelected) Debug.Log($"{experienceData.experienceName} is currently selected");
-
+        {
+            selectExperienceToggle.ToggledOn    = isSelected;
+            selectExperienceToggle.interactable = isInteractable;
+        }
     }
 
     private void UpdateDisplay()

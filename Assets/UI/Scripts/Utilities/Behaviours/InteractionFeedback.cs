@@ -44,6 +44,15 @@ public class InteractionFeedback : MonoBehaviour
         textColor = new Color(0.5f, 0.5f, 0.5f)
     };
 
+    [SerializeField] private bool enableSelectedState = false;
+    [SerializeField] private VisualStateConfig selectedState = new VisualStateConfig()
+    {
+        changeBackgroundColor = true,
+        backgroundColor = new Color(0.75f, 0.85f, 1f),
+        changeScale = true,
+        scale = new Vector3(1.03f, 1.03f, 1.03f)
+    };
+
     [Header("Animation Settings")]
     [SerializeField] private float transitionSpeed = 10f;
     [SerializeField] private bool useSmoothTransitions = true;
@@ -63,6 +72,7 @@ public class InteractionFeedback : MonoBehaviour
     private bool isPressed = false;
     private bool isHovered = false;
     private bool isDisabled = false;
+    private bool isSelected = false;
     private bool isAnimating = false;
     private float hoverTimer = 0f;
     private bool hoverDelayElapsed = false;
@@ -285,9 +295,23 @@ public class InteractionFeedback : MonoBehaviour
         }
     }
 
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+
+        if (isSelected && enableSelectedState)
+        {
+            ApplyState(selectedState);
+        }
+        else if (!isPressed && !isHovered)
+        {
+            RestoreToOriginal();
+        }
+    }
+
     private void RestoreToOriginal()
     {
-        if (targetBlock == null) return;
+        if (targetBlock == null || isSelected) return;
 
         targetScale = originalState.scale;
         targetBackgroundColor = originalState.backgroundColor;

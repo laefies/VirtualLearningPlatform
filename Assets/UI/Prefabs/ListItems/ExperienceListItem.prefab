@@ -431,7 +431,7 @@ MonoBehaviour:
         Raw: 184
         Type: 0
       Y:
-        Raw: 0
+        Raw: 61
         Type: 0
       Z:
         Raw: 0
@@ -441,7 +441,7 @@ MonoBehaviour:
         Raw: 0
         Type: 0
       Y:
-        Raw: 77
+        Raw: 0
         Type: 0
       Z:
         Raw: 0
@@ -1719,6 +1719,27 @@ MonoBehaviour:
     borderColor: {r: 0, g: 0, b: 0, a: 1}
     borderWidth: 2
     changeShadow: 0
+    showShadow: 0
+    shadowColor: {r: 0, g: 0, b: 0, a: 0.3}
+    shadowBlur: 4
+    shadowOffset: {x: 0, y: 2}
+    changeCornerRadius: 0
+    cornerRadius:
+      Raw: 0
+      Type: 0
+  enableSelectedState: 1
+  selectedState:
+    changeScale: 0
+    scale: {x: 1.03, y: 1.03, z: 1.03}
+    changeBackgroundColor: 1
+    backgroundColor: {r: 1, g: 1, b: 1, a: 0.2509804}
+    changeTextColor: 0
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    changeBorder: 1
+    showBorder: 1
+    borderColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+    borderWidth: 1
+    changeShadow: 1
     showShadow: 0
     shadowColor: {r: 0, g: 0, b: 0, a: 0.3}
     shadowBlur: 4

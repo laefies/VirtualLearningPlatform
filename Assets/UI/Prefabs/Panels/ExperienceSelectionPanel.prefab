@@ -3004,6 +3004,66 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartExperienceButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: enableDisabledState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.shadowBlur
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.textColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.changeBorder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.changeShadow
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.shadowColor.a
+      value: 0.29803923
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.changeTextColor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.backgroundColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.backgroundColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.backgroundColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.backgroundColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308945029447671938, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: disabledState.changeBackgroundColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

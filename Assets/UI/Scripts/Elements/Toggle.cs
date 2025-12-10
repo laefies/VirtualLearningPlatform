@@ -31,15 +31,17 @@ public class Toggle : UIControl<ToggleVisuals>
 
             UpdateToggleIndicator();
             OnToggled?.Invoke(toggledOn);
+
+            visualFeedback?.SetSelected(ToggledOn);
         }
     }
 
-    private Interactable interactableComponent;
+    private Nova.Interactable interactableComponent;
     private InteractionFeedback visualFeedback;
 
     private void Awake()
     {
-        interactableComponent = gameObject.GetComponent<Interactable>();
+        interactableComponent = gameObject.GetComponent<Nova.Interactable>();
         visualFeedback = GetComponent<InteractionFeedback>();
     }
 
@@ -51,6 +53,7 @@ public class Toggle : UIControl<ToggleVisuals>
             if (interactableComponent != null)
             {
                 interactableComponent.enabled = value;
+                visualFeedback?.SetDisabled(!value);
             }
         }
     }

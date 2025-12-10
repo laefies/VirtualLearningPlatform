@@ -11,13 +11,13 @@ public class Button : UIControl<ButtonVisuals>
     [Tooltip("Event fired when the button is clicked.")]
     public UnityEvent OnClicked = null;
 
-    private Interactable interactableComponent;
+    private Nova.Interactable interactableComponent;
     private InteractionFeedback visualFeedback;
 
     private void Awake()
     {
-        interactableComponent = gameObject.GetComponent<Interactable>();
-        visualFeedback = GetComponent<InteractionFeedback>(); // ADD THIS
+        interactableComponent = gameObject.GetComponent<Nova.Interactable>();
+        visualFeedback = GetComponent<InteractionFeedback>();
     }
 
     public bool interactable
@@ -27,7 +27,10 @@ public class Button : UIControl<ButtonVisuals>
         {
             if (interactableComponent != null)
             {
+                if (value == interactableComponent.enabled) return;
+
                 interactableComponent.enabled = value;
+                visualFeedback?.SetDisabled(!value);
             }
         }
     }

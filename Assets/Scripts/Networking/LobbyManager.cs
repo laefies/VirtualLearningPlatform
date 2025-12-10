@@ -150,7 +150,6 @@ public class LobbyManager : MonoBehaviour
     /// <param name="isPrivate">Whether the lobby is private</param>
     public async Task<Lobby> CreateLobbyAsync(
         string playerName,
-        string experienceName = null,
         int maxPlayers = DEFAULT_MAX_PLAYERS,
         bool isPrivate = false)
     {
@@ -171,7 +170,7 @@ public class LobbyManager : MonoBehaviour
             _lobbyCounter++; 
             string lobbyName = $"{playerName}'s";
             
-            string experience = string.IsNullOrEmpty(experienceName) ? NO_EXPERIENCE_SELECTED : experienceName;
+            string experience = string.IsNullOrEmpty(_lastExperienceFilter) ? NO_EXPERIENCE_SELECTED : _lastExperienceFilter;
 
             string initialStatus = maxPlayers == 1 ? STATUS_FULL : STATUS_WAITING;
 
@@ -435,7 +434,7 @@ public class LobbyManager : MonoBehaviour
     /// Refreshes the list of available lobbies.
     /// </summary>
     /// <param name="experienceFilter">Optional: filter by specific experience name</param>
-    public async Task<List<Lobby>> RefreshLobbyListAsync(string experienceFilter = null)
+    public async Task<List<Lobby>> RefreshLobbyListAsync(string experienceFilter = null, bool clearFilters = false)
     {
         if (!_isAuthenticated)
         {
@@ -453,6 +452,8 @@ public class LobbyManager : MonoBehaviour
                 }
             };
 
+            if (clearFilters) ClearFilters();
+
             experienceFilter ??= _lastExperienceFilter;
             if (!string.IsNullOrEmpty(experienceFilter))
             {
@@ -467,7 +468,7 @@ public class LobbyManager : MonoBehaviour
 
             var response = await Lobbies.Instance.QueryLobbiesAsync(options);
             
-            Debug.Log($"[Lobby Management] Found {response.Results.Count} available lobbies");
+            Debug.Log($"[Lobby Management] Found {response.Results.Count} available lobbies. Filtered by: {experienceFilter ?? "All"}");
             OnLobbyListRefreshed?.Invoke(response.Results);
 
             return response.Results;
@@ -493,12 +494,11 @@ public class LobbyManager : MonoBehaviour
             return false;
         }
         
-        // TODO Add again
-        // if (!HasExperienceSelected())
-        // {
-        //     Debug.LogWarning("[Lobby Management] Cannot start - no experience selected yet.");
-        //     return false;
-        // }
+        if (!HasExperienceSelected())
+        {
+            Debug.LogWarning("[Lobby Management] Cannot start - no experience selected yet.");
+            return false;
+        }
 
         try
         {
@@ -517,7 +517,7 @@ public class LobbyManager : MonoBehaviour
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
             
-            Debug.Log("[Lobby Management] Experience started - transitioning to game scene");
+            Debug.Log($"[Lobby Management] Experience started - transitioning to '{GetCurrentExperience()}'");
             OnExperienceStarted?.Invoke(_currentLobby);
 
             return true;
@@ -631,7 +631,8 @@ public class LobbyManager : MonoBehaviour
 
         _lastKnownPlayerCount = _currentLobby.Players?.Count ?? 0;
         _lastKnownHostId = _currentLobby.HostId;
-        _lastKnownExperience = GetCurrentExperience();
+
+        CheckAndFireExperienceChanges();
     }
 
     /// <summary>
@@ -641,9 +642,19 @@ public class LobbyManager : MonoBehaviour
     {
         _lastKnownPlayerCount = 0;
         _lastKnownHostId = null;
-        _lastKnownExperience = null;
+
+        ClearFilters();
+        CheckAndFireExperienceChanges();
+    }
+
+    /// <summary>
+    /// Clears all previously applied lobby list filters.
+    /// </summary>
+    private void ClearFilters()
+    {
         _lastExperienceFilter = null;
     }
+
 
     /// <summary>
     /// Checks if players have changed.
@@ -672,13 +683,13 @@ public class LobbyManager : MonoBehaviour
     /// </summary>
     private void CheckAndFireExperienceChanges()
     {
-        if (!IsInLobby) return;
-
         string currentExperience = GetCurrentExperience();
 
         if (currentExperience != _lastKnownExperience)
         {
             _lastKnownExperience = currentExperience;
+            
+            Debug.Log($"[Lobby Management] Changed experience to '{_lastKnownExperience ?? "None"}'");
             OnExperienceChanged?.Invoke(_lastKnownExperience);
         }
     }

@@ -75,24 +75,23 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     {
         ExperienceData experience = string.IsNullOrEmpty(experienceName)
             ? null
-            : availableExperiences.Find(e => e.sceneName == experienceName);
+            : availableExperiences.Find(e => e.experienceName == experienceName);
 
-        if (experience != selectedExperience)
-        {
-            UpdateSelectedExperience(experience);
-            UpdateStartButtonState();      
-        }
+        UpdateSelectedExperience(experience);
     }
 
     private void UpdateSelectedExperience(ExperienceData newExperience)
     {
-        if (newExperience == selectedExperience) return;
-
         selectedExperience = newExperience;
         
         foreach (ExperienceListItem item in experienceItems)
-            item.SetSelected(item.ExperienceData == selectedExperience);  
+        {
+            bool isSelected     = item.ExperienceData == selectedExperience;
+            bool isInteractable = !LobbyManager.IsInLobby || (LobbyManager.IsHost && !isSelected);
+            item.SetState(isSelected, isInteractable);  
+        }   
 
+        UpdateStartButtonState();      
     }
 
     private void ClearExperienceGrid()
@@ -126,21 +125,22 @@ public class ExperienceSelectionPanelController : MonoBehaviour
 
         // Case 1 :: Not in lobby + Clicking the already selected experience → Unselect
         if (!inLobby && selectedExperience == clickedExperience) {
+            await LobbyManager.RefreshLobbyListAsync(null, true);
             UpdateSelectedExperience(null);
-            await LobbyManager.RefreshLobbyListAsync();
             return;
         }
 
         // Case 2 :: Host of a lobby → Change lobby experience
         if (inLobby && isHost) {
-            await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
+            bool changed = await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
+            UpdateSelectedExperience(changed ? clickedExperience : selectedExperience);
             return;
         }
 
         // Case 3 : Not in a lobby → Update filtering
         if (!inLobby) {
-            UpdateSelectedExperience(clickedExperience);
             await LobbyManager.RefreshLobbyListAsync(clickedExperience.experienceName);
+            UpdateSelectedExperience(clickedExperience);
         }
     }
 

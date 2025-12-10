@@ -81,6 +81,8 @@ public class InteractionFeedbackEditor : Editor
     private SerializedProperty pressedState;
     private SerializedProperty enableDisabledState;
     private SerializedProperty disabledState;
+    private SerializedProperty enableSelectedState;
+    private SerializedProperty selectedState;
     private SerializedProperty transitionSpeed;
     private SerializedProperty useSmoothTransitions;
     private SerializedProperty easingCurve;
@@ -93,6 +95,7 @@ public class InteractionFeedbackEditor : Editor
     private bool showHoverState = true;
     private bool showPressedState = true;
     private bool showDisabledState = true;
+    private bool showSelectedState = true;
     private bool showAudio = false;
 
     private void OnEnable()
@@ -106,6 +109,8 @@ public class InteractionFeedbackEditor : Editor
         pressedState = serializedObject.FindProperty("pressedState");
         enableDisabledState = serializedObject.FindProperty("enableDisabledState");
         disabledState = serializedObject.FindProperty("disabledState");
+        enableSelectedState = serializedObject.FindProperty("enableSelectedState");
+        selectedState = serializedObject.FindProperty("selectedState");
         transitionSpeed = serializedObject.FindProperty("transitionSpeed");
         useSmoothTransitions = serializedObject.FindProperty("useSmoothTransitions");
         easingCurve = serializedObject.FindProperty("easingCurve");
@@ -176,6 +181,22 @@ public class InteractionFeedbackEditor : Editor
         {
             DrawStateContent(() => {
                 EditorGUILayout.PropertyField(disabledState, GUIContent.none, true);
+            });
+        }
+
+        EditorGUILayout.Space(8);
+
+        // Selected State
+        showSelectedState = DrawStateSection(
+            "Selected State", 
+            showSelectedState, 
+            enableSelectedState
+        );
+        
+        if (showSelectedState && enableSelectedState.boolValue)
+        {
+            DrawStateContent(() => {
+                EditorGUILayout.PropertyField(selectedState, GUIContent.none, true);
             });
         }
 
