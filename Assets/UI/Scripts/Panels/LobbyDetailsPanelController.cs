@@ -21,15 +21,19 @@ public class LobbyDetailsPanelController : MonoBehaviour
     private async void OnEnable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnLobbyUpdated += HandleLobbyUpdated;
+        {  
+            DisplayPlayers(LobbyManager.CurrentLobby?.Players);
+            LobbyManager.OnLobbyPlayersChanged += HandlePlayersChanged;
+        }
 
         leaveLobbyButton?.AddListener(OnLeaveLobbyClicked);
+
     }
 
     private void OnDisable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnLobbyUpdated -= HandleLobbyUpdated;
+            LobbyManager.OnLobbyPlayersChanged -= HandlePlayersChanged;
 
         leaveLobbyButton?.RemoveListener(OnLeaveLobbyClicked);
 
@@ -38,23 +42,26 @@ public class LobbyDetailsPanelController : MonoBehaviour
 
     private void OnDestroy() { ClearPlayerList(); }
 
-    private void HandleLobbyUpdated(Lobby lobby)
+    private void HandlePlayersChanged(List<Player> players)
     {
-        DisplayPlayers(lobby.Players);
+        DisplayPlayers(players);
     }
 
-    private void DisplayPlayers(List<Player> playerList)
+    private void DisplayPlayers(List<Player> players)
     {
+        if (players == null) return;
+
         ClearPlayerList();
 
-        foreach (Player player in playerList) {
+        foreach (Player player in players) {
             if (player == null) continue;
 
             GameObject playerItemObject = Instantiate(playerItemPrefab, playerListContainer);
-            activePlayerItems.Add(playerItemObject);
             
-            if (playerItemObject.TryGetComponent<PlayerListItem>(out PlayerListItem playerItem))
+            if (playerItemObject.TryGetComponent<PlayerListItem>(out PlayerListItem playerItem)) {
                 playerItem.SetPlayer(player);
+                activePlayerItems.Add(playerItemObject);
+            }
         }
     }
 

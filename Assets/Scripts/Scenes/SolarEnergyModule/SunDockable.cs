@@ -24,7 +24,7 @@ public class SunDockable : Dockable
     [SerializeField] private Text lightText;
     [SerializeField] private Slider lightSlider;
     [SerializeField] private Transform cloudParent;
-    [SerializeField] private Toggle dockToggle;
+    [SerializeField] private UnityEngine.UI.Toggle dockToggle;
 
     [Header("Cloud Animation Settings")]
     [SerializeField] private float cloudRiseDistance = 1.5f;

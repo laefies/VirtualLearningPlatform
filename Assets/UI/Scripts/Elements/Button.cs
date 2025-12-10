@@ -12,7 +12,7 @@ public class Button : UIControl<ButtonVisuals>
     public UnityEvent OnClicked = null;
 
     private Interactable interactableComponent;
-    private InteractionFeedback visualFeedback; // ADD THIS
+    private InteractionFeedback visualFeedback;
 
     private void Awake()
     {

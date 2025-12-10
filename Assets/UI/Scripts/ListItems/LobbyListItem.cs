@@ -16,7 +16,7 @@ public class LobbyListItem : MonoBehaviour
     private Lobby lobby;
     private LobbyManager LobbyManager => LobbyManager.Instance;
 
-    private void Awake()  { joinLobbyButton?.AddListener(OnItemClicked); }
+    private void Awake() { joinLobbyButton?.AddListener(OnItemClicked); }
     private void OnDestroy() { joinLobbyButton?.RemoveListener(OnItemClicked); }
 
     public void SetLobby(Lobby lobbyData)

@@ -61,15 +61,15 @@ public class MainMenuUI : FollowPlayerUI
 
         // Subscribe to Lobby related events
         LobbyManager.Instance.OnLobbyListRefreshed  += UpdateLobbyList;
-        LobbyManager.Instance.OnLobbyUpdated += HandleJoinedLobbyUpdate;
-        LobbyManager.Instance.OnLobbyJoined       += HandleJoinedLobby;
-        LobbyManager.Instance.OnLobbyLeft         += HandleLeftLobby;
+        LobbyManager.Instance.OnLobbyPlayersChanged += HandleJoinedLobbyUpdate;
+        LobbyManager.Instance.OnLobbyJoined         += HandleJoinedLobby;
+        LobbyManager.Instance.OnLobbyLeft           += HandleLeftLobby;
     }
 
     void OnDestroy() {
         // Unsubscribe from Lobby related events
         LobbyManager.Instance.OnLobbyListRefreshed  -= UpdateLobbyList;
-        LobbyManager.Instance.OnLobbyUpdated -= HandleJoinedLobbyUpdate;
+        LobbyManager.Instance.OnLobbyPlayersChanged -= HandleJoinedLobbyUpdate;
         LobbyManager.Instance.OnLobbyJoined       -= HandleJoinedLobby;
         LobbyManager.Instance.OnLobbyLeft         -= HandleLeftLobby;
 
@@ -94,7 +94,7 @@ public class MainMenuUI : FollowPlayerUI
     // Called when a lobby is created or picked from the lobby list
     void HandleJoinedLobby(Lobby lobby) {
         HandleMenuVisibility();      // Swap menus to show player list;
-        UpdatePlayerList(lobby);   // Show lobby players on screen; 
+        UpdatePlayerList(lobby.Players);   // Show lobby players on screen; 
         ClearLobbyItems();           // Clear lobby list as its not visible;
     }
 
@@ -106,8 +106,8 @@ public class MainMenuUI : FollowPlayerUI
     }
 
     // Continuously called while in a lobby
-    void HandleJoinedLobbyUpdate(Lobby lobby) {
-        UpdatePlayerList(lobby);   // Update lobby information through all menus
+    void HandleJoinedLobbyUpdate(List<Player> players) {
+        UpdatePlayerList(players);   // Update lobby information through all menus
         HandleGameMenuState();       // Swap header/subheader messages
     }
 
@@ -169,14 +169,14 @@ public class MainMenuUI : FollowPlayerUI
      */
 
     // Visually updates the list of players in the lobby
-    void UpdatePlayerList(Lobby lobby) {
+    void UpdatePlayerList(List<Player> players) {
         // Clear existing player items first
         ClearPlayerItems();
 
         // Create new player items for each player in the list
-        for (int i = 0; i < lobby.Players.Count; i++)
+        for (int i = 0; i < players.Count; i++)
         {
-            Player player = lobby.Players[i];
+            Player player = players[i];
 
             if (player != null) {
                 // Instantiate the player item prefab as a child of the content panel
@@ -184,7 +184,7 @@ public class MainMenuUI : FollowPlayerUI
                 
                 // Assign the player data to the list item
                 PlayerListItemUI playerItem = playerItemGO.GetComponent<PlayerListItemUI>();
-                playerItem.SetPlayer(player, lobby.HostId == player.Id); // Checks if hosting
+                playerItem.SetPlayer(player, LobbyManager.Instance.IsPlayerHost(player.Id)); // Checks if hosting
 
                 // Cycle through the possible colors meaning: 0,1,2,0,1,2,...
                 playerItem.SetColor(mainListColors[i % mainListColors.Length], 

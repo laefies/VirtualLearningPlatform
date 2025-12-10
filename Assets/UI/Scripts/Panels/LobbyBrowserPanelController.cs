@@ -43,23 +43,26 @@ public class LobbyBrowserPanelController : MonoBehaviour
 
     private void OnDestroy() { ClearLobbyList(); }
 
-    private void HandleLobbyListRefreshed(List<Lobby> lobbyList)
+    private void HandleLobbyListRefreshed(List<Lobby> lobbies)
     {
-        DisplayLobbies(lobbyList);
+        DisplayLobbies(lobbies);
     }
 
-    private void DisplayLobbies(List<Lobby> lobbyList)
+    private void DisplayLobbies(List<Lobby> lobbies)
     {
+        if (lobbies == null) return;
+        
         ClearLobbyList();
 
-        foreach (Lobby lobby in lobbyList) {
+        foreach (Lobby lobby in lobbies) {
             if (lobby == null) continue;
 
             GameObject lobbyItemObject = Instantiate(lobbyItemPrefab, lobbyListContainer);
-            activeLobbyItems.Add(lobbyItemObject);
             
-            if (lobbyItemObject.TryGetComponent<LobbyListItem>(out LobbyListItem lobbyItem))
+            if (lobbyItemObject.TryGetComponent<LobbyListItem>(out LobbyListItem lobbyItem)) {
                 lobbyItem.SetLobby(lobby);
+                activeLobbyItems.Add(lobbyItemObject);
+            }
         }
     }
 

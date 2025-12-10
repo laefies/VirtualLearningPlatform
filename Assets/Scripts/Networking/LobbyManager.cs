@@ -46,10 +46,11 @@ public class LobbyManager : MonoBehaviour
 
     #region Events
     public event Action<Lobby> OnLobbyJoined;
-    public event Action<Lobby> OnLobbyUpdated;
     public event Action OnLobbyLeft;
     public event Action<List<Lobby>> OnLobbyListRefreshed;
+    public event Action<List<Player>> OnLobbyPlayersChanged;
     public event Action<Lobby> OnExperienceStarted;
+    public event Action<string> OnExperienceChanged;
     #endregion
 
     #region Private Fields
@@ -61,6 +62,11 @@ public class LobbyManager : MonoBehaviour
     
     private bool _isAuthenticated;
     private int _lobbyCounter;
+    
+    private int _lastKnownPlayerCount;
+    private string _lastKnownHostId;
+    private string _lastKnownExperience;
+    private string _lastExperienceFilter;
     #endregion
 
     #region Properties
@@ -165,10 +171,8 @@ public class LobbyManager : MonoBehaviour
             _lobbyCounter++; 
             string lobbyName = $"{playerName}'s";
             
-            // Defaults to "None" if no experience is selected yet
             string experience = string.IsNullOrEmpty(experienceName) ? NO_EXPERIENCE_SELECTED : experienceName;
 
-            // Determine initial status based on max players
             string initialStatus = maxPlayers == 1 ? STATUS_FULL : STATUS_WAITING;
 
             var options = new CreateLobbyOptions
@@ -185,6 +189,7 @@ public class LobbyManager : MonoBehaviour
 
             _currentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
             
+            UpdateTrackedState();
             ResetTimers();
             
             string logMessage = experience == NO_EXPERIENCE_SELECTED 
@@ -231,9 +236,9 @@ public class LobbyManager : MonoBehaviour
 
             _currentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
             
-            // Update status to Full if lobby is now at capacity
             await UpdateLobbyStatusBasedOnCapacity();
             
+            UpdateTrackedState();
             ResetTimers();
             
             Debug.Log($"[Lobby Management] Joined '{lobby.Name}'");
@@ -245,7 +250,6 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.LogError($"[Lobby Management] Failed to join lobby: {e.Message}");
             
-            // Refresh list if lobby no longer exists
             if (e.Reason == LobbyExceptionReason.LobbyNotFound)
             {
                 await RefreshLobbyListAsync();
@@ -269,16 +273,17 @@ public class LobbyManager : MonoBehaviour
             Debug.Log($"[Lobby Management] Left '{_currentLobby.Name}'");
             
             _currentLobby = null;
+            ClearTrackedState();
             OnLobbyLeft?.Invoke();
         }
         catch (LobbyServiceException e)
         {
             Debug.LogError($"[Lobby Management] Failed to leave lobby: {e.Message}");
             
-            // Force clear if lobby no longer exists
             if (e.Reason == LobbyExceptionReason.LobbyNotFound)
             {
                 _currentLobby = null;
+                ClearTrackedState();
                 OnLobbyLeft?.Invoke();
             }
         }
@@ -309,8 +314,10 @@ public class LobbyManager : MonoBehaviour
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
             
+            _lastKnownExperience = newExperienceName;
+            
             Debug.Log($"[Lobby Management] Changed experience to '{newExperienceName}'");
-            OnLobbyUpdated?.Invoke(_currentLobby);
+            OnExperienceChanged?.Invoke(_lastKnownExperience);
 
             return true;
         }
@@ -336,8 +343,11 @@ public class LobbyManager : MonoBehaviour
         {
             await LobbyService.Instance.RemovePlayerAsync(_currentLobby.Id, playerId);
             
-            // Update status after kicking - lobby may no longer be full
+            _currentLobby = await LobbyService.Instance.GetLobbyAsync(_currentLobby.Id);
+            
             await UpdateLobbyStatusBasedOnCapacity();
+            
+            CheckAndFirePlayerChanges();
             
             Debug.Log($"[Lobby Management] Kicked player {playerId}");
             return true;
@@ -369,8 +379,10 @@ public class LobbyManager : MonoBehaviour
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
             
+            _lastKnownHostId = newHostId;
+            
             Debug.Log($"[Lobby Management] Transferred host to {newHostId}");
-            OnLobbyUpdated?.Invoke(_currentLobby);
+            OnLobbyPlayersChanged?.Invoke(_currentLobby.Players);
 
             return true;
         }
@@ -396,7 +408,6 @@ public class LobbyManager : MonoBehaviour
         bool isFull = _currentLobby.Players.Count >= _currentLobby.MaxPlayers;
         string newStatus = isFull ? STATUS_FULL : STATUS_WAITING;
 
-        // Only update if status actually changed
         if (currentStatus == newStatus) return;
 
         try
@@ -410,8 +421,7 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
-            Debug.Log($"[Lobby Management] Updated lobby status to '{newStatus}'");
-            OnLobbyUpdated?.Invoke(_currentLobby);
+            Debug.Log($"[Lobby Management] Updated lobby status to '{newStatus}'");            
         }
         catch (LobbyServiceException e)
         {
@@ -443,13 +453,16 @@ public class LobbyManager : MonoBehaviour
                 }
             };
 
-            // Add experience filter if specified
+            experienceFilter ??= _lastExperienceFilter;
             if (!string.IsNullOrEmpty(experienceFilter))
             {
+                options.Filters ??= new List<QueryFilter>();
                 options.Filters.Add(new QueryFilter(
                     field: QueryFilter.FieldOptions.S1,
                     op: QueryFilter.OpOptions.EQ,
                     value: experienceFilter));
+
+                _lastExperienceFilter = experienceFilter;
             }
 
             var response = await Lobbies.Instance.QueryLobbiesAsync(options);
@@ -569,6 +582,7 @@ public class LobbyManager : MonoBehaviour
             {
                 Debug.Log("[Lobby Management] Removed from lobby");
                 _currentLobby = null;
+                ClearTrackedState();
                 OnLobbyLeft?.Invoke();
                 return;
             }
@@ -584,7 +598,9 @@ public class LobbyManager : MonoBehaviour
                 return;
             }
 
-            OnLobbyUpdated?.Invoke(_currentLobby);
+            // Check for changes and fire appropriate events
+            CheckAndFirePlayerChanges();
+            CheckAndFireExperienceChanges();
         }
         catch (LobbyServiceException e)
         {
@@ -593,12 +609,77 @@ public class LobbyManager : MonoBehaviour
             {
                 Debug.Log("[Lobby Management] Lobby no longer exists");
                 _currentLobby = null;
+                ClearTrackedState();
                 OnLobbyLeft?.Invoke();
             }
             else
             {
                 Debug.LogError($"[Lobby Management] Polling failed: {e.Message}");
             }
+        }
+    }
+    #endregion
+
+    #region Change Detection
+    /// <summary>
+    /// Updates the tracked state after lobby changes.
+    /// Call this whenever _currentLobby is updated.
+    /// </summary>
+    private void UpdateTrackedState()
+    {
+        if (!IsInLobby) return;
+
+        _lastKnownPlayerCount = _currentLobby.Players?.Count ?? 0;
+        _lastKnownHostId = _currentLobby.HostId;
+        _lastKnownExperience = GetCurrentExperience();
+    }
+
+    /// <summary>
+    /// Clears the tracked state when leaving a lobby.
+    /// </summary>
+    private void ClearTrackedState()
+    {
+        _lastKnownPlayerCount = 0;
+        _lastKnownHostId = null;
+        _lastKnownExperience = null;
+        _lastExperienceFilter = null;
+    }
+
+    /// <summary>
+    /// Checks if players have changed.
+    /// </summary>
+    private void CheckAndFirePlayerChanges()
+    {
+        if (!IsInLobby) return;
+
+        int currentPlayerCount = _currentLobby.Players?.Count ?? 0;
+        string currentHostId = _currentLobby.HostId;
+
+        bool playersChanged = currentPlayerCount != _lastKnownPlayerCount;
+        bool hostChanged = currentHostId != _lastKnownHostId;
+
+        if (playersChanged || hostChanged)
+        {
+            _lastKnownPlayerCount = currentPlayerCount;
+            _lastKnownHostId = currentHostId;
+
+            OnLobbyPlayersChanged?.Invoke(_currentLobby.Players);
+        }
+    }
+
+    /// <summary>
+    /// Checks if the experience has changed.
+    /// </summary>
+    private void CheckAndFireExperienceChanges()
+    {
+        if (!IsInLobby) return;
+
+        string currentExperience = GetCurrentExperience();
+
+        if (currentExperience != _lastKnownExperience)
+        {
+            _lastKnownExperience = currentExperience;
+            OnExperienceChanged?.Invoke(_lastKnownExperience);
         }
     }
     #endregion

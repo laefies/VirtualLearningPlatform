@@ -1204,7 +1204,7 @@ Transform:
   m_GameObject: {fileID: 2075375662154965637}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -286, z: 0}
+  m_LocalPosition: {x: 0, y: -155.99998, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1242,8 +1242,8 @@ MonoBehaviour:
         Raw: 704
         Type: 0
       Y:
-        Raw: 208
-        Type: 0
+        Raw: 0.6
+        Type: 1
       Z:
         Raw: 0
         Type: 0
@@ -1401,9 +1401,9 @@ MonoBehaviour:
     ReceiveShadows: 1
   PreviewSize: {x: 1, y: 1, z: 0}
   visuals:
-    Color: {r: 0, g: 0, b: 0, a: 0.101960786}
+    Color: {r: 0, g: 0, b: 0, a: 0}
     CornerRadius:
-      Raw: 16
+      Raw: 0
       Type: 0
     RadialFill:
       Center:
@@ -1417,20 +1417,20 @@ MonoBehaviour:
       FillAngle: 90
       Enabled: 0
     Gradient:
-      Color: {r: 0.4, g: 0.4, b: 0.4, a: 0}
+      Color: {r: 0, g: 0, b: 0, a: 1}
       Center:
         X:
-          Raw: 0.005
+          Raw: 0
           Type: 1
         Y:
-          Raw: 0.46
+          Raw: 1.15
           Type: 1
       Radius:
         X:
-          Raw: 5
+          Raw: 0
           Type: 1
         Y:
-          Raw: 0.661
+          Raw: 0.05
           Type: 1
       Rotation: 0
       Enabled: 1
@@ -1442,21 +1442,21 @@ MonoBehaviour:
       Enabled: 0
       Direction: 2
     Shadow:
-      Color: {r: 0, g: 0, b: 0, a: 0.2509804}
+      Color: {r: 0.25490198, g: 0.25490198, b: 0.25490198, a: 0.94}
       Width:
-        Raw: 0
-        Type: 0
+        Raw: -1
+        Type: 1
       Blur:
-        Raw: 8
-        Type: 0
+        Raw: 1
+        Type: 1
       Offset:
         X:
           Raw: 0
           Type: 0
         Y:
-          Raw: 4
-          Type: 0
-      Enabled: 0
+          Raw: 1
+          Type: 1
+      Enabled: 1
       Direction: 1
     Image:
       Adjustment:
@@ -1466,7 +1466,7 @@ MonoBehaviour:
         scaleMode: 1
       Mode: 1
     SoftenEdges: 1
-    FillEnabled: 1
+    FillEnabled: 0
   texture: {fileID: 0}
   sprite: {fileID: 0}
 --- !u!1 &2549440540196441289
@@ -1774,6 +1774,7 @@ GameObject:
   - component: {fileID: 3743603520313069374}
   - component: {fileID: 5099418604693487909}
   - component: {fileID: 6892303936371613098}
+  - component: {fileID: 896195942656080432}
   - component: {fileID: 2621127520909531130}
   m_Layer: 0
   m_Name: LobbyDetailsPanel
@@ -2058,6 +2059,22 @@ MonoBehaviour:
     FillEnabled: 1
   texture: {fileID: 0}
   sprite: {fileID: 0}
+--- !u!114 &896195942656080432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4478904303233724168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 388f1fceb3d2beb408ed2d18963ab884, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  info:
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Clip: 1
+  maskTexture: {fileID: 0}
 --- !u!114 &2621127520909531130
 MonoBehaviour:
   m_ObjectHideFlags: 0

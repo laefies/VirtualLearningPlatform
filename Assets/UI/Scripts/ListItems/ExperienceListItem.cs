@@ -1,27 +1,41 @@
 using UnityEngine;
 using Nova;
+using System;
 
 /// <summary>
-/// Controls the visual representation of a single experience card in the grid.
+/// Represents a single experience card in the grid.
+/// This is a "dumb" view component - it doesn't manage state, just displays it.
 /// </summary>
 public class ExperienceListItem : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Button selectExperienceButton;
+    [SerializeField] private Toggle selectExperienceToggle;
     [SerializeField] private UIBlock2D thumbnail;
     [SerializeField] private TextBlock experienceNameText;
     [SerializeField] private TextBlock subtitleText;
     
     private ExperienceData experienceData;
-    private LobbyManager LobbyManager => LobbyManager.Instance;
+    private Action<ExperienceData> onClickCallback;
 
-    private void Awake() { selectExperienceButton?.AddListener(OnItemClicked); }
-    private void OnDestroy() { selectExperienceButton?.RemoveListener(OnItemClicked); }
+    public ExperienceData ExperienceData => experienceData;
 
-    public void SetExperience(ExperienceData data)
+    private void Awake() { selectExperienceToggle?.AddListener(OnToggleClicked); }
+    private void OnDestroy() { selectExperienceToggle?.RemoveListener(OnToggleClicked); }
+
+    public void SetExperience(ExperienceData data, Action<ExperienceData> onClick)
     {
-        experienceData = data;
+        experienceData  = data;
+        onClickCallback = onClick;
         UpdateDisplay();
+    }
+
+    public void SetSelected(bool isSelected)
+    {
+        if (selectExperienceToggle != null)
+            selectExperienceToggle.ToggledOn = isSelected;
+
+        if (isSelected) Debug.Log($"{experienceData.experienceName} is currently selected");
+
     }
 
     private void UpdateDisplay()
@@ -37,12 +51,5 @@ public class ExperienceListItem : MonoBehaviour
         thumbnail?.SetImage(experienceData.displayIcon);
     }
 
-    private async void OnItemClicked()
-    {
-        if (experienceData == null || LobbyManager == null) return;
-
-        if (!LobbyManager.IsInLobby) await LobbyManager.RefreshLobbyListAsync(experienceData.sceneName);
-        else if (LobbyManager.IsHost) await LobbyManager.ChangeExperienceAsync(experienceData.sceneName);
-    }
-
+    private void OnToggleClicked() { onClickCallback?.Invoke(experienceData); }
 }
