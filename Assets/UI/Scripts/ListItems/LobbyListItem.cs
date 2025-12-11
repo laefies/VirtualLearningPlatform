@@ -42,14 +42,14 @@ public class LobbyListItem : MonoBehaviour
             playerCountText.Text = $"Players {currentPlayers}/{maxPlayers}";
         
         if (joinLobbyButton != null)
-            joinLobbyButton.interactable = currentPlayers < maxPlayers;
+            joinLobbyButton.IsInteractable = currentPlayers < maxPlayers;
     }
 
     private async void OnItemClicked()
     {
         if (joinLobbyButton == null || lobby == null) return;
 
-        joinLobbyButton.interactable = false;
+        joinLobbyButton.IsInteractable = false;
 
         bool joined = await LobbyManager?.JoinLobbyAsync(lobby, PlayerManager.Instance.PlayerName);
         if (joined) await LobbyManager?.RefreshLobbyListAsync();

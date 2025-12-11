@@ -180,7 +180,7 @@ public class LobbyManager : MonoBehaviour
                 Player = CreatePlayer(playerName),
                 Data = new Dictionary<string, DataObject>
                 {
-                    { KEY_EXPERIENCE_NAME, new DataObject(DataObject.VisibilityOptions.Public, experience) },
+                    { KEY_EXPERIENCE_NAME, new DataObject(DataObject.VisibilityOptions.Public, experience, index: DataObject.IndexOptions.S1) },
                     { KEY_LOBBY_STATUS, new DataObject(DataObject.VisibilityOptions.Public, initialStatus) },
                     { KEY_RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, "") }
                 }
@@ -307,7 +307,7 @@ public class LobbyManager : MonoBehaviour
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { KEY_EXPERIENCE_NAME, new DataObject(DataObject.VisibilityOptions.Public, newExperienceName) }
+                    { KEY_EXPERIENCE_NAME, new DataObject(DataObject.VisibilityOptions.Public, newExperienceName, index: DataObject.IndexOptions.S1) }
                 }
             };
 

@@ -20,7 +20,7 @@ public class Button : UIControl<ButtonVisuals>
         visualFeedback = GetComponent<InteractionFeedback>();
     }
 
-    public bool interactable
+    public bool IsInteractable
     {
         get => interactableComponent != null && interactableComponent.enabled;
         set
@@ -34,6 +34,8 @@ public class Button : UIControl<ButtonVisuals>
             }
         }
     }
+
+    public void UpdateDefaultAppearance() { visualFeedback.UpdateDefaultAppearance(); }
 
     private void OnEnable()
     {

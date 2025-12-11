@@ -161,7 +161,7 @@ public class MainMenuUI : FollowPlayerUI
                                                                                       : GAME_MENU_SUBHEADER_NON_HOST );
         // A game can only be started if:
         //   1. User is playing alone    2. User is hosting the lobby they are in
-        startButton.interactable = !inLobby || LobbyManager.Instance.IsHost;
+        startButton.IsInteractable = !inLobby || LobbyManager.Instance.IsHost;
     }
 
     /*

@@ -33,8 +33,8 @@ public class ExperienceListItem : MonoBehaviour
     {
         if (selectExperienceToggle != null)
         {
-            selectExperienceToggle.ToggledOn    = isSelected;
-            selectExperienceToggle.interactable = isInteractable;
+            selectExperienceToggle.ToggledOn      = isSelected;
+            selectExperienceToggle.IsInteractable = isInteractable;
         }
     }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Services.Lobbies.Models;
 using Nova;
 
 /// <summary>
@@ -23,7 +24,10 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     private void OnEnable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnExperienceChanged += HandleExperienceChanged;
+        {
+            LobbyManager.OnExperienceChanged   += HandleExperienceChanged;
+            LobbyManager.OnLobbyPlayersChanged += HandleLobbyPlayersChanged;
+        }
         
         startExperienceButton?.AddListener(OnStartExperienceClicked);
 
@@ -35,7 +39,10 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     private void OnDisable()
     {
         if (LobbyManager != null)
-            LobbyManager.OnExperienceChanged -= HandleExperienceChanged;
+        {
+            LobbyManager.OnExperienceChanged   -= HandleExperienceChanged;
+            LobbyManager.OnLobbyPlayersChanged -= HandleLobbyPlayersChanged;
+        }
 
         startExperienceButton?.RemoveListener(OnStartExperienceClicked);
     }
@@ -80,17 +87,17 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         UpdateSelectedExperience(experience);
     }
 
+    private void HandleLobbyPlayersChanged(List<Player> _)
+    {
+        UpdateExperienceListState();
+        UpdateStartButtonState();      
+    }
+
     private void UpdateSelectedExperience(ExperienceData newExperience)
     {
         selectedExperience = newExperience;
         
-        foreach (ExperienceListItem item in experienceItems)
-        {
-            bool isSelected     = item.ExperienceData == selectedExperience;
-            bool isInteractable = !LobbyManager.IsInLobby || (LobbyManager.IsHost && !isSelected);
-            item.SetState(isSelected, isInteractable);  
-        }   
-
+        UpdateExperienceListState();
         UpdateStartButtonState();      
     }
 
@@ -104,6 +111,17 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         experienceItems.Clear();
     }
 
+    private void UpdateExperienceListState()
+    {
+        Debug.Log("UpdateExperienceListState");
+        foreach (ExperienceListItem item in experienceItems)
+        {
+            bool isSelected     = item.ExperienceData == selectedExperience;
+            bool isInteractable = !LobbyManager.IsInLobby || (LobbyManager.IsHost && !isSelected);
+            item.SetState(isSelected, isInteractable);  
+        }   
+    }
+
     private void UpdateStartButtonState()
     {
         if (startExperienceButton == null) return;
@@ -111,36 +129,31 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         bool canStart = selectedExperience != null && 
                        (LobbyManager == null || !LobbyManager.IsInLobby || LobbyManager.IsHost);
         
-        startExperienceButton.interactable = canStart;
+        startExperienceButton.IsInteractable = canStart;
     }
-
 
     private async void OnExperienceCardClicked(ExperienceData clickedExperience)
     {
         if (clickedExperience == null || LobbyManager == null)
             return;
-
-        bool inLobby = LobbyManager.IsInLobby;
-        bool isHost  = LobbyManager.IsHost;
-
-        // Case 1 :: Not in lobby + Clicking the already selected experience → Unselect
-        if (!inLobby && selectedExperience == clickedExperience) {
-            await LobbyManager.RefreshLobbyListAsync(null, true);
-            UpdateSelectedExperience(null);
+                    
+        // Case 1 :: Not in a lobby 
+        //              + Clicking an unselected experience         →  Update filtering
+        //              + Clicking the already selected experience  →  Unselect / Remove filtering
+        if (!LobbyManager.IsInLobby) {
+            bool isDeselecting = selectedExperience == clickedExperience;
+            await LobbyManager.RefreshLobbyListAsync(
+                isDeselecting ? null : clickedExperience.experienceName, // New filter
+                isDeselecting                                            // Ensures previous filter is cleared
+            );
+            UpdateSelectedExperience(isDeselecting ? null : clickedExperience);
             return;
         }
 
-        // Case 2 :: Host of a lobby → Change lobby experience
-        if (inLobby && isHost) {
-            bool changed = await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
-            UpdateSelectedExperience(changed ? clickedExperience : selectedExperience);
+        // Case 2 :: In lobby as host → Change lobby experience
+        if (LobbyManager.IsHost) {
+            await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
             return;
-        }
-
-        // Case 3 : Not in a lobby → Update filtering
-        if (!inLobby) {
-            await LobbyManager.RefreshLobbyListAsync(clickedExperience.experienceName);
-            UpdateSelectedExperience(clickedExperience);
         }
     }
 

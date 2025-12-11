@@ -113,6 +113,7 @@ public class InteractionFeedback : MonoBehaviour
         CaptureOriginalState();
     }
 
+    public void UpdateDefaultAppearance() { CaptureOriginalState(); }
     private void CaptureOriginalState()
     {
         if (targetBlock == null) return;

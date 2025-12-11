@@ -46,6 +46,8 @@ public class PlayerListItem : MonoBehaviour
 
         LabelStyle labelStyle = hostLabel.ApplyStyle(isHostEntry ? "Owner" : "Member");
         if (labelStyle != null) playerNameText.Color = labelStyle.mainColor;
+        
+        GetComponent<InteractionFeedback>().UpdateDefaultAppearance();
 
         hostLabel.gameObject.SetActive(isHostEntry);
         lobbyHostOptions.gameObject.SetActive(isLocalHost && !isHostEntry);

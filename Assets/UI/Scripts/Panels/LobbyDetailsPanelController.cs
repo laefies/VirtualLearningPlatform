@@ -4,6 +4,7 @@ using UnityEngine;
 using Nova;
 using UnityEngine.Events;
 using Unity.Services.Lobbies.Models;
+using System.Linq;
 
 /// <summary>
 /// Controls the lobby details panel showing current lobby members and data.
@@ -53,6 +54,7 @@ public class LobbyDetailsPanelController : MonoBehaviour
 
         ClearPlayerList();
 
+        players = players.OrderByDescending(p => p.Id == LobbyManager.CurrentLobby.HostId).ToList();
         foreach (Player player in players) {
             if (player == null) continue;
 

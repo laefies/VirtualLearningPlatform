@@ -45,7 +45,7 @@ public class Toggle : UIControl<ToggleVisuals>
         visualFeedback = GetComponent<InteractionFeedback>();
     }
 
-    public bool interactable
+    public bool IsInteractable
     {
         get => interactableComponent != null && interactableComponent.enabled;
         set
