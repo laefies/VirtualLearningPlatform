@@ -603,10 +603,10 @@ RectTransform:
   - {fileID: 8822410622847273800}
   m_Father: {fileID: 3844210198637172282}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 12.849999, y: -4}
-  m_SizeDelta: {x: 9.9, y: 8}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5016854029813675466
 CanvasRenderer:
@@ -841,8 +841,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4953045032126690166}
   m_HandleRect: {fileID: 5104346600792788508}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.99976397
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2741,7 +2741,7 @@ MonoBehaviour:
   _allowManualReposition: 1
   gameMenuHeader: {fileID: 2853245225660197733}
   gameMenuSubheader: {fileID: 7812747075130682513}
-  startButton: {fileID: 5461969833806049138}
+  startButton: {fileID: 0}
   lobbyMenu: {fileID: 4542507010542156303}
   lobbyListContent: {fileID: 3446092478721645598}
   lobbyItemPrefab: {fileID: 6217060297320237067, guid: 869fec13395411b45acd81f3ae995d4b,
@@ -4287,10 +4287,10 @@ RectTransform:
   - {fileID: 3313049573577734910}
   m_Father: {fileID: 3844210198637172282}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 4.95, y: -4}
-  m_SizeDelta: {x: 9.9, y: 8}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6029669461101486003
 CanvasRenderer:

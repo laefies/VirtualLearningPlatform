@@ -76,6 +76,8 @@ public class ExperienceSelectionPanelController : MonoBehaviour
                 experienceItems.Add(listItem);
             }
         }
+
+        startExperienceButton.IsInteractable = false;
     }
 
     private void HandleExperienceChanged(string experienceName)
@@ -113,7 +115,6 @@ public class ExperienceSelectionPanelController : MonoBehaviour
 
     private void UpdateExperienceListState()
     {
-        Debug.Log("UpdateExperienceListState");
         foreach (ExperienceListItem item in experienceItems)
         {
             bool isSelected     = item.ExperienceData == selectedExperience;

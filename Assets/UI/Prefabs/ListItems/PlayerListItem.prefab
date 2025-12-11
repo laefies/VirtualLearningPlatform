@@ -1153,6 +1153,27 @@ MonoBehaviour:
     cornerRadius:
       Raw: 0
       Type: 0
+  enableSelectedState: 0
+  selectedState:
+    changeScale: 1
+    scale: {x: 1.03, y: 1.03, z: 1.03}
+    changeBackgroundColor: 1
+    backgroundColor: {r: 0.75, g: 0.85, b: 1, a: 1}
+    changeTextColor: 0
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    changeBorder: 0
+    showBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 1}
+    borderWidth: 2
+    changeShadow: 0
+    showShadow: 0
+    shadowColor: {r: 0, g: 0, b: 0, a: 0.3}
+    shadowBlur: 4
+    shadowOffset: {x: 0, y: 2}
+    changeCornerRadius: 0
+    cornerRadius:
+      Raw: 0
+      Type: 0
   transitionSpeed: 0.2
   useSmoothTransitions: 1
   easingCurve:

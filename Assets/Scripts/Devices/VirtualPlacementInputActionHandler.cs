@@ -59,14 +59,20 @@ public class VirtualPlacementInputActionHandler : MonoBehaviour {
     }
 
     private void OnConfirm(InputAction.CallbackContext context) {
-        placing = !VirtualPlacementSystem.Instance.ConfirmPlacement();
-        HandleDuplicateInputs();
+        if (placing)
+        {
+            placing = !VirtualPlacementSystem.Instance.ConfirmPlacement();
+            HandleDuplicateInputs();
+        }
     }
 
     private void OnCancel(InputAction.CallbackContext context) {
-        VirtualPlacementSystem.Instance.StopPlacement();
-        placing = false;
-        HandleDuplicateInputs();
+        if (placing)
+        {
+            VirtualPlacementSystem.Instance.StopPlacement();
+            placing = false;
+            HandleDuplicateInputs();
+        }
     }
 
     private Ray GetAimRay(float distance = 1)
@@ -95,9 +101,13 @@ public class VirtualPlacementInputActionHandler : MonoBehaviour {
 
             Vector2 rotateValue = rotateAction.action.ReadValue<Vector2>();
             if (rotateValue.x != 0) VirtualPlacementSystem.Instance?.RotateBy(rotateValue.x * ROT_FACTOR);
-        } else {
+        } 
+        else {
             if (xrOrigin != null)
-                CheckNovaInteraction(false);  
+            {
+                bool pressing = confirmAction.action.ReadValue<float>() > 0f;
+                //CheckNovaInteraction(pressing);  
+            }
         }   
     }
 }
