@@ -77,7 +77,6 @@ public class ExperienceSelectionPanelController : MonoBehaviour
             }
         }
 
-        startExperienceButton.IsInteractable = false;
     }
 
     private void HandleExperienceChanged(string experienceName)

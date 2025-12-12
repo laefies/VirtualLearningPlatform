@@ -21,27 +21,27 @@ public class LobbyManager : MonoBehaviour
     #region Constants
     // Lobby data keys
     private const string KEY_EXPERIENCE_NAME = "ExperienceName";
-    private const string KEY_LOBBY_STATUS    = "LobbyStatus";
-    private const string KEY_RELAY_CODE      = "RelayCode";
+    private const string KEY_LOBBY_STATUS = "LobbyStatus";
+    private const string KEY_RELAY_CODE = "RelayCode";
 
     // Player data keys
     private const string KEY_PLAYER_NAME = "PlayerName";
 
     // Lobby status values
-    private const string STATUS_WAITING     = "Waiting";
+    private const string STATUS_WAITING = "Waiting";
     private const string STATUS_IN_PROGRESS = "Learning";
-    private const string STATUS_FULL        = "Full";
-    
+    private const string STATUS_FULL = "Full";
+
     // Default values
     private const string NO_EXPERIENCE_SELECTED = "None";
 
     // Timing constants
     private const float HEARTBEAT_INTERVAL = 15f;
     private const float POLL_INTERVAL = 1.5f;
-    
+
     // Lobby settings
     private const int DEFAULT_MAX_PLAYERS = 10;
-    private const int LOBBY_QUERY_LIMIT   = 30;
+    private const int LOBBY_QUERY_LIMIT = 30;
     #endregion
 
     #region Events
@@ -56,13 +56,14 @@ public class LobbyManager : MonoBehaviour
     #region Private Fields
     private Lobby _currentLobby;
     private string _cachedPlayerId;
-    
+
     private float _heartbeatTimer;
     private float _pollTimer;
-    
+
     private bool _isAuthenticated;
+    private bool _isShuttingDown;
     private int _lobbyCounter;
-    
+
     private int _lastKnownPlayerCount;
     private string _lastKnownHostId;
     private string _lastKnownExperience;
@@ -84,7 +85,7 @@ public class LobbyManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -100,7 +101,10 @@ public class LobbyManager : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this)
+        {
+            CleanupOnExit();
             Instance = null;
+        }
     }
     #endregion
 
@@ -119,7 +123,7 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await UnityServices.InitializeAsync();
-            
+
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
@@ -129,7 +133,7 @@ public class LobbyManager : MonoBehaviour
             _isAuthenticated = true;
 
             Debug.Log($"[Lobby Management] Successfully authenticated.");
-                        
+
             return true;
         }
         catch (Exception e)
@@ -167,9 +171,9 @@ public class LobbyManager : MonoBehaviour
 
         try
         {
-            _lobbyCounter++; 
+            _lobbyCounter++;
             string lobbyName = $"{playerName}'s";
-            
+
             string experience = string.IsNullOrEmpty(_lastExperienceFilter) ? NO_EXPERIENCE_SELECTED : _lastExperienceFilter;
 
             string initialStatus = maxPlayers == 1 ? STATUS_FULL : STATUS_WAITING;
@@ -187,15 +191,15 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
-            
+
             UpdateTrackedState();
             ResetTimers();
-            
-            string logMessage = experience == NO_EXPERIENCE_SELECTED 
+
+            string logMessage = experience == NO_EXPERIENCE_SELECTED
                 ? $"[Lobby Management] Created '{lobbyName}' (no experience selected yet)"
                 : $"[Lobby Management] Created '{lobbyName}' for experience '{experience}'";
             Debug.Log(logMessage);
-            
+
             OnLobbyJoined?.Invoke(_currentLobby);
 
             return _currentLobby;
@@ -234,12 +238,12 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, options);
-            
+
             await UpdateLobbyStatusBasedOnCapacity();
-            
+
             UpdateTrackedState();
             ResetTimers();
-            
+
             Debug.Log($"[Lobby Management] Joined '{lobby.Name}'");
             OnLobbyJoined?.Invoke(_currentLobby);
 
@@ -248,12 +252,12 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.LogError($"[Lobby Management] Failed to join lobby: {e.Message}");
-            
+
             if (e.Reason == LobbyExceptionReason.LobbyNotFound)
             {
                 await RefreshLobbyListAsync();
             }
-            
+
             return false;
         }
     }
@@ -268,9 +272,9 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(_currentLobby.Id, _cachedPlayerId);
-            
+
             Debug.Log($"[Lobby Management] Left '{_currentLobby.Name}'");
-            
+
             _currentLobby = null;
             ClearTrackedState();
             OnLobbyLeft?.Invoke();
@@ -278,7 +282,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.LogError($"[Lobby Management] Failed to leave lobby: {e.Message}");
-            
+
             if (e.Reason == LobbyExceptionReason.LobbyNotFound)
             {
                 _currentLobby = null;
@@ -312,9 +316,9 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
-            
+
             _lastKnownExperience = newExperienceName;
-            
+
             Debug.Log($"[Lobby Management] Changed experience to '{newExperienceName}'");
             OnExperienceChanged?.Invoke(_lastKnownExperience);
 
@@ -341,13 +345,13 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(_currentLobby.Id, playerId);
-            
+
             _currentLobby = await LobbyService.Instance.GetLobbyAsync(_currentLobby.Id);
-            
+
             await UpdateLobbyStatusBasedOnCapacity();
-            
+
             CheckAndFirePlayerChanges();
-            
+
             Debug.Log($"[Lobby Management] Kicked player {playerId}");
             return true;
         }
@@ -377,9 +381,9 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
-            
+
             _lastKnownHostId = newHostId;
-            
+
             Debug.Log($"[Lobby Management] Transferred host to {newHostId}");
             OnLobbyPlayersChanged?.Invoke(_currentLobby.Players);
 
@@ -420,7 +424,7 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
-            Debug.Log($"[Lobby Management] Updated lobby status to '{newStatus}'");            
+            Debug.Log($"[Lobby Management] Updated lobby status to '{newStatus}'");
         }
         catch (LobbyServiceException e)
         {
@@ -467,7 +471,7 @@ public class LobbyManager : MonoBehaviour
             }
 
             var response = await Lobbies.Instance.QueryLobbiesAsync(options);
-            
+
             Debug.Log($"[Lobby Management] Found {response.Results.Count} available lobbies. Filtered by: {experienceFilter ?? "All"}");
             OnLobbyListRefreshed?.Invoke(response.Results);
 
@@ -493,7 +497,7 @@ public class LobbyManager : MonoBehaviour
             Debug.LogWarning("[Lobby Management] Only the host can start the experience.");
             return false;
         }
-        
+
         if (!HasExperienceSelected())
         {
             Debug.LogWarning("[Lobby Management] Cannot start - no experience selected yet.");
@@ -516,7 +520,7 @@ public class LobbyManager : MonoBehaviour
             };
 
             _currentLobby = await Lobbies.Instance.UpdateLobbyAsync(_currentLobby.Id, options);
-            
+
             Debug.Log($"[Lobby Management] Experience started - transitioning to '{GetCurrentExperience()}'");
             OnExperienceStarted?.Invoke(_currentLobby);
 
@@ -536,7 +540,7 @@ public class LobbyManager : MonoBehaviour
         if (!IsHost || !IsInLobby) return;
 
         _heartbeatTimer -= Time.deltaTime;
-        
+
         if (_heartbeatTimer <= 0f)
         {
             _heartbeatTimer = HEARTBEAT_INTERVAL;
@@ -562,7 +566,7 @@ public class LobbyManager : MonoBehaviour
         if (!IsInLobby || RelayManager.Instance.IsInRelay()) return;
 
         _pollTimer -= Time.deltaTime;
-        
+
         if (_pollTimer <= 0f)
         {
             _pollTimer = POLL_INTERVAL;
@@ -688,7 +692,7 @@ public class LobbyManager : MonoBehaviour
         if (currentExperience != _lastKnownExperience)
         {
             _lastKnownExperience = currentExperience;
-            
+
             Debug.Log($"[Lobby Management] Changed experience to '{_lastKnownExperience ?? "None"}'");
             OnExperienceChanged?.Invoke(_lastKnownExperience);
         }
@@ -710,21 +714,21 @@ public class LobbyManager : MonoBehaviour
     private bool IsPlayerInCurrentLobby()
     {
         if (!IsInLobby || _currentLobby.Players == null) return false;
-        
+
         return _currentLobby.Players.Any(p => p.Id == _cachedPlayerId);
     }
 
     private void ResetTimers()
     {
         _heartbeatTimer = HEARTBEAT_INTERVAL;
-        _pollTimer      = POLL_INTERVAL;
+        _pollTimer = POLL_INTERVAL;
     }
 
     private string GetRelayCode()
     {
-        if (!IsInLobby || !_currentLobby.Data.ContainsKey(KEY_RELAY_CODE)) 
+        if (!IsInLobby || !_currentLobby.Data.ContainsKey(KEY_RELAY_CODE))
             return null;
-        
+
         return _currentLobby.Data[KEY_RELAY_CODE].Value;
     }
 
@@ -740,7 +744,7 @@ public class LobbyManager : MonoBehaviour
         string experience = _currentLobby.Data[KEY_EXPERIENCE_NAME].Value;
         return experience == NO_EXPERIENCE_SELECTED ? null : experience;
     }
-    
+
     /// <summary>
     /// Checks if an experience has been selected for the current lobby.
     /// </summary>
@@ -752,7 +756,7 @@ public class LobbyManager : MonoBehaviour
     /// <summary>
     /// Gets the current status of a given lobby.
     /// </summary>
-    public string GetLobbyStatus(Lobby lobby) 
+    public string GetLobbyStatus(Lobby lobby)
     {
         if (lobby == null || !lobby.Data.ContainsKey(KEY_LOBBY_STATUS))
             return null;
@@ -769,7 +773,7 @@ public class LobbyManager : MonoBehaviour
         if (!IsInLobby) return null;
 
         var player = _currentLobby.Players.FirstOrDefault(p => p.Id == playerId);
-        
+
         if (player?.Data != null && player.Data.ContainsKey(KEY_PLAYER_NAME))
         {
             return player.Data[KEY_PLAYER_NAME].Value;
@@ -788,5 +792,51 @@ public class LobbyManager : MonoBehaviour
 
         return _currentLobby.HostId == playerId;
     }
+    #endregion
+
+    #region Application Lifecycle & Cleanup
+
+    private void OnApplicationQuit()
+    {
+        CleanupOnExit();
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus) CleanupOnExit();
+    }
+
+    /// <summary>
+    /// Performs cleanup when the application is closing.
+    /// Removes player from lobby - Unity Lobbies handles host migration automatically.
+    /// </summary>
+    private void CleanupOnExit()
+    {
+        if (!IsInLobby || _isShuttingDown) return;
+
+        _isShuttingDown = true;
+
+        try
+        {
+            // Stop timers to prevent further updates
+            _heartbeatTimer = float.MaxValue;
+            _pollTimer = float.MaxValue;
+
+            // The lobby service will auto-remove inactive players after ~30 seconds anyway
+                    Debug.Log("OnApplicationPause " + _currentLobby.Id + " " + _cachedPlayerId);
+
+            _ = LobbyService.Instance.RemovePlayerAsync(_currentLobby.Id, _cachedPlayerId);
+
+            Debug.Log("[Lobby Management] Leaving lobby on application exit");
+
+            _currentLobby = null;
+            ClearTrackedState();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[Lobby Management] Error during cleanup: {e.Message}");
+        }
+    }
+
     #endregion
 }

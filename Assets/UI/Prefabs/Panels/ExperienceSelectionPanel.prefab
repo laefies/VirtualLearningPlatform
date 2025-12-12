@@ -2934,6 +2934,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3743603520313069374}
     m_Modifications:
+    - target: {fileID: 533545218879677583, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 787002063865602103, guid: 731fd9f6e3af38147ba1052c3e15c9fa,
         type: 3}
       propertyPath: layout.Alignment.Y

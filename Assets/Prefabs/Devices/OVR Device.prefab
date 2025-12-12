@@ -980,6 +980,7 @@ GameObject:
   - component: {fileID: 5129165797634277922}
   - component: {fileID: 3737503889441068377}
   - component: {fileID: 645300462395625588}
+  - component: {fileID: 2732449901333283455}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: Untagged
@@ -1316,6 +1317,91 @@ MonoBehaviour:
   - groupMember: {fileID: 1871732778026252311}
     overrideGroupMembers:
     - {fileID: 7742077950044266703}
+--- !u!114 &2732449901333283455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384438052948703070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e15a149de7f25b64ea98a71a376b3c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rayInteractor: {fileID: 7523226023639194702}
+  lineVisual: {fileID: 5449914092194044364}
+  selectAction: {fileID: -6395602842196007441, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  maxRayDistance: 150
+  controlID: 0
+  adjustLineLength: 1
+  useGradients: 1
+  novaHoverColor: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 1}
+  novaSelectColor: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  novaHoverGradient:
+    serializedVersion: 2
+    key0: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 0}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  novaSelectGradient:
+    serializedVersion: 2
+    key0: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
+    key1: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 0}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  enableHaptics: 1
+  hapticIntensity: 0.3
 --- !u!1 &3384960414225645169
 GameObject:
   m_ObjectHideFlags: 0
@@ -1997,6 +2083,7 @@ GameObject:
   - component: {fileID: 1838544922006027542}
   - component: {fileID: 2954339318933004311}
   - component: {fileID: 3885069015511887561}
+  - component: {fileID: 2176665835578638475}
   m_Layer: 0
   m_Name: Right Controller
   m_TagString: Untagged
@@ -2333,6 +2420,91 @@ MonoBehaviour:
   - groupMember: {fileID: 6373665243824041511}
     overrideGroupMembers:
     - {fileID: 3629464295252689797}
+--- !u!114 &2176665835578638475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5844110324889923994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e15a149de7f25b64ea98a71a376b3c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rayInteractor: {fileID: 5914362914743200815}
+  lineVisual: {fileID: 8201666750813645229}
+  selectAction: {fileID: 3279264004350380116, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  maxRayDistance: 150
+  controlID: 1
+  adjustLineLength: 1
+  useGradients: 1
+  novaHoverColor: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 1}
+  novaSelectColor: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  novaHoverGradient:
+    serializedVersion: 2
+    key0: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 0}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  novaSelectGradient:
+    serializedVersion: 2
+    key0: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
+    key1: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 0}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  enableHaptics: 1
+  hapticIntensity: 0.3
 --- !u!1 &6465926867746345614
 GameObject:
   m_ObjectHideFlags: 0
@@ -2529,7 +2701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 220003722
+  GlobalObjectIdHash: 1078870324
   InScenePlacedSourceGlobalObjectIdHash: 1078870324
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -3153,9 +3325,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
         type: 3}
+      propertyPath: m_LineLength
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
+        type: 3}
       propertyPath: m_LineOriginTransform
       value: 
       objectReference: {fileID: 3310589618877578125}
+    - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
+        type: 3}
+      propertyPath: m_LineLengthChangeSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5888765399538998960, guid: ad818c36731146e994540a1896ad8f24,
         type: 3}
       propertyPath: m_RootOrder
@@ -3226,6 +3408,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad818c36731146e994540a1896ad8f24, type: 3}
+--- !u!114 &5449914092194044364 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
+    type: 3}
+  m_PrefabInstance: {fileID: 1150290780060538721}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e988983f96fe1dd48800bcdfc82f23e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6795861129534392785 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5888765399538998960, guid: ad818c36731146e994540a1896ad8f24,
@@ -3952,6 +4146,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
         type: 3}
+      propertyPath: m_LineLength
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
+        type: 3}
       propertyPath: m_SmoothMovement
       value: 0
       objectReference: {fileID: 0}
@@ -3960,6 +4159,11 @@ PrefabInstance:
       propertyPath: m_LineOriginTransform
       value: 
       objectReference: {fileID: 2046037891016041390}
+    - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
+        type: 3}
+      propertyPath: m_LineLengthChangeSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4924506573850889901, guid: ad818c36731146e994540a1896ad8f24,
         type: 3}
       propertyPath: m_StopLineAtFirstRaycastHit
@@ -4073,109 +4277,15 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1787346994484839025, guid: ad818c36731146e994540a1896ad8f24,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6893912444960404550}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad818c36731146e994540a1896ad8f24, type: 3}
---- !u!1 &3263031965539231089 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1787346994484839025, guid: ad818c36731146e994540a1896ad8f24,
-    type: 3}
-  m_PrefabInstance: {fileID: 3856612728459519744}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6893912444960404550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3263031965539231089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e15a149de7f25b64ea98a71a376b3c5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rayInteractor: {fileID: 5914362914743200815}
-  lineVisual: {fileID: 8201666750813645229}
-  selectAction: {fileID: 3279264004350380116, guid: c348712bda248c246b8c49b3db54643f,
-    type: 3}
-  maxRayDistance: 100
-  controlID: 1
-  useGradients: 1
-  novaHoverColor: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 1}
-  novaSelectColor: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
-  novaHoverGradient:
-    serializedVersion: 2
-    key0: {r: 0.21867214, g: 0.4678966, b: 0.509434, a: 1}
-    key1: {r: 0.21176471, g: 0.58431375, b: 0.6745098, a: 0}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  novaSelectGradient:
-    serializedVersion: 2
-    key0: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 1}
-    key1: {r: 0.078431375, g: 0.26666668, b: 0.29803923, a: 0}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  enableHaptics: 1
-  hapticIntensity: 0.3
 --- !u!114 &5914362914743200815 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7462879561657043759, guid: ad818c36731146e994540a1896ad8f24,
     type: 3}
   m_PrefabInstance: {fileID: 3856612728459519744}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3263031965539231089}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6803edce0201f574f923fd9d10e5b30a, type: 3}
@@ -4193,7 +4303,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 3856612728459519744}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3263031965539231089}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e988983f96fe1dd48800bcdfc82f23e9, type: 3}
