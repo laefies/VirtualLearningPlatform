@@ -14,14 +14,20 @@ public class MainMenuManager : FollowPlayerUI
 
     private LobbyManager LobbyManager => LobbyManager.Instance;
 
-    protected override void Start()
-    {
+    protected override void Start() {
         base.Start();        
         UpdatePanelVisibility();
     }
 
-    private void OnEnable() { SubscribeToEvents(); }
-    private void OnDisable() { UnsubscribeFromEvents(); }
+    protected override void OnEnable()  { 
+        base.OnEnable();        
+        SubscribeToEvents(); 
+    }
+
+    protected override void OnDisable() { 
+        base.OnDisable();        
+        UnsubscribeFromEvents(); 
+    }
 
     private void SubscribeToEvents()
     {
@@ -38,7 +44,6 @@ public class MainMenuManager : FollowPlayerUI
         LobbyManager.OnLobbyJoined -= HandleLobbyJoined;
         LobbyManager.OnLobbyLeft   -= HandleLobbyLeft;
     }
-
 
     private void HandleLobbyJoined(Lobby lobby) { UpdatePanelVisibility(); }
     private void HandleLobbyLeft() { UpdatePanelVisibility(); }

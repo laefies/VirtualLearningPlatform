@@ -1571,6 +1571,11 @@ PrefabInstance:
       propertyPath: texture
       value: 
       objectReference: {fileID: 2800000, guid: 8ba6c64a3d8df6d459d30849055722d9, type: 3}
+    - target: {fileID: 5559514886122328113, guid: a52585c51de6fae4b8a5529d81cafd70,
+        type: 3}
+      propertyPath: m_text
+      value: Kick Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1681,6 +1686,11 @@ PrefabInstance:
         type: 3}
       propertyPath: layout.Size.Y.Raw
       value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5559514886122328113, guid: a52585c51de6fae4b8a5529d81cafd70,
+        type: 3}
+      propertyPath: m_text
+      value: Make Host
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

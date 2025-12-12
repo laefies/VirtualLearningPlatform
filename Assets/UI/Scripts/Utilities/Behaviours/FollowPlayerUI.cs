@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
 /// Makes UI follow the player's head with smooth repositioning for comfortable XR viewing.
@@ -9,17 +10,17 @@ public class FollowPlayerUI : MonoBehaviour
     [Header("UI Positioning")]
     [Tooltip("Distance in front of the player")]
     [SerializeField] private float _forwardDistance = 0.375f;
-    
+
     [Tooltip("Height offset relative to head (0 = eye level, negative = below)")]
     [SerializeField] private float _heightOffset = 0.03f;
-    
+
     [Tooltip("Tilt angle of the UI")]
     [SerializeField] private float _tiltAngle = 15f;
 
     [Header("Repositioning Thresholds")]
     [Tooltip("Max distance the player can move before UI repositions")]
     [SerializeField] private float _maxDistance = 0.4f;
-    
+
     [Tooltip("Max rotation angle (in degrees) before UI repositions")]
     [SerializeField] private float _maxRotationAngle = 45f;
 
@@ -31,36 +32,56 @@ public class FollowPlayerUI : MonoBehaviour
     [Tooltip("Allow user to manually reposition UI")]
     [SerializeField] private bool _allowManualReposition = true;
 
+    [Tooltip("Handle object with which the user may manually reposition UI")]
+    [SerializeField] private XRGrabInteractable _manualRepositionHandle;
+
+    [Tooltip("Lock rotation axes during manual reposition (only allow tilt)")]
+    [SerializeField] private bool _lockRotationAxes = true;
+
     // Cached values
     private Transform _transform;
     private DeviceManager _deviceManager;
-    
+
     // Single tracking state
     private Pose _lastHeadPose;
     private Vector3 _targetPosition;
     private Quaternion _targetRotation;
-    
+
     // Manual repositioning state
     private bool _isBeingManuallyRepositioned;
     private Vector3 _manualRepositionStartPos;
     private Quaternion _manualRepositionStartRot;
 
-    private void Awake()
+    protected void Awake()
     {
         _transform = transform;
         _deviceManager = DeviceManager.Instance;
     }
 
+    protected virtual void OnEnable()
+    {
+        _manualRepositionHandle ??= GetComponent<XRGrabInteractable>();
+
+        _manualRepositionHandle?.selectEntered.AddListener(OnGrabStarted);
+        _manualRepositionHandle?.selectExited.AddListener(OnGrabEnded);
+    }
+
+    protected virtual void OnDisable()
+    {
+        _manualRepositionHandle?.selectEntered.RemoveListener(OnGrabStarted);
+        _manualRepositionHandle?.selectExited.RemoveListener(OnGrabEnded);
+    }
+
     protected virtual void Start() { RepositionUI(); }
 
     protected virtual void Update()
-    {        
+    {
         // Skip automatic repositioning while being manually moved
         if (_isBeingManuallyRepositioned)
             return;
 
         Pose headPose = _deviceManager.GetHeadPose();
-        
+
         if (ShouldReposition(headPose))
             RepositionUI(headPose);
 
@@ -68,6 +89,30 @@ public class FollowPlayerUI : MonoBehaviour
         float deltaTime = Time.deltaTime;
         _transform.position = Vector3.Lerp(_transform.position, _targetPosition, deltaTime * _lerpSpeed);
         _transform.rotation = Quaternion.Slerp(_transform.rotation, _targetRotation, deltaTime * _lerpSpeed);
+    }
+
+    protected virtual void LateUpdate()
+    {
+        if (!_isBeingManuallyRepositioned || !_lockRotationAxes) return;
+        
+        Pose headPose = _deviceManager.GetHeadPose();
+        
+        Vector3 toPlayerFlat = headPose.position - _transform.position;
+        toPlayerFlat.y = 0f;
+        
+        if (toPlayerFlat.sqrMagnitude > 0.001f)
+        {
+            toPlayerFlat.Normalize();
+            
+            Quaternion baseRotation = Quaternion.LookRotation(-toPlayerFlat);
+            
+            Vector3 currentEuler = _transform.rotation.eulerAngles;
+            Vector3 baseEuler = baseRotation.eulerAngles;
+            
+            float tiltAngle = Mathf.DeltaAngle(baseEuler.x, currentEuler.x);
+            
+            _transform.rotation = baseRotation * Quaternion.Euler(tiltAngle, 0f, 0f);
+        }
     }
 
     private bool ShouldReposition(Pose headPose)
@@ -81,7 +126,7 @@ public class FollowPlayerUI : MonoBehaviour
         float lastY = _lastHeadPose.rotation.eulerAngles.y;
         float currentY = headPose.rotation.eulerAngles.y;
         float angleDelta = Mathf.DeltaAngle(lastY, currentY);
-        
+
         return Mathf.Abs(angleDelta) > _maxRotationAngle;
     }
 
@@ -95,15 +140,15 @@ public class FollowPlayerUI : MonoBehaviour
         // Calculate forward direction (ignore vertical component)
         Vector3 headForward = headPose.rotation * Vector3.forward;
         headForward.y = 0f;
-        
+
         if (headForward.sqrMagnitude > 0.001f)
             headForward.Normalize();
         else
             headForward = Vector3.forward;
 
         // Calculate target position
-        _targetPosition = headPose.position 
-            + headForward * _forwardDistance 
+        _targetPosition = headPose.position
+            + headForward * _forwardDistance
             + Vector3.up * _heightOffset;
 
         // Calculate target rotation (look at player with tilt)
@@ -114,6 +159,9 @@ public class FollowPlayerUI : MonoBehaviour
         else
             _targetRotation = Quaternion.Euler(_tiltAngle, 0f, 0f);
     }
+
+    private void OnGrabStarted(SelectEnterEventArgs args) { BeginManualReposition(); }
+    private void OnGrabEnded(SelectExitEventArgs args) { EndManualReposition(); }
 
     public void BeginManualReposition()
     {
@@ -127,14 +175,13 @@ public class FollowPlayerUI : MonoBehaviour
 
     public void EndManualReposition()
     {
-        if (!_isBeingManuallyRepositioned)
-            return;
+        if (!_isBeingManuallyRepositioned) return;
 
         _isBeingManuallyRepositioned = false;
 
         // Calculate new parameters from current transform
         Pose headPose = _deviceManager.GetHeadPose();
-        
+
         // Calculate new forward distance
         Vector3 headForward = headPose.rotation * Vector3.forward;
         headForward.y = 0f;
@@ -151,22 +198,25 @@ public class FollowPlayerUI : MonoBehaviour
         _heightOffset = _transform.position.y - headPose.position.y;
 
         // Calculate new tilt angle
-        Vector3 uiForward = _transform.forward;
-        uiForward.y = 0f;
-        if (uiForward.sqrMagnitude > 0.001f)
+        Vector3 toPlayerFlat = headPose.position - _transform.position;
+        toPlayerFlat.y = 0f;
+
+        if (toPlayerFlat.sqrMagnitude > 0.001f)
         {
-            uiForward.Normalize();
-            Vector3 toPlayerFlat = headPose.position - _transform.position;
-            toPlayerFlat.y = 0f;
-            
-            if (toPlayerFlat.sqrMagnitude > 0.001f)
-            {
-                toPlayerFlat.Normalize();
-                Quaternion flatRotation = Quaternion.LookRotation(toPlayerFlat);
-                Quaternion currentRotFlat = Quaternion.LookRotation(uiForward);
-                _tiltAngle = Quaternion.Angle(flatRotation, _transform.rotation) * 
-                             Mathf.Sign(_transform.forward.y);
-            }
+            toPlayerFlat.Normalize();
+
+            Quaternion flatRotation = Quaternion.LookRotation(-toPlayerFlat);
+
+            Vector3 flatForward = flatRotation * Vector3.forward;
+            Vector3 actualForward = _transform.forward;
+
+            float verticalAngle = Vector3.SignedAngle(
+                new Vector3(flatForward.x, 0, flatForward.z).normalized,
+                actualForward,
+                Vector3.Cross(flatForward, Vector3.up)
+            );
+
+            _tiltAngle = -verticalAngle;
         }
 
         // Update targets to current position

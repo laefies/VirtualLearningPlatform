@@ -211,7 +211,7 @@ public class NovaXRInputHandler : MonoBehaviour
         // Update visual feedback and line length
         if (adjustLineLength && hitNovaUI)
         {
-            float hitDistance = hit.distance * 0.8f;
+            float hitDistance = hit.distance * 0.95f;
             UpdateLineLengthToTarget(hitDistance);
         }
         else
