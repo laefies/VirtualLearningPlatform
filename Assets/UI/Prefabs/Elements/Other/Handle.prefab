@@ -32,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 7745086370613980628}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 0}
+  m_LocalPosition: {x: 0, y: 8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -67,10 +67,10 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 145
+        Raw: 148
         Type: 0
       Y:
-        Raw: 14
+        Raw: 16
         Type: 0
       Z:
         Raw: 0
@@ -227,7 +227,7 @@ MonoBehaviour:
     LightingModel: 0
     ShadowCastingMode: 2
     ReceiveShadows: 1
-  PreviewSize: {x: 145, y: 14, z: 0}
+  PreviewSize: {x: 148, y: 16, z: 0}
   visuals:
     Color: {r: 0, g: 0, b: 0, a: 0.2}
     CornerRadius:
@@ -268,7 +268,7 @@ MonoBehaviour:
         Raw: 1
         Type: 0
       Enabled: 1
-      Direction: 0
+      Direction: 2
     Shadow:
       Color: {r: 0.25490198, g: 0.25490198, b: 0.25490198, a: 0.5}
       Width:
@@ -401,8 +401,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 12
-  m_Height: 156
+  m_Radius: 7
+  m_Height: 146
   m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4180055338892696640

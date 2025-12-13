@@ -1330,6 +1330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rayInteractor: {fileID: 7523226023639194702}
+  pokeInteractor: {fileID: 1871732778026252311}
   lineVisual: {fileID: 5449914092194044364}
   selectAction: {fileID: -6395602842196007441, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
@@ -2433,6 +2434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rayInteractor: {fileID: 5914362914743200815}
+  pokeInteractor: {fileID: 6373665243824041511}
   lineVisual: {fileID: 8201666750813645229}
   selectAction: {fileID: 3279264004350380116, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
@@ -2701,7 +2703,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1078870324
+  GlobalObjectIdHash: 220003722
   InScenePlacedSourceGlobalObjectIdHash: 1078870324
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -5825,6 +5827,11 @@ PrefabInstance:
     - target: {fileID: 1925769544920504264, guid: 27024f5809f4a4347b9cd7f26a1bdf93,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2417358720014700305, guid: 27024f5809f4a4347b9cd7f26a1bdf93,
+        type: 3}
+      propertyPath: m_RequirePokeFilter
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4125421792874400280, guid: 27024f5809f4a4347b9cd7f26a1bdf93,
