@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 428622176564143503}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 21, z: 0}
+  m_LocalPosition: {x: 0, y: 22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -78,7 +78,7 @@ MonoBehaviour:
         Raw: 0
         Type: 0
       Y:
-        Raw: 38
+        Raw: 44
         Type: 0
       Z:
         Raw: 0
@@ -257,9 +257,9 @@ Transform:
   m_GameObject: {fileID: 7070550167296718260}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.98, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -18.98, y: 0, z: 0.7}
+  m_LocalScale: {x: 0.0004, y: 0.0004, z: 0.0004}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6761637052805400201}
   - {fileID: 6402655207170545237}
@@ -297,7 +297,7 @@ MonoBehaviour:
         Raw: 2354
         Type: 0
       Y:
-        Raw: 822
+        Raw: 824
         Type: 0
       Z:
         Raw: 0
@@ -454,7 +454,7 @@ MonoBehaviour:
     LightingModel: 0
     ShadowCastingMode: 2
     ReceiveShadows: 1
-  PreviewSize: {x: 2354, y: 818, z: 0}
+  PreviewSize: {x: 2354, y: 824, z: 0}
 --- !u!114 &6351291186104513226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,8 +663,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be23642a7ea8a44c86209ea13d6bd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _forwardDistance: 0.75
-  _heightOffset: -0.07
+  _forwardDistance: 0.7
+  _heightOffset: -0.1
   _tiltAngle: 3
   _maxDistance: 0.1
   _maxRotationAngle: 45

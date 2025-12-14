@@ -209,7 +209,6 @@ public class SharedGrabbable : NetworkBehaviour
         _isDocked.Value = docked;
     }
 
-    // Public API
     public void SetDocked(bool docked)
     {
         SetDockedServerRpc(docked);

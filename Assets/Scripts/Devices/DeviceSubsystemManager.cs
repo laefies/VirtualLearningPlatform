@@ -9,8 +9,8 @@ public abstract class DeviceSubsystemManager : MonoBehaviour
     protected SubsystemType _managedSubsystemType;
     private bool isEnabled;
 
-    void Start()     { SceneLoader.Instance.OnSceneLoaded += handleSubsystemStatus; }
-    void OnDestroy() { SceneLoader.Instance.OnSceneLoaded -= handleSubsystemStatus; }
+    void Start()     { }
+    void OnDestroy() { }
 
     void Update()
     {
@@ -18,7 +18,7 @@ public abstract class DeviceSubsystemManager : MonoBehaviour
     }
     protected abstract void HandleSubsystem();
 
-    void handleSubsystemStatus(object sender, SceneLoader.SceneEventArgs e) {
-        isEnabled = e.sceneInfo.RequiresSubsystem(_managedSubsystemType);
-    }
+    // void handleSubsystemStatus(object sender, SceneLoader.SceneEventArgs e) {
+    //     isEnabled = e.sceneInfo.RequiresSubsystem(_managedSubsystemType);
+    // }
 }

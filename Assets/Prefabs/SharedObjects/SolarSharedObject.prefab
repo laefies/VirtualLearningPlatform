@@ -1663,8 +1663,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vrProxyObject: {fileID: 416156534055598637}
   anchorPoint: {fileID: 4887225524158230497}
-  defaultVRPosition: {x: 0, y: 0, z: 0}
-  defaultVRRotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!1 &5497595832027389579
 GameObject:
   m_ObjectHideFlags: 0
@@ -2846,7 +2844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnable: {fileID: 0}
   grabInteractable: {fileID: 524804762410137166}
-  autoUndockDistanceMultiplier: 3
+  autoUndockDistanceMultiplier: 1.5
   enableAutoUndock: 1
   panelEfficiency: 0.18
   panelArea: 2

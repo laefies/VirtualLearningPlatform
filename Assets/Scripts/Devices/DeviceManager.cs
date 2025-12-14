@@ -25,14 +25,27 @@ public class DeviceManager : MonoBehaviour
         }
 
         Instance = this;
-    }    
+    }   
 
-    void Start() { 
-        xrOrigin = FindObjectOfType<XROrigin>();
-
-        SceneLoader.Instance.OnSceneLoaded += PrepareDeviceForScene; 
+    void OnEnable()
+    {
+        if (SceneManager.Instance != null)
+        {
+            SceneManager.Instance.OnMenuLoaded += HandleMenuLoaded;
+            SceneManager.Instance.OnExperienceLoaded += HandleExperienceChange;
+        }
     }
-    void OnDestroy() { SceneLoader.Instance.OnSceneLoaded -= PrepareDeviceForScene; }
+
+    void OnDisable()
+    {
+        if (SceneManager.Instance != null)
+        {
+            SceneManager.Instance.OnMenuLoaded -= HandleMenuLoaded;
+            SceneManager.Instance.OnExperienceLoaded -= HandleExperienceChange;
+        }
+    }
+
+    void Start() {  xrOrigin = FindObjectOfType<XROrigin>(); }
 
     // Called during startup - assigns the manager to a specified DeviceInfo.
     public void Initialize(DeviceInfo info) {
@@ -43,16 +56,28 @@ public class DeviceManager : MonoBehaviour
         cam.cullingMask &= ~LayerMask.GetMask("Hidden");
     }
 
-    void PrepareDeviceForScene(object sender, SceneLoader.SceneEventArgs e) {
-        if (!IsAR() && e.sceneInfo.vrEnvironmentPrefab != null)
-            Instantiate(e.sceneInfo.vrEnvironmentPrefab);
+    private void HandleMenuLoaded() { HandleExperienceChange(); }
+
+    private void HandleExperienceChange(ExperienceData _ = null)
+    {
+        if (!IsAR())
+            SceneManager.Instance.SpawnVREnvironmentForCurrentScene();
     }
 
     void FixedUpdate() {
-        if (!IsAR()) {
+        if (!IsAR())
+        {
             CharacterController controller = GetComponentInChildren<CharacterController>();
-            if (controller != null && !controller.isGrounded) 
-                controller.Move( Vector3.down * 9.81f * Time.deltaTime );
+            if (controller != null)
+            {
+                if (!controller.isGrounded)
+                    controller.Move(Vector3.down * 9.81f * Time.deltaTime);
+            }
+            else
+            {
+                Rigidbody rb = GetComponentInChildren<Rigidbody>();
+                rb?.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
+            }
         }
     }
 

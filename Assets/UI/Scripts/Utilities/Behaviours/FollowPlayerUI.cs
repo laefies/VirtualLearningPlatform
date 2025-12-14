@@ -56,6 +56,7 @@ public class FollowPlayerUI : MonoBehaviour
     {
         _transform = transform;
         _deviceManager = DeviceManager.Instance;
+        ForceReposition();
     }
 
     protected virtual void OnEnable()

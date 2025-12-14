@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731707, g: 0.13414726, b: 0.12107861, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 1030871393}
   - component: {fileID: 1030871394}
   m_Layer: 0
-  m_Name: Scene Loader
+  m_Name: Scene Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,8 +293,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 604abf4cf0c6286459151de022830310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuScene: {fileID: 11400000, guid: c1c07a7a5f2eb9743b50acc5b8fb8d90, type: 2}
-  testScene: {fileID: 11400000, guid: 59319f25f6c86214b9483b59cba6eb27, type: 2}
+  defaultVREnvironment: {fileID: 8556302698627607510, guid: 257848f44e04d3249807571550dc6293,
+    type: 3}
+  menuSceneName: MainMenu
+  availableExperiences:
+  - {fileID: 11400000, guid: a2835325da55a8446b5f9325df40185b, type: 2}
+  - {fileID: 11400000, guid: a9ebf2be55d402148a0cca893b36e084, type: 2}
+  - {fileID: 11400000, guid: dca1307cfb4f6c646a202eee158ad3d7, type: 2}
+  - {fileID: 11400000, guid: 60c686dd9637b6b48895c9308c20e995, type: 2}
+  - {fileID: 11400000, guid: a2dcbaf916f40204d9b20100f705f054, type: 2}
+  - {fileID: 11400000, guid: e306b09bde05edf4dba46ccd296f585b, type: 2}
+  - {fileID: 11400000, guid: c65542c038c9900428756a18381c1fd2, type: 2}
+  - {fileID: 11400000, guid: 424eb23ce7e87a54397797dc73a13b17, type: 2}
+  loadingScreen: {fileID: 4478904303233724168, guid: d8a4ddff61c8d3342bf6252dcea0634f,
+    type: 3}
 --- !u!1001 &1840797263
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -406,5 +418,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 542526830}
-  - {fileID: 1840797263}
   - {fileID: 1030871393}
+  - {fileID: 1840797263}

@@ -5,20 +5,19 @@ using Nova;
 
 /// <summary>
 /// Controls the experience selection panel, displaying available experiences in a grid.
+/// Coordinates user actions to start solo or multiplayer experiences.
 /// </summary>
 public class ExperienceSelectionPanelController : MonoBehaviour
 {
-    [Header("Experience Configuration")]
-    [SerializeField] private List<ExperienceData> availableExperiences;
-
     [Header("UI References")]
     [SerializeField] private Button startExperienceButton;
     [SerializeField] private Transform experienceGridContainer;
     [SerializeField] private GameObject experienceItemPrefab;
 
     private LobbyManager LobbyManager => LobbyManager.Instance;
+    private SceneManager SceneManager => SceneManager.Instance;
+    
     private readonly List<ExperienceListItem> experienceItems = new List<ExperienceListItem>();
-
     private ExperienceData selectedExperience;
 
     private void OnEnable()
@@ -28,16 +27,11 @@ public class ExperienceSelectionPanelController : MonoBehaviour
             LobbyManager.OnExperienceChanged += HandleExperienceChanged;
             LobbyManager.OnLobbyPlayersChanged += HandleLobbyPlayersChanged;
         }
-
+        
         startExperienceButton?.AddListener(OnStartExperienceClicked);
-    }
 
-    private void Start()
-    {
-        LoadExperiences();
         DisplayExperiences();
         UpdateStartButtonState();
-
     }
 
     private void OnDisable()
@@ -53,43 +47,34 @@ public class ExperienceSelectionPanelController : MonoBehaviour
 
     private void OnDestroy() { ClearExperienceGrid(); }
 
-    private void LoadExperiences()
-    {
-        if (availableExperiences != null && availableExperiences.Count > 0)
-            return;
-
-        if (availableExperiences.Count == 0)
-        {
-            Debug.LogWarning("No ExperienceData assets found.");
-        }
-    }
-
     private void DisplayExperiences()
     {
         ClearExperienceGrid();
 
-        if (availableExperiences == null || availableExperiences.Count == 0) return;
+        if (SceneManager == null || SceneManager.AvailableExperiences == null) {
+            Debug.LogWarning("[Experience Panel] SceneManager or experiences not available");
+            return;
+        }
 
-        foreach (ExperienceData experience in availableExperiences)
+        foreach (ExperienceData experience in SceneManager.AvailableExperiences)
         {
             if (experience == null) continue;
 
             GameObject itemObject = Instantiate(experienceItemPrefab, experienceGridContainer);
-
+            
             if (itemObject.TryGetComponent(out ExperienceListItem listItem))
             {
                 listItem.SetExperience(experience, OnExperienceCardClicked);
                 experienceItems.Add(listItem);
             }
         }
-
     }
 
     private void HandleExperienceChanged(string experienceName)
     {
         ExperienceData experience = string.IsNullOrEmpty(experienceName)
             ? null
-            : availableExperiences.Find(e => e.experienceName == experienceName);
+            : SceneManager.GetExperienceByName(experienceName);
 
         UpdateSelectedExperience(experience);
     }
@@ -103,7 +88,7 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     private void UpdateSelectedExperience(ExperienceData newExperience)
     {
         selectedExperience = newExperience;
-
+        
         UpdateExperienceListState();
         UpdateStartButtonState();
     }
@@ -132,9 +117,9 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     {
         if (startExperienceButton == null) return;
 
-        bool canStart = selectedExperience != null &&
+        bool canStart = selectedExperience != null && 
                        (LobbyManager == null || !LobbyManager.IsInLobby || LobbyManager.IsHost);
-
+        
         startExperienceButton.IsInteractable = canStart;
     }
 
@@ -143,42 +128,61 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         if (clickedExperience == null || LobbyManager == null)
             return;
 
-        // Case 1 :: Not in a lobby 
-        //              + Clicking an unselected experience         →  Update filtering
-        //              + Clicking the already selected experience  →  Unselect / Remove filtering
+        // Case 1: Not in a lobby - update filtering
         if (!LobbyManager.IsInLobby)
         {
             bool isDeselecting = selectedExperience == clickedExperience;
             await LobbyManager.RefreshLobbyListAsync(
-                isDeselecting ? null : clickedExperience.experienceName, // New filter
-                isDeselecting                                            // Ensures previous filter is cleared
+                isDeselecting ? null : clickedExperience.experienceName,
+                isDeselecting
             );
             UpdateSelectedExperience(isDeselecting ? null : clickedExperience);
             return;
         }
 
-        // Case 2 :: In lobby as host → Change lobby experience
+        // Case 2: In lobby as host - change lobby experience
         if (LobbyManager.IsHost)
         {
             await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
-            return;
         }
     }
 
     private async void OnStartExperienceClicked()
     {
-        if (selectedExperience == null) return;
+        if (selectedExperience == null)
+        {
+            Debug.LogWarning("[Experience Panel] No experience selected");
+            return;
+        }
 
-        // If in a lobby, use lobby system to start
+        if (SceneManager.IsTransitioning)
+        {
+            Debug.LogWarning("[Experience Panel] Scene transition already in progress");
+            return;
+        }
+
+        // Multiplayer: Prepare relay, then load scene
         if (LobbyManager != null && LobbyManager.IsInLobby)
         {
-            if (LobbyManager.IsHost) await LobbyManager.StartExperienceAsync();
+            if (!LobbyManager.IsHost) {
+                Debug.LogWarning("[Experience Panel] Only host can start experience");
+                return;
+            }
+
+            Debug.Log($"[Experience Panel] Starting multiplayer experience: {selectedExperience.experienceName}");
+            
+            bool success = await LobbyManager.PrepareMultiplayerExperienceAsync();
+            
+            if (success)
+                SceneManager.LoadMultiplayerExperience(selectedExperience);
+            else
+                Debug.LogError("[Experience Panel] Failed to prepare multiplayer experience");
         }
+        // Solo: Directly load the scene
         else
         {
-            // Debug.Log($"[Experience Panel] Starting solo experience: {selectedExperience.experienceName}");
-            // TODO: Implement solo experience start
-            // SceneManager.LoadScene(selectedExperience.sceneName);
+            Debug.Log($"[Experience Panel] Starting solo experience: {selectedExperience.experienceName}");
+            SceneManager.LoadSoloExperience(selectedExperience);
         }
     }
 }
