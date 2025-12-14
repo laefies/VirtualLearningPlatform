@@ -133,7 +133,7 @@ public class LobbyManager : MonoBehaviour
             _isAuthenticated = true;
 
             Debug.Log($"[Lobby Management] Successfully authenticated.");
-
+            
             return true;
         }
         catch (Exception e)
@@ -246,7 +246,7 @@ public class LobbyManager : MonoBehaviour
 
             Debug.Log($"[Lobby Management] Joined '{lobby.Name}'");
             OnLobbyJoined?.Invoke(_currentLobby);
-
+            OnLobbyPlayersChanged?.Invoke(_currentLobby.Players);
             return true;
         }
         catch (LobbyServiceException e)

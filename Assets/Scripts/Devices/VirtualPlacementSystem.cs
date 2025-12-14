@@ -167,27 +167,43 @@ public class VirtualPlacementSystem : MonoBehaviour
 
     bool TryPlaceObject() 
     { 
-        if (!NetworkObjectManager.Instance) return false;
-        
-        // Verify if there are objects to spawn
-        DetectionConfiguration config = NetworkObjectManager.Instance.config;
-        if (config == null || config.GetObjectCount() == 0) { 
-            Debug.LogError("Object can not be spawned!"); 
-            return false;
-        } 
-        
-        try {
-            NetworkObjectManager.Instance.ProcessMarkerServerRpc( 
-                new MarkerInfo { 
-                    Id = config.GetIdentificator(objectIndex), 
-                    Pose = lastValidPose,
-                    Size = 0.075f 
-                } 
-            );
+        try
+        {
+            ObjectPlacementInfo info = new ObjectPlacementInfo {
+                typeId       = new ObjectTypeId("Solar Panel"),
+                localPose    = new NetworkPose(lastValidPose.position, lastValidPose.rotation),
+                detectedSize = 0.075f 
+            };
+
+            SharedObjectRegistry.Instance?.RegisterObjectPlacementServerRpc(info);
+            
             return true;
         } catch (System.Exception e) {
             Debug.LogError($"Something went wrong while spawning the object!");
             return false;
         }
+
+        // if (!NetworkObjectManager.Instance) return false;
+        
+        // // Verify if there are objects to spawn
+        // DetectionConfiguration config = NetworkObjectManager.Instance.config;
+        // if (config == null || config.GetObjectCount() == 0) { 
+        //     Debug.LogError("Object can not be spawned!"); 
+        //     return false;
+        // } 
+        
+        // try {
+        //     NetworkObjectManager.Instance.ProcessMarkerServerRpc( 
+        //         new MarkerInfo { 
+        //             Id = config.GetIdentificator(objectIndex), 
+        //             Pose = lastValidPose,
+        //             Size = 0.075f 
+        //         } 
+        //     );
+        //     return true;
+        // } catch (System.Exception e) {
+        //     Debug.LogError($"Something went wrong while spawning the object!");
+        //     return false;
+        // }
     }
 }

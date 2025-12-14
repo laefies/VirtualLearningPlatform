@@ -242,6 +242,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1717273817
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1717273818}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1717273818
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717273817}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.117798805, y: 0.71799994, z: 0.679399}
+  m_LocalScale: {x: 0.20000006, y: 0.2, z: 0.20000006}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1974759978
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -340,14 +371,44 @@ PrefabInstance:
       propertyPath: m_Name
       value: Object Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 8662164903924689418, guid: 499aedf048f5008489b7fa70d657a756,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3040089315333674666, guid: 499aedf048f5008489b7fa70d657a756,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1974759980}
   m_SourcePrefab: {fileID: 100100000, guid: 499aedf048f5008489b7fa70d657a756, type: 3}
+--- !u!1 &1974759979 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3040089315333674666, guid: 499aedf048f5008489b7fa70d657a756,
+    type: 3}
+  m_PrefabInstance: {fileID: 1974759978}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1974759980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974759979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1314700cdc3ac38469fafa9da19e3e75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabDatabase: {fileID: 11400000, guid: 796accd4c6ee1fb458bbc8180abc3a3d, type: 2}
+  defaultVRSpawnPoint: {fileID: 1717273818}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1974759978}
   - {fileID: 672132935}
+  - {fileID: 1974759978}
+  - {fileID: 1717273818}

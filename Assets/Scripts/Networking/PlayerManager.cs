@@ -33,9 +33,6 @@ public class PlayerManager : NetworkBehaviour
 
     private void Start() 
     {
-        // Authenticate into Unity Services
-        LobbyManager.Instance.AuthenticateAsync();
-
         // Detect the current device or fallback to default
         DeviceInfo info = GetDeviceInfo();
         _playerName = $"{info.deviceName} User";

@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using System.Threading.Tasks;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -33,11 +34,17 @@ public class SceneLoader : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
+    private async void OnEnable()
     {
+        // Authenticate into Unity Services
+        await LobbyManager.Instance.AuthenticateAsync();
+
         // Subscribe to Lobby related events
         LobbyManager.Instance.OnExperienceStarted += HandleGameStart;
+    }
 
+    private void Start()
+    {
         // Start by showing the player the Menu Scene
         StartCoroutine(LoadMenuScene());
     }

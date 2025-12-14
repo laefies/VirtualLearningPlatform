@@ -663,10 +663,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be23642a7ea8a44c86209ea13d6bd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _forwardDistance: 0.375
-  _heightOffset: 0.03
-  _tiltAngle: 5
-  _maxDistance: 0.4
+  _forwardDistance: 0.75
+  _heightOffset: -0.07
+  _tiltAngle: 3
+  _maxDistance: 0.1
   _maxRotationAngle: 45
   _lerpSpeed: 2
   _allowManualReposition: 1

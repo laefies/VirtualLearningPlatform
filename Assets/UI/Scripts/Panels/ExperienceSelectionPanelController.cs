@@ -10,7 +10,7 @@ public class ExperienceSelectionPanelController : MonoBehaviour
 {
     [Header("Experience Configuration")]
     [SerializeField] private List<ExperienceData> availableExperiences;
-    
+
     [Header("UI References")]
     [SerializeField] private Button startExperienceButton;
     [SerializeField] private Transform experienceGridContainer;
@@ -18,29 +18,33 @@ public class ExperienceSelectionPanelController : MonoBehaviour
 
     private LobbyManager LobbyManager => LobbyManager.Instance;
     private readonly List<ExperienceListItem> experienceItems = new List<ExperienceListItem>();
-    
+
     private ExperienceData selectedExperience;
 
     private void OnEnable()
     {
         if (LobbyManager != null)
         {
-            LobbyManager.OnExperienceChanged   += HandleExperienceChanged;
+            LobbyManager.OnExperienceChanged += HandleExperienceChanged;
             LobbyManager.OnLobbyPlayersChanged += HandleLobbyPlayersChanged;
         }
-        
-        startExperienceButton?.AddListener(OnStartExperienceClicked);
 
+        startExperienceButton?.AddListener(OnStartExperienceClicked);
+    }
+
+    private void Start()
+    {
         LoadExperiences();
         DisplayExperiences();
         UpdateStartButtonState();
+
     }
 
     private void OnDisable()
     {
         if (LobbyManager != null)
         {
-            LobbyManager.OnExperienceChanged   -= HandleExperienceChanged;
+            LobbyManager.OnExperienceChanged -= HandleExperienceChanged;
             LobbyManager.OnLobbyPlayersChanged -= HandleLobbyPlayersChanged;
         }
 
@@ -54,7 +58,8 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         if (availableExperiences != null && availableExperiences.Count > 0)
             return;
 
-        if (availableExperiences.Count == 0) {
+        if (availableExperiences.Count == 0)
+        {
             Debug.LogWarning("No ExperienceData assets found.");
         }
     }
@@ -70,8 +75,9 @@ public class ExperienceSelectionPanelController : MonoBehaviour
             if (experience == null) continue;
 
             GameObject itemObject = Instantiate(experienceItemPrefab, experienceGridContainer);
-            
-            if (itemObject.TryGetComponent(out ExperienceListItem listItem)) {
+
+            if (itemObject.TryGetComponent(out ExperienceListItem listItem))
+            {
                 listItem.SetExperience(experience, OnExperienceCardClicked);
                 experienceItems.Add(listItem);
             }
@@ -91,15 +97,15 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     private void HandleLobbyPlayersChanged(List<Player> _)
     {
         UpdateExperienceListState();
-        UpdateStartButtonState();      
+        UpdateStartButtonState();
     }
 
     private void UpdateSelectedExperience(ExperienceData newExperience)
     {
         selectedExperience = newExperience;
-        
+
         UpdateExperienceListState();
-        UpdateStartButtonState();      
+        UpdateStartButtonState();
     }
 
     private void ClearExperienceGrid()
@@ -116,19 +122,19 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     {
         foreach (ExperienceListItem item in experienceItems)
         {
-            bool isSelected     = item.ExperienceData == selectedExperience;
+            bool isSelected = item.ExperienceData == selectedExperience;
             bool isInteractable = !LobbyManager.IsInLobby || (LobbyManager.IsHost && !isSelected);
-            item.SetState(isSelected, isInteractable);  
-        }   
+            item.SetState(isSelected, isInteractable);
+        }
     }
 
     private void UpdateStartButtonState()
     {
         if (startExperienceButton == null) return;
 
-        bool canStart = selectedExperience != null && 
+        bool canStart = selectedExperience != null &&
                        (LobbyManager == null || !LobbyManager.IsInLobby || LobbyManager.IsHost);
-        
+
         startExperienceButton.IsInteractable = canStart;
     }
 
@@ -136,11 +142,12 @@ public class ExperienceSelectionPanelController : MonoBehaviour
     {
         if (clickedExperience == null || LobbyManager == null)
             return;
-                    
+
         // Case 1 :: Not in a lobby 
         //              + Clicking an unselected experience         →  Update filtering
         //              + Clicking the already selected experience  →  Unselect / Remove filtering
-        if (!LobbyManager.IsInLobby) {
+        if (!LobbyManager.IsInLobby)
+        {
             bool isDeselecting = selectedExperience == clickedExperience;
             await LobbyManager.RefreshLobbyListAsync(
                 isDeselecting ? null : clickedExperience.experienceName, // New filter
@@ -151,7 +158,8 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         }
 
         // Case 2 :: In lobby as host → Change lobby experience
-        if (LobbyManager.IsHost) {
+        if (LobbyManager.IsHost)
+        {
             await LobbyManager.ChangeExperienceAsync(clickedExperience.experienceName);
             return;
         }

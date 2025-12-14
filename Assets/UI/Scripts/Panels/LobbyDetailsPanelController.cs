@@ -28,7 +28,6 @@ public class LobbyDetailsPanelController : MonoBehaviour
         }
 
         leaveLobbyButton?.AddListener(OnLeaveLobbyClicked);
-
     }
 
     private void OnDisable()

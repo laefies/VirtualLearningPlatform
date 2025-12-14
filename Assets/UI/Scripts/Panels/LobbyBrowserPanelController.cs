@@ -19,14 +19,17 @@ public class LobbyBrowserPanelController : MonoBehaviour
     private LobbyManager LobbyManager => LobbyManager.Instance;
     private readonly List<GameObject> activeLobbyItems = new List<GameObject>();
 
-    private async void OnEnable()
+    private void OnEnable()
     {
         if (LobbyManager != null)
             LobbyManager.OnLobbyListRefreshed += HandleLobbyListRefreshed;
 
         createLobbyButton?.AddListener(OnCreateLobbyClicked);
         refreshLobbyListButton?.AddListener(OnRefreshLobbyListClicked);
+    }
 
+    private async void Start()
+    {
         await LobbyManager?.RefreshLobbyListAsync();
     }
 
