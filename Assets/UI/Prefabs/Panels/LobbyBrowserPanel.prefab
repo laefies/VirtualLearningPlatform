@@ -629,8 +629,8 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 422
-        Type: 0
+        Raw: 1
+        Type: 1
       Y:
         Raw: 26
         Type: 0
@@ -748,7 +748,7 @@ MonoBehaviour:
       Y: 1
       Z: 0
     AutoSize:
-      X: 0
+      X: 1
       Y: 0
       Z: 0
     RotateSize: 0
@@ -810,7 +810,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Choose a lobby to join, or create your own.
+  m_text: Don't want to play alone? Join or create a team!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
   m_sharedMaterial: {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7,
@@ -2813,6 +2813,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: RefreshLobbyListButton
       objectReference: {fileID: 0}
+    - target: {fileID: 5079467211874031647, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: layout.Position.Y.Raw
+      value: 1.325
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841442627323987115, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7997314120082392295, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061250207645018535, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 74
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2909,10 +2929,20 @@ PrefabInstance:
       propertyPath: texture
       value: 
       objectReference: {fileID: 2800000, guid: 148406cb594041f42b7c78354190b0ea, type: 3}
+    - target: {fileID: 5841442627323987115, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7308945029447671938, guid: 11140e3d715ac55459554afbac113402,
         type: 3}
       propertyPath: hoverState.shadowOffset.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061250207645018535, guid: 11140e3d715ac55459554afbac113402,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 74
       objectReference: {fileID: 0}
     - target: {fileID: 9090460022043237997, guid: 11140e3d715ac55459554afbac113402,
         type: 3}

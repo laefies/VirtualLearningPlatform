@@ -14,12 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Experiences/SolarExperience.unity
     guid: 3d7b62689c8b8234b8c6ccb47ea7a976
-  - enabled: 0
-    path: Assets/Samples/Meta XR Core SDK/72.0.0/Sample Scenes/ControllerDrivenHandPoses.unity
-    guid: 7ea9f7c90c2fa404d86276a633b59903
-  - enabled: 0
-    path: Assets/Samples/Meta XR Core SDK/72.0.0/Sample Scenes/ControllerModels.unity
-    guid: 39cfe7aa0a2d46c47994d8d0308ec663
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: be2dfd4e545ad4e4cbdd3097b0b417e2,
       type: 2}

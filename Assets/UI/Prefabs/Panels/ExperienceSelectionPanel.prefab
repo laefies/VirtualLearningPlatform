@@ -261,7 +261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -38}
+  m_AnchoredPosition: {x: 24.873657, y: -38}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &2561271864331801397
@@ -335,7 +335,7 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 544
+        Raw: 593.7473
         Type: 0
       Y:
         Raw: 26
@@ -454,7 +454,7 @@ MonoBehaviour:
       Y: -1
       Z: 0
     AutoSize:
-      X: 0
+      X: 2
       Y: 0
       Z: 0
     RotateSize: 0
@@ -516,7 +516,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "You\u2019re not in a lobby. Pick a lesson to explore on your own."
+  m_text: What do you want to discover today? Select a category to begin!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
   m_sharedMaterial: {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7,
@@ -580,7 +580,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -272, y: -13, z: -272, w: -13}
+  m_margin: {x: -0, y: -13, z: -0, w: -13}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -1502,15 +1502,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34512e213bb662c499adb26ac4c46176, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableExperiences:
-  - {fileID: 11400000, guid: a2835325da55a8446b5f9325df40185b, type: 2}
-  - {fileID: 11400000, guid: a9ebf2be55d402148a0cca893b36e084, type: 2}
-  - {fileID: 11400000, guid: dca1307cfb4f6c646a202eee158ad3d7, type: 2}
-  - {fileID: 11400000, guid: 60c686dd9637b6b48895c9308c20e995, type: 2}
-  - {fileID: 11400000, guid: a2dcbaf916f40204d9b20100f705f054, type: 2}
-  - {fileID: 11400000, guid: e306b09bde05edf4dba46ccd296f585b, type: 2}
-  - {fileID: 11400000, guid: c65542c038c9900428756a18381c1fd2, type: 2}
-  - {fileID: 11400000, guid: 424eb23ce7e87a54397797dc73a13b17, type: 2}
   startExperienceButton: {fileID: 2059637710077165635}
   experienceGridContainer: {fileID: 4852464528434968631}
   experienceItemPrefab: {fileID: 8758552013999915253, guid: 613a8aae29e895f43bceea184e066c38,
@@ -2684,7 +2675,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Choose a Lesson!
+  m_text: Pick a Theme!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bc380e34778e38542918e7309d7a381e, type: 2}
   m_sharedMaterial: {fileID: 5832712011949517647, guid: bc380e34778e38542918e7309d7a381e,

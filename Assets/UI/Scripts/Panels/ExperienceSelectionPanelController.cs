@@ -29,7 +29,10 @@ public class ExperienceSelectionPanelController : MonoBehaviour
         }
         
         startExperienceButton?.AddListener(OnStartExperienceClicked);
+    }
 
+    private void Start()
+    {
         DisplayExperiences();
         UpdateStartButtonState();
     }

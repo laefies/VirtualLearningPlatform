@@ -810,7 +810,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Find out who\u2019s joining you."
+  m_text: Find out who's exploring with you!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea6283055697a2b43847b9a413b96df7, type: 2}
   m_sharedMaterial: {fileID: -8491420403023871798, guid: ea6283055697a2b43847b9a413b96df7,
@@ -2967,7 +2967,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: In Lobby!
+  m_text: Team Members
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bc380e34778e38542918e7309d7a381e, type: 2}
   m_sharedMaterial: {fileID: 5832712011949517647, guid: bc380e34778e38542918e7309d7a381e,

@@ -257,7 +257,7 @@ Transform:
   m_GameObject: {fileID: 7070550167296718260}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.98, y: 0, z: 0.7}
+  m_LocalPosition: {x: -18.98, y: 0, z: 0}
   m_LocalScale: {x: 0.0004, y: 0.0004, z: 0.0004}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -669,6 +669,34 @@ MonoBehaviour:
   _maxDistance: 0.1
   _maxRotationAngle: 45
   _lerpSpeed: 2
+  _enableSpawnAnimation: 1
+  _spawnAnimationDuration: 0.85
+  _spawnScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _spawnSound: {fileID: 8300000, guid: 65315d601d3c52f4db7428a1219c9f6e, type: 3}
+  _spawnSoundVolume: 0.2
   _allowManualReposition: 1
   _manualRepositionHandle: {fileID: 5154366572184799637}
   _lockRotationAxes: 1
@@ -1326,6 +1354,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 1012624897289701698, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: layout.Size.X.Raw
+      value: 112.02299
+      objectReference: {fileID: 0}
     - target: {fileID: 1600054292801670577, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}
       propertyPath: m_Layer
@@ -1426,6 +1459,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 4784538344610564604, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838481743160713364, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4852464527959352848, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}
       propertyPath: m_Layer
@@ -1460,6 +1503,16 @@ PrefabInstance:
         type: 3}
       propertyPath: layout.Position.X.Raw
       value: 97
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756451816334326892, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: layout.Size.X.Raw
+      value: 144.02298
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756451816334326892, guid: 16cfdbe651f75e147815309da5ea8d9e,
+        type: 3}
+      propertyPath: layout.Position.Y.Raw
+      value: 1.325
       objectReference: {fileID: 0}
     - target: {fileID: 8498935829957761244, guid: 16cfdbe651f75e147815309da5ea8d9e,
         type: 3}

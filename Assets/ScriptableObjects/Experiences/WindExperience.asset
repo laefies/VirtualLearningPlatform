@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WindExperience
   m_EditorClassIdentifier: 
   experienceName: Wind
-  experienceSubtitle: Module 1
+  experienceSubtitle: 0 Experiences
   displayIcon: {fileID: 21300000, guid: 229bd342aae6478438bf7b9ae9f8ecb7, type: 3}
   sceneName: SolarExperience
   vrEnvironment: {fileID: 8556302698627607510, guid: 257848f44e04d3249807571550dc6293,

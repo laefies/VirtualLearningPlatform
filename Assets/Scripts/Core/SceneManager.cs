@@ -82,13 +82,13 @@ public class SceneManager : MonoBehaviour
         // spawn device
         PlayerManager.Instance.SpawnDevice();
 
-        FollowPlayerUI aa = Instantiate(loadingScreen).GetComponent<FollowPlayerUI>();
-        aa.ForceReposition();
-        DontDestroyOnLoad(aa.gameObject);
+        // FollowPlayerUI aa = Instantiate(loadingScreen).GetComponent<FollowPlayerUI>();
+        // aa.ForceReposition();
+        // DontDestroyOnLoad(aa.gameObject);
         await LobbyManager.Instance?.AuthenticateAsync();
 
         StartCoroutine(LoadMenuScene());
-        Destroy(aa.gameObject);
+        //Destroy(aa.gameObject);
     }
     #endregion
 

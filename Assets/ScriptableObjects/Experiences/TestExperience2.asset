@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestExperience2
   m_EditorClassIdentifier: 
   experienceName: Experience
-  experienceSubtitle: Module 1
+  experienceSubtitle: 0 Experiences
   displayIcon: {fileID: 21300000, guid: 001dad2ab1feba74bb20d2d9a26c20c7, type: 3}
   sceneName: SolarExperience
   vrEnvironment: {fileID: 8556302698627607510, guid: 257848f44e04d3249807571550dc6293,

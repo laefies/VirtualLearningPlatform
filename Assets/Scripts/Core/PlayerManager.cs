@@ -82,7 +82,7 @@ public class PlayerManager : NetworkBehaviour
     private void OnNetworkSceneEvent(SceneEvent sceneEvent) {
 
         if (sceneEvent.SceneEventType == SceneEventType.LoadComplete) {
-            // TODO DELETE SceneLoader.Instance.NotifySceneLoad();
+            // TODO DELETE Not doing anymore;
         }
     }
 
