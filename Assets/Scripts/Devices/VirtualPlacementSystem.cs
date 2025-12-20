@@ -23,7 +23,7 @@ public class VirtualPlacementSystem : MonoBehaviour
     void Start() { objectIndex = -1; }
 
     public bool InitPlacement() {
-        if (!NetworkObjectManager.Instance) return false;
+        if (!SharedObjectRegistry.Instance) return false;
             
         canPlace = false;
         objectIndex = -1;
@@ -49,11 +49,11 @@ public class VirtualPlacementSystem : MonoBehaviour
     }
 
     void GetNextObject() {
-        if (!NetworkObjectManager.Instance) return;
+        if (!SharedObjectRegistry.Instance) return;
 
         // Verify if there are objects to spawn
-        DetectionConfiguration config = NetworkObjectManager.Instance.config;
-        if (config == null || config.GetObjectCount() == 0) {
+        ObjectPrefabDatabase objectDatabase = SharedObjectRegistry.Instance.Database;
+        if (objectDatabase == null || objectDatabase.IsEmpty) {
             Debug.LogError("No objects to spawn!");
             return;
         }
@@ -65,19 +65,20 @@ public class VirtualPlacementSystem : MonoBehaviour
         }
 
         // Increase index count and get next spawnable object
-        objectIndex = (objectIndex + 1) % config.GetObjectCount();
-        GameObject prefab = config.GetPrefab(objectIndex);
+        objectIndex = (objectIndex + 1) % objectDatabase.Count;
+        GameObject prefab = objectDatabase.GetEntryAt(objectIndex).prefab;
 
+        Debug.Log(prefab.name);
         // Validate object
-        Spawnable spawnable = prefab.GetComponent<Spawnable>();
-        if (spawnable == null || spawnable.vrProxy == null) {
-            Debug.LogError($"Prefab '{prefab.name}' is missing Spawnable or Proxy component!");
+        SharedObject sharedObject = prefab.GetComponent<SharedObject>();
+        if (sharedObject == null || sharedObject.vrProxyObject == null) {
+            Debug.LogError($"Prefab '{prefab.name}' is missing proxy component!");
             return;
         }
 
         // Instantiate the object's preview
-        objectPreview = Instantiate(spawnable.vrProxy);
-        objectPreview.transform.localScale = spawnable.vrProxy.transform.localScale * 0.075f;
+        objectPreview = Instantiate(sharedObject.vrProxyObject);
+        objectPreview.transform.localScale = sharedObject.vrProxyObject.transform.localScale * 0.075f;
         PreparePlacementPreview();
     }
 

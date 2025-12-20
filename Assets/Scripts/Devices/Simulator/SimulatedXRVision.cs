@@ -30,7 +30,6 @@ public class SimulatedXRVision : MonoBehaviour
     void Update()
     {
         MoveCamera();        
-        HandleSimulatedSpawns();
     }
 
     /// <summary>
@@ -56,25 +55,5 @@ public class SimulatedXRVision : MonoBehaviour
 
         // Prevent the cursor from leaving the game window while rotating
         Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    /// <summary>
-    /// Simulates placing virtual objects in the environment.
-    /// </summary>
-    void HandleSimulatedSpawns() {
-
-        // Check if an interpretable key is being pressed
-        if (Input.GetKey(KeyCode.P)) {
-            NetworkObjectManager.Instance.ProcessMarkerServerRpc(
-                new MarkerInfo {
-                    Id   = "Solar Panel",
-                    Pose = new Pose(
-                        cameraTransform.position + cameraTransform.forward * 0.4f, 
-                        Quaternion.identity            
-                    ),
-                    Size = 0.035f
-                }
-            );
-        }
     }
 }

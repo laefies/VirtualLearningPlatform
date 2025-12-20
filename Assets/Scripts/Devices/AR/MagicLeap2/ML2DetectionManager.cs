@@ -50,7 +50,7 @@ public class ML2DetectionManager : DeviceSubsystemManager
     /// <summary> Updates the marker detector and processes all (if any) detected markers. </summary>
     protected override void HandleSubsystem()
     {
-        if (NetworkObjectManager.Instance != null && Detector.Instance.IsAvailable())
+        if (SharedObjectRegistry.Instance != null && Detector.Instance.IsAvailable())
         {
             PixelSensorSnapshot snapshot = TryMakeSnapshot();
             if (snapshot != null)
@@ -153,13 +153,14 @@ public class ML2DetectionManager : DeviceSubsystemManager
 
             // testObject.transform.position = markerCenter;
             // testObject.transform.rotation = Quaternion.LookRotation(markerRotation);
-            NetworkObjectManager.Instance.ProcessMarkerServerRpc(
-                 new MarkerInfo {
-                    Id = detection.class_id,
-                    Pose = new Pose(markerCenter, markerRotation),
-                    Size = 0.035f
-                 }
-            );
+            
+            ObjectPlacementInfo info = new ObjectPlacementInfo {
+                typeId       = new ObjectTypeId(detection.class_id),
+                localPose    = new NetworkPose(markerCenter, markerRotation),
+                detectedSize = 0.035f
+            };
+
+            SharedObjectRegistry.Instance?.RegisterObjectPlacementServerRpc(info);
         }
     }
 }
