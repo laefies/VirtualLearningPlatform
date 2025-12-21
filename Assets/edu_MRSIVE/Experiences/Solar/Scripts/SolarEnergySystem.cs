@@ -72,6 +72,7 @@ public class SolarEnergySystem : NetworkBehaviour
             _grabbable.OnDockedChanged += OnDockedChanged;
 
         lightSlider?.onValueChanged.AddListener(OnLightSliderChanged);
+        dockToggle?.onValueChanged.AddListener(OnDockToggleChanged);
 
         UpdateAngleUI(_incidenceAngle.Value);
         UpdateLightUI(_lightIntensity.Value);
@@ -181,6 +182,11 @@ public class SolarEnergySystem : NetworkBehaviour
     private void OnLightSliderChanged(float value)
     {
         SetLightIntensity(value);
+    }
+
+    private void OnDockToggleChanged(bool isOn)
+    {
+        _grabbable.SetDocked(isOn);
     }
 
     #endregion

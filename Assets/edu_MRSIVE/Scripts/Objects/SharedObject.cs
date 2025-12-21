@@ -11,105 +11,82 @@ using Unity.Netcode;
 public class SharedObject : NetworkBehaviour
 {
     [Header("References")]
-    [SerializeField] public GameObject vrProxyObject;
+    [SerializeField] private GameObject vrProxyObject;
     [SerializeField] private Transform anchorPoint;
 
     private ObjectTypeId _typeId;
     private bool _isDetectedByLocalUser = false;
     private Transform[] _allChildTransforms;
 
-    private NetworkVariable<NetworkPose> _worldTransform = new NetworkVariable<NetworkPose>(
+    private NetworkVariable<NetworkPose> _sharedPose = new NetworkVariable<NetworkPose>(
         new NetworkPose(Vector3.zero, Quaternion.identity),
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
 
-    private NetworkVariable<float> _scale = new NetworkVariable<float>(
-        1f,
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server
-    );
+    private bool IsARUser() => DeviceManager.Instance.IsAR();
+    public GameObject GetVRProxy()     => vrProxyObject;
+    public Transform  GetAnchorPoint() => anchorPoint;
 
     private void Awake()
     {
         CacheChildTransforms();
         
-        if (vrProxyObject != null)
-            vrProxyObject.SetActive(!IsARUser());
+        vrProxyObject?.SetActive(!IsARUser());
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         
-        _worldTransform.OnValueChanged += OnWorldTransformChanged;
-        _scale.OnValueChanged += OnScaleChanged;
-        
-        // VR users can see immediately and use world position
-        if (!IsARUser())
-        {
+        // For non-AR users:
+        if (!IsARUser()) {
+            // Listen to changes to the shared object pose
+            _sharedPose.OnValueChanged += OnSharedPoseChanged;
+            ApplySharedPose(); // And apply the starting one
+
+            // Immediately set as spotted - VR users always see the shared objects
             _isDetectedByLocalUser = true;
-            ApplyWorldTransform();
         }
         
         UpdateVisibility(_isDetectedByLocalUser);
     }
 
-    public void Initialize(ObjectTypeId typeId)
-    {
-        _typeId = typeId;
-    }
+    public void Initialize(ObjectTypeId typeId) { _typeId = typeId; }
 
     /// <summary>
     /// Called on the specific client that detected/placed this object
     /// </summary>
     [ClientRpc]
-    public void NotifyClientDetectionClientRpc(NetworkPose localPose, float size, ClientRpcParams clientRpcParams = default)
+    public void NotifyClientDetectionClientRpc(NetworkPose pose, ClientRpcParams clientRpcParams = default)
     {
+        if (anchorPoint == null) return; 
+            
         _isDetectedByLocalUser = true;
         
-        if (IsARUser())
-        {
-            // AR: Position anchor at detected marker
-            if (anchorPoint != null)
-            {
-                anchorPoint.SetPositionAndRotation(localPose.position, localPose.rotation);
-                anchorPoint.localScale = Vector3.one * size;
-            }
-        }
-        else
-        {
-            UpdateWorldTransformServerRpc(localPose, size);
+        if (IsARUser()) {
+            // AR: Position the anchor "on" the real-world detected marker
+            anchorPoint.SetPositionAndRotation(pose.position, pose.rotation);
+        } else {
+            // VR: Update the shared value of the object's pose
+            UpdateSharedPoseServerRpc(pose);
         }
         
         UpdateVisibility(true);
     }
 
-    private void OnWorldTransformChanged(NetworkPose oldValue, NetworkPose newValue)
-    {
-        if (!IsARUser())
-            ApplyWorldTransform();
-    }
-
-    private void OnScaleChanged(float oldValue, float newValue)
-    {
-        if (!IsARUser())
-            ApplyWorldTransform();
-    }
-
-    private void ApplyWorldTransform()
-    {
-        // VR users apply the shared world transform directly
-        Pose worldPose = _worldTransform.Value.ToPose();
-        transform.SetPositionAndRotation(worldPose.position, worldPose.rotation);
-        transform.localScale = Vector3.one * _scale.Value;
-    }
-
     [ServerRpc(RequireOwnership = false)]
-    private void UpdateWorldTransformServerRpc(NetworkPose pose, float scale)
-    {
-        _worldTransform.Value = pose;
-        _scale.Value          = scale;
+    private void UpdateSharedPoseServerRpc(NetworkPose pose) {
+        _sharedPose.Value = pose;
+    }
+
+    private void OnSharedPoseChanged(NetworkPose oldValue, NetworkPose newValue) {
+        if (!IsARUser()) ApplySharedPose();
+    }
+
+    private void ApplySharedPose() {
+        Pose newSharedPose = _sharedPose.Value.ToPose();
+        transform.SetPositionAndRotation(newSharedPose.position, newSharedPose.rotation);
     }
 
     private void UpdateVisibility(bool visible)
@@ -125,8 +102,7 @@ public class SharedObject : NetworkBehaviour
             
             GameObject obj = t.gameObject;
 
-            if (vrProxyObject != null && obj == vrProxyObject)
-                continue;
+            if (vrProxyObject != null && obj == vrProxyObject) continue;
 
             obj.layer = targetLayer;
             SetComponentsEnabled(obj, visible);
@@ -145,38 +121,28 @@ public class SharedObject : NetworkBehaviour
             i.enabled = enabled;
     }
 
-    private void CacheChildTransforms()
-    {
+    private void CacheChildTransforms() {
         _allChildTransforms = GetComponentsInChildren<Transform>(includeInactive: true);
     }
 
-    private bool IsARUser()
-    {
-        return DeviceManager.Instance != null && DeviceManager.Instance.IsAR();
-    }
-
-    public Transform GetAnchorPoint() => anchorPoint;
-
     [ServerRpc(RequireOwnership = false)]
-    public void RequestOwnershipServerRpc(ServerRpcParams rpcParams = default)
-    {
+    public void RequestOwnershipServerRpc(ServerRpcParams rpcParams = default) {
         NetworkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
     }
 
     [ServerRpc]
-    public void ReturnOwnershipServerRpc()
-    {
+    public void ReturnOwnershipServerRpc() {
         NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
     }
 
     public override void OnNetworkDespawn()
     {
-        _worldTransform.OnValueChanged -= OnWorldTransformChanged;
-        _scale.OnValueChanged -= OnScaleChanged;
-        
-        if (SharedObjectRegistry.Instance != null)
-            SharedObjectRegistry.Instance.UnregisterObject(_typeId);
+        if (!IsARUser()) _sharedPose.OnValueChanged -= OnSharedPoseChanged;
+
+        SharedObjectRegistry.Instance?.UnregisterObject(_typeId);
         
         base.OnNetworkDespawn();
     }
+
+    void OnValidate() { UpdateVisibility(false); }
 }

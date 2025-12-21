@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 /// <summary>
 /// A child object that can be grabbed and moved, but maintains its relationship
-/// to the parent SharedObject's anchor. Example: A Sun that orbits above a solar panel.
+/// to a parenting anchor.
 /// </summary>
 public class SharedGrabbable : NetworkBehaviour
 {
@@ -20,14 +20,8 @@ public class SharedGrabbable : NetworkBehaviour
 
     public event Action<bool> OnDockedChanged;
 
-    private NetworkVariable<Vector3> _relativePosition = new NetworkVariable<Vector3>(
-        Vector3.zero,
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server
-    );
-
-    private NetworkVariable<Quaternion> _relativeRotation = new NetworkVariable<Quaternion>(
-        Quaternion.identity,
+    private NetworkVariable<NetworkPose> _relativePose = new NetworkVariable<NetworkPose>(
+        new NetworkPose(Vector3.zero, Quaternion.identity),
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
@@ -38,33 +32,23 @@ public class SharedGrabbable : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
-    private Transform _anchorTransform;
-    private Vector3 _initialLocalPosition;
-    private Quaternion _initialLocalRotation;
+    private Transform _anchor;
     private bool _isBeingGrabbed = false;
 
-    private void Awake()
-    {
-        ValidateComponents();
-        
-        _initialLocalPosition = transform.localPosition;
-        _initialLocalRotation = transform.localRotation;
-    }
+    private void Awake() { ValidateComponents(); }
 
     private void ValidateComponents()
     {
-        if (parentSharedObject == null)
-        {
-            parentSharedObject = GetComponentInParent<SharedObject>();
+        if (parentSharedObject == null) {
+            parentSharedObject = transform.root.GetComponent<SharedObject>();
             if (parentSharedObject == null)
-                Debug.LogError($"[{gameObject.name}] SharedDockableObject requires a SharedObject parent!", this);
+                Debug.LogError($"[{gameObject.name}] SharedGrabbable requires a SharedObject parent!", this);
         }
 
-        if (grabInteractable == null)
-        {
+        if (grabInteractable == null) {
             grabInteractable = GetComponent<XRGrabInteractable>();
             if (grabInteractable == null)
-                Debug.LogError($"[{gameObject.name}] No XRGrabInteractable found!", this);
+                Debug.LogError($"[{gameObject.name}] SharedGrabbable requires a XRGrabInteractable!", this);
         }
     }
 
@@ -72,121 +56,87 @@ public class SharedGrabbable : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        _anchorTransform = transform.parent;
+        _anchor = parentSharedObject.GetAnchorPoint();
 
-        if (IsServer)
-        {
-            _isDocked.Value = startDocked;
-            _relativePosition.Value = _initialLocalPosition;
-            _relativeRotation.Value = _initialLocalRotation;
+        if (IsServer) {
+            _isDocked.Value     = startDocked;
+            _relativePose.Value = new NetworkPose(transform.localPosition, transform.localRotation);
         }
 
-        _relativePosition.OnValueChanged += OnRelativePositionChanged;
-        _relativeRotation.OnValueChanged += OnRelativeRotationChanged;
-        _isDocked.OnValueChanged += OnDockedStateChanged;
+        _relativePose.OnValueChanged += OnRelativePoseChanged;
+        _isDocked.OnValueChanged     += OnDockedStateChanged;
 
         if (grabInteractable != null) {
             grabInteractable.selectEntered.AddListener(OnGrabbed);
             grabInteractable.selectExited.AddListener(OnReleased);
         }
 
-        ApplyRelativeTransform();
+        ApplyRelativePose();
         UpdateDockingState(_isDocked.Value);
     }
 
     private void Update()
     {
         if (IsOwner && (_isBeingGrabbed || !_isDocked.Value))
-            UpdateRelativeTransform();
-
-        if (enableAutoUndock && _isDocked.Value && _isBeingGrabbed)
-            CheckAutoUndock();
+            UpdateRelativePose();
     }
 
-    private void OnGrabbed(SelectEnterEventArgs args)
-    {
+    private void OnGrabbed(SelectEnterEventArgs args) {
         _isBeingGrabbed = true;
-
-        if (parentSharedObject != null)
-        {
-            NetworkObject parentNetObj = parentSharedObject.GetComponent<NetworkObject>();
-            if (parentNetObj != null && !parentNetObj.IsOwner)
-            {
-                parentSharedObject.RequestOwnershipServerRpc();
-            }
-        }
+        if (!IsOwner) parentSharedObject.RequestOwnershipServerRpc();
     }
 
-    private void OnReleased(SelectExitEventArgs args)
-    {
+    private void OnReleased(SelectExitEventArgs args) {
         _isBeingGrabbed = false;
+        if (IsOwner && !IsServer) parentSharedObject?.ReturnOwnershipServerRpc();
 
-        if (parentSharedObject != null && !IsServer)
-        {
-            parentSharedObject.ReturnOwnershipServerRpc();
-        }
+        if (enableAutoUndock && _isDocked.Value)
+            CheckAutoUndock();
     }
 
     private void CheckAutoUndock()
     {
-        if (_anchorTransform == null) return;
+        if (_anchor == null) return;
 
-        float distance = Vector3.Distance(transform.position, _anchorTransform.position);
+        float distance = Vector3.Distance(transform.position, _anchor.position);
         
-        if (distance > autoUndockDistance && _isDocked.Value)
+        if (_isDocked.Value && distance > autoUndockDistance)
             SetDockedServerRpc(false);
     }
 
-    private void UpdateRelativeTransform()
+    public void SetDocked(bool docked) { SetDockedServerRpc(docked); }
+
+    private void UpdateRelativePose()
     {
-        if (_anchorTransform == null) return;
+        if (_anchor == null) return;
 
-        // Calculate position and rotation relative to anchor
-        Vector3 newRelativePos = _anchorTransform.InverseTransformPoint(transform.position);
-        Quaternion newRelativeRot = Quaternion.Inverse(_anchorTransform.rotation) * transform.rotation;
+        Vector3 newRelativePos    = _anchor.InverseTransformPoint(transform.position);
+        Quaternion newRelativeRot = Quaternion.Inverse(_anchor.rotation) * transform.rotation;
 
-        // Only update if changed significantly (reduce network traffic)
-        if (Vector3.Distance(newRelativePos, _relativePosition.Value) > 0.001f ||
-            Quaternion.Angle(newRelativeRot, _relativeRotation.Value) > 0.1f)
-        {
-            UpdateRelativeTransformServerRpc(newRelativePos, newRelativeRot);
+        if (Vector3.Distance(newRelativePos, _relativePose.Value.position) > 0.001f ||
+            Quaternion.Angle(newRelativeRot, _relativePose.Value.rotation) > 0.1f) {
+            UpdateRelativePoseServerRpc(newRelativePos, newRelativeRot);
         }
     }
 
-    private void ApplyRelativeTransform()
+    private void ApplyRelativePose()
     {
-        if (_anchorTransform == null || _isBeingGrabbed) return;
+        if (_anchor == null || _isBeingGrabbed) return;
 
-        // Convert relative transform to world space
-        Vector3 worldPos = _anchorTransform.TransformPoint(_relativePosition.Value);
-        Quaternion worldRot = _anchorTransform.rotation * _relativeRotation.Value;
+        Vector3 newPosition    = _anchor.TransformPoint(_relativePose.Value.position);
+        Quaternion newRotation = _anchor.rotation * _relativePose.Value.rotation;
 
-        transform.SetPositionAndRotation(worldPos, worldRot);
+        transform.SetPositionAndRotation(newPosition, newRotation);
     }
 
     private void UpdateDockingState(bool isDocked)
     {
-        if (isDocked) {
-            transform.SetParent(_anchorTransform);
-            transform.localPosition = _initialLocalPosition;
-            transform.localRotation = _initialLocalRotation;
-        }
-        else {
-            transform.SetParent(_anchorTransform);
-        }
+        Debug.Log(isDocked);
+        transform.SetParent(isDocked ? _anchor : parentSharedObject.transform);
     }
 
-    // Network variable callbacks
-    private void OnRelativePositionChanged(Vector3 oldValue, Vector3 newValue)
-    {
-        if (!IsOwner)
-            ApplyRelativeTransform();
-    }
-
-    private void OnRelativeRotationChanged(Quaternion oldValue, Quaternion newValue)
-    {
-        if (!IsOwner)
-            ApplyRelativeTransform();
+    private void OnRelativePoseChanged(NetworkPose oldValue, NetworkPose newValue) {
+        if (!IsOwner) ApplyRelativePose();
     }
 
     private void OnDockedStateChanged(bool oldValue, bool newValue)
@@ -195,53 +145,22 @@ public class SharedGrabbable : NetworkBehaviour
         OnDockedChanged?.Invoke(newValue);
     }
 
-    // Server RPCs
-    [ServerRpc]
-    private void UpdateRelativeTransformServerRpc(Vector3 position, Quaternion rotation)
-    {
-        _relativePosition.Value = position;
-        _relativeRotation.Value = rotation;
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateRelativePoseServerRpc(Vector3 position, Quaternion rotation) {
+        _relativePose.Value = new NetworkPose(position, rotation);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetDockedServerRpc(bool docked)
-    {
+    private void SetDockedServerRpc(bool docked) {
         _isDocked.Value = docked;
-    }
-
-    public void SetDocked(bool docked)
-    {
-        SetDockedServerRpc(docked);
-    }
-
-    public void ResetToDockedPosition()
-    {
-        if (IsServer) {
-            _relativePosition.Value = _initialLocalPosition;
-            _relativeRotation.Value = _initialLocalRotation;
-            _isDocked.Value = true;
-        }
-        else {
-            ResetToDockedPositionServerRpc();
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void ResetToDockedPositionServerRpc()
-    {
-        _relativePosition.Value = _initialLocalPosition;
-        _relativeRotation.Value = _initialLocalRotation;
-        _isDocked.Value = true;
     }
 
     public override void OnNetworkDespawn()
     {
-        _relativePosition.OnValueChanged -= OnRelativePositionChanged;
-        _relativeRotation.OnValueChanged -= OnRelativeRotationChanged;
-        _isDocked.OnValueChanged -= OnDockedStateChanged;
+        _relativePose.OnValueChanged -= OnRelativePoseChanged;
+        _isDocked.OnValueChanged     -= OnDockedStateChanged;
 
-        if (grabInteractable != null)
-        {
+        if (grabInteractable != null) {
             grabInteractable.selectEntered.RemoveListener(OnGrabbed);
             grabInteractable.selectExited.RemoveListener(OnReleased);
         }

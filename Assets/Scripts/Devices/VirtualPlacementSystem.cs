@@ -71,14 +71,14 @@ public class VirtualPlacementSystem : MonoBehaviour
         Debug.Log(prefab.name);
         // Validate object
         SharedObject sharedObject = prefab.GetComponent<SharedObject>();
-        if (sharedObject == null || sharedObject.vrProxyObject == null) {
+        if (sharedObject == null || sharedObject.GetVRProxy() == null) {
             Debug.LogError($"Prefab '{prefab.name}' is missing proxy component!");
             return;
         }
 
         // Instantiate the object's preview
-        objectPreview = Instantiate(sharedObject.vrProxyObject);
-        objectPreview.transform.localScale = sharedObject.vrProxyObject.transform.localScale * 0.075f;
+        objectPreview = Instantiate(sharedObject.GetVRProxy());
+        objectPreview.transform.localScale = sharedObject.GetVRProxy().transform.localScale * 0.075f;
         PreparePlacementPreview();
     }
 

@@ -63,16 +63,15 @@ public class ObjectPrefabDatabase : ScriptableObject
         return _prefabCache.ContainsKey(typeId.value);
     }
 
-    public int Count {
-        get {
-            if (_prefabCache == null) Initialize();
-            return _prefabCache.Count;
-        }
-    }
     public bool IsEmpty => Count == 0;
+
+    public int Count {
+        get { if (_prefabCache == null) Initialize();
+              return _prefabCache.Count; }
+    }
+
     public PrefabEntry GetEntryAt(int index) {
-        if (index < 0 || index >= prefabMappings.Count)
-        {
+        if (index < 0 || index >= prefabMappings.Count) {
             Debug.LogWarning($"Index {index} out of range. Database has {prefabMappings.Count} entries.");
             return null;
         }

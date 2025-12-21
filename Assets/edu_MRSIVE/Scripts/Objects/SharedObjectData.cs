@@ -11,8 +11,7 @@ public struct ObjectTypeId : INetworkSerializable, System.IEquatable<ObjectTypeI
 
     public ObjectTypeId(string id) => value = id;
 
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-    {
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
         serializer.SerializeValue(ref value);
     }
 
@@ -82,7 +81,7 @@ public struct AnchorRelativeTransform : INetworkSerializable
 }
 
 /// <summary>
-/// Information regarding a to-be-placed object whether  by 
+/// Information regarding a to-be-placed object whether by 
 ///          a) AR marker spotting
 ///          b) VR manual placement
 /// </summary>

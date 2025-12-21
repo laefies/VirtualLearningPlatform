@@ -10,7 +10,6 @@ public class SharedObjectRegistry : NetworkBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private ObjectPrefabDatabase prefabDatabase;
-    [SerializeField] private Transform defaultVRSpawnPoint;
 
     private Dictionary<string, SharedObject> _activeObjects = new Dictionary<string, SharedObject>();
 
@@ -38,45 +37,48 @@ public class SharedObjectRegistry : NetworkBehaviour
         ulong senderId = rpcParams.Receive.SenderClientId;
         
         // Get or create the shared object
-        SharedObject sharedObj = GetOrSpawnObject(info.typeId);
+        SharedObject sharedObj = GetOrSpawnObject(info);
         if (sharedObj == null) return;
 
         // Notify the specific client that placed/detected it
-        sharedObj.NotifyClientDetectionClientRpc(info.localPose, info.detectedSize,
+        sharedObj.NotifyClientDetectionClientRpc(info.localPose,
             new ClientRpcParams {
                 Send = new ClientRpcSendParams
                 { TargetClientIds = new ulong[] { senderId } }
             });
     }
 
-    private SharedObject GetOrSpawnObject(ObjectTypeId typeId)
+    private SharedObject GetOrSpawnObject(ObjectPlacementInfo info)
     {
-        // Check if the object type has already been spawned
+        // 1. Obtain the type of object that was placed/detected
+        ObjectTypeId typeId = info.typeId;
+        
+        // 2. Check if this type's associated object is already in-scene
         if (_activeObjects.TryGetValue(typeId.value, out SharedObject existing))
             return existing;
 
-        // Otherwise, get associated prefab from database
+        // 3. If not in-scene yet, fetch the associated object from the database
         GameObject prefab = prefabDatabase.GetPrefab(typeId);
         if (prefab == null) {
             Debug.LogWarning($"No prefab found for object type: {typeId}");
             return null;
         }
 
-        // Initially place at default spawn position, for VR users
-        Vector3 spawnPos    = defaultVRSpawnPoint != null ? defaultVRSpawnPoint.position : Vector3.zero;
-        Quaternion spawnRot = defaultVRSpawnPoint != null ? defaultVRSpawnPoint.rotation : Quaternion.identity;
+        // 4. Place the object at the default spawn position, initially
+        GameObject instance = Instantiate(prefab, transform.position, transform.rotation);
+        instance.transform.localScale *= info.detectedSize;
 
-        GameObject instance = Instantiate(prefab, spawnPos, spawnRot);
+        // 5. Spawn the object for all users
         NetworkObject networkObject = instance.GetComponent<NetworkObject>();
-        
         if (networkObject == null) {
             Debug.LogError($"Prefab for {typeId} is missing NetworkObject component!");
             Destroy(instance);
             return null;
         }
-
+    
         networkObject.Spawn(true);
 
+        // 6. Ensure the right type of object was instantiated, and save it
         SharedObject sharedObject = instance.GetComponent<SharedObject>();
         if (sharedObject != null) {
             sharedObject.Initialize(typeId);
@@ -86,14 +88,10 @@ public class SharedObjectRegistry : NetworkBehaviour
         return sharedObject;
     }
 
-    public SharedObject GetObject(ObjectTypeId typeId)
-    {
+    public SharedObject GetObject(ObjectTypeId typeId) {
         _activeObjects.TryGetValue(typeId.value, out SharedObject sharedObject);
         return sharedObject;
     }
 
-    public void UnregisterObject(ObjectTypeId typeId)
-    {
-        _activeObjects.Remove(typeId.value);
-    }
+    public void UnregisterObject(ObjectTypeId typeId) { _activeObjects.Remove(typeId.value); }
 }
