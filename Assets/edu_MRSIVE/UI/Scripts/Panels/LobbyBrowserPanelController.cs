@@ -78,7 +78,7 @@ public class LobbyBrowserPanelController : MonoBehaviour
     }
 
     private async void OnCreateLobbyClicked() { 
-        await LobbyManager?.CreateLobbyAsync(PlayerManager.Instance.PlayerName); 
+        await LobbyManager?.CreateLobbyAsync(LocalPlayer.Instance.PlayerName); 
     }
 
     private async void OnRefreshLobbyListClicked() { LobbyManager?.RefreshLobbyListAsync(); }

@@ -56,7 +56,7 @@ public class FollowPlayerUI : MonoBehaviour
 
     // Cached values
     private Transform _transform;
-    private DeviceManager _deviceManager;
+    private LocalPlayer _player;
     private UIBlock _novaUIBlock;
 
     // Single tracking state
@@ -77,7 +77,7 @@ public class FollowPlayerUI : MonoBehaviour
     protected void Awake()
     {
         _transform = transform;
-        _deviceManager = DeviceManager.Instance;
+        _player = LocalPlayer.Instance;
         _manualRepositionHandle ??= GetComponent<XRGrabInteractable>();
         _novaUIBlock ??= GetComponent<UIBlock>();
         
@@ -130,7 +130,7 @@ public class FollowPlayerUI : MonoBehaviour
         // Skip automatic repositioning while being manually moved
         if (_isBeingManuallyRepositioned) return;
 
-        Pose headPose = _deviceManager.GetHeadPose();
+        Pose headPose = _player.GetHeadPose();
         if (ShouldReposition(headPose))
             RepositionUI(headPose);
 
@@ -144,7 +144,7 @@ public class FollowPlayerUI : MonoBehaviour
     {
         if (!_isBeingManuallyRepositioned || !_lockRotationAxes) return;
 
-        Pose headPose = _deviceManager.GetHeadPose();
+        Pose headPose = _player.GetHeadPose();
         Vector3 toPlayerFlat = headPose.position - _transform.position;
         toPlayerFlat.y = 0f;
 
@@ -176,7 +176,7 @@ public class FollowPlayerUI : MonoBehaviour
 
     private void RepositionUI()
     {
-        RepositionUI(_deviceManager.GetHeadPose());
+        RepositionUI(_player.GetHeadPose());
     }
 
     private void RepositionUI(Pose headPose)
@@ -230,7 +230,7 @@ public class FollowPlayerUI : MonoBehaviour
         _isBeingManuallyRepositioned = false;
 
         // Calculate new parameters from current transform
-        Pose headPose = _deviceManager.GetHeadPose();
+        Pose headPose = _player.GetHeadPose();
 
         // Calculate new forward distance
         Vector3 headForward = headPose.rotation * Vector3.forward;

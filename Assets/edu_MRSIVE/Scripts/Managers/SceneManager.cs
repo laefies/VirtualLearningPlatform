@@ -76,11 +76,11 @@ public class SceneManager : MonoBehaviour
     private async void MockBootstraping()
     {
         // know what type of device and spawn VR environment if needed
-        if (PlayerManager.Instance.GetDeviceInfo()?.deviceType != DeviceType.AR)
+        if (PlayerSpawner.Instance.GetDetectedDevice()?.deviceType != DeviceType.AR)
             SpawnVREnvironmentForCurrentScene();
 
         // spawn device
-        PlayerManager.Instance.SpawnDevice();
+        PlayerSpawner.Instance?.SpawnLocalPlayer();
 
         // FollowPlayerUI aa = Instantiate(loadingScreen).GetComponent<FollowPlayerUI>();
         // aa.ForceReposition();
@@ -207,8 +207,8 @@ public class SceneManager : MonoBehaviour
         currentExperience = null;
 
         Debug.Log("[SceneManager] Menu loaded");
-        OnMenuLoaded?.Invoke();
-        
+
+        if (!LocalPlayer.Instance.IsAR) SpawnVREnvironmentForCurrentScene();
         isTransitioning = false;
     }
 
@@ -227,8 +227,8 @@ public class SceneManager : MonoBehaviour
         currentExperience = null;
 
         Debug.Log("[SceneManager] Returned to menu");
-        OnMenuLoaded?.Invoke();
 
+        if (!LocalPlayer.Instance.IsAR) SpawnVREnvironmentForCurrentScene();
         isTransitioning = false;
     }
 
@@ -257,8 +257,8 @@ public class SceneManager : MonoBehaviour
         currentExperience = experience;
 
         Debug.Log($"[SceneManager] Successfully loaded experience: {experience.experienceName}");
-        OnExperienceLoaded?.Invoke(experience);
 
+        if (!LocalPlayer.Instance.IsAR) SpawnVREnvironmentForCurrentScene();
         isTransitioning = false;
     }
 

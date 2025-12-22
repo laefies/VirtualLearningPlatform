@@ -51,7 +51,7 @@ public class LobbyListItem : MonoBehaviour
 
         joinLobbyButton.IsInteractable = false;
 
-        bool joined = await LobbyManager?.JoinLobbyAsync(lobby, PlayerManager.Instance.PlayerName);
+        bool joined = await LobbyManager?.JoinLobbyAsync(lobby, LocalPlayer.Instance.PlayerName);
         if (joined) await LobbyManager?.RefreshLobbyListAsync();
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 497bb8935bfb2a147b664685b48c6e3e, type: 3}
   m_Name: TestExperience1
   m_EditorClassIdentifier: 
-  experienceName: Experience
+  experienceName: Experience 1
   experienceSubtitle: 0 Experiences
   displayIcon: {fileID: 21300000, guid: a1934139d916ad84a993961628734f4d, type: 3}
   sceneName: SolarExperience

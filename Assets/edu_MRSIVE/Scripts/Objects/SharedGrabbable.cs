@@ -131,7 +131,6 @@ public class SharedGrabbable : NetworkBehaviour
 
     private void UpdateDockingState(bool isDocked)
     {
-        Debug.Log(isDocked);
         transform.SetParent(isDocked ? _anchor : parentSharedObject.transform);
     }
 

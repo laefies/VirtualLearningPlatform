@@ -58,7 +58,7 @@ public class VirtualPlacementSystem : MonoBehaviour
             return;
         }
 
-        // Destroy previously previewed object (if theye exist)
+        // Destroy previously previewed object (if they exist)
         if (objectPreview) {
             Destroy(objectPreview);
             objectPreview = null;
@@ -68,7 +68,6 @@ public class VirtualPlacementSystem : MonoBehaviour
         objectIndex = (objectIndex + 1) % objectDatabase.Count;
         GameObject prefab = objectDatabase.GetEntryAt(objectIndex).prefab;
 
-        Debug.Log(prefab.name);
         // Validate object
         SharedObject sharedObject = prefab.GetComponent<SharedObject>();
         if (sharedObject == null || sharedObject.GetVRProxy() == null) {

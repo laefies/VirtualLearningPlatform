@@ -24,7 +24,7 @@ public class SharedObject : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
-    private bool IsARUser() => DeviceManager.Instance.IsAR();
+    private bool IsARUser() => LocalPlayer.Instance.IsAR;
     public GameObject GetVRProxy()     => vrProxyObject;
     public Transform  GetAnchorPoint() => anchorPoint;
 
@@ -45,7 +45,7 @@ public class SharedObject : NetworkBehaviour
             _sharedPose.OnValueChanged += OnSharedPoseChanged;
             ApplySharedPose(); // And apply the starting one
 
-            // Immediately set as spotted - VR users always see the shared objects
+            // Immediately set as spotted - VR users should always see the shared objects
             _isDetectedByLocalUser = true;
         }
         
@@ -144,5 +144,4 @@ public class SharedObject : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
-    void OnValidate() { UpdateVisibility(false); }
 }
