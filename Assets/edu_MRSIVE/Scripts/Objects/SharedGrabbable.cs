@@ -129,8 +129,7 @@ public class SharedGrabbable : NetworkBehaviour
         transform.SetPositionAndRotation(newPosition, newRotation);
     }
 
-    private void UpdateDockingState(bool isDocked)
-    {
+    private void UpdateDockingState(bool isDocked) {
         transform.SetParent(isDocked ? _anchor : parentSharedObject.transform);
     }
 
