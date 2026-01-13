@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Nova;
 
 public class SolarPanelExplorer : MonoBehaviour
 {
@@ -29,9 +30,9 @@ public class SolarPanelExplorer : MonoBehaviour
     public AnimationCurve easeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
     [Header("UI Settings")]
-    public Canvas infoCanvas;
-    public UnityEngine.UI.Text layerNameText;
-    public UnityEngine.UI.Text descriptionText;
+    public GameObject infoCanvas;
+    public TextBlock  layerNameText;
+    public TextBlock  descriptionText;
     public UnityEngine.UI.Button nextButton;
     public UnityEngine.UI.Button prevButton;
     public UnityEngine.UI.Button closeButton;
@@ -54,7 +55,7 @@ public class SolarPanelExplorer : MonoBehaviour
         SetupUI();
         
         if (infoCanvas != null)
-            infoCanvas.gameObject.SetActive(false);
+            infoCanvas.SetActive(false);
     }
 
     void InitializeArrays()
@@ -233,7 +234,7 @@ public class SolarPanelExplorer : MonoBehaviour
         
         // Show UI and highlight first layer
         if (infoCanvas != null)
-            infoCanvas.gameObject.SetActive(true);
+            infoCanvas.SetActive(true);
         
         HighlightLayer(0);
     }
@@ -249,7 +250,7 @@ public class SolarPanelExplorer : MonoBehaviour
         }
         
         if (infoCanvas != null)
-            infoCanvas.gameObject.SetActive(false);
+            infoCanvas.SetActive(false);
         
         float elapsed = 0f;
         
@@ -376,9 +377,9 @@ public class SolarPanelExplorer : MonoBehaviour
         if (index < 0 || index >= layerDescriptions.Count) return;
         
         if (layerNameText != null)
-            layerNameText.text = layerDescriptions[index].layerName;
+            layerNameText.Text = layerDescriptions[index].layerName;
         
         if (descriptionText != null)
-            descriptionText.text = layerDescriptions[index].description;
+            descriptionText.Text = layerDescriptions[index].description;
     }
 }

@@ -295,12 +295,10 @@ public class NovaXRInputHandler : MonoBehaviour
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[] {
-                new GradientColorKey(color, 0f),
-                new GradientColorKey(color, 1f)
+                new GradientColorKey(color, 0f), new GradientColorKey(color, 1f)
             },
             new GradientAlphaKey[] {
-                new GradientAlphaKey(1f, 0f),
-                new GradientAlphaKey(1f, 1f)
+                new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f)
             }
         );
         

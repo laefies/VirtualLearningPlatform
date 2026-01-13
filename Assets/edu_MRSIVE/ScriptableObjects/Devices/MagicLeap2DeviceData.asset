@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deviceName: Magic Leap 2
   deviceType: 0
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 1888926882335728892, guid: f897651ef7e4c1545b6eaf152d6f2621,
+    type: 3}

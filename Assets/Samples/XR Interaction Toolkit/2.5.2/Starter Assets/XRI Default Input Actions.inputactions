@@ -907,11 +907,11 @@
                 },
                 {
                     "name": "",
-                    "id": "a5bf6a12-a026-46d1-a793-7252c49aaf66",
-                    "path": "<MetaAimHand>{LeftHand}/indexPressed",
-                    "interactions": "Press(pressPoint=0.75)",
+                    "id": "1cef4ff5-9927-44c2-8d8c-4f60d91d107a",
+                    "path": "<HandInteraction>{LeftHand}/pinchValue",
+                    "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
