@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Nova;
+using UnityEngine.InputSystem;
 
 public class SolarPanelExplorer : MonoBehaviour
 {
@@ -9,8 +10,9 @@ public class SolarPanelExplorer : MonoBehaviour
     public class LayerInfo
     {
         public string layerName;
-        [TextArea(3, 10)]
-        public string description;
+
+        [Multiline(5)]  // Shows 5 lines
+        public List<string> layerText = new List<string>();
     }
 
     [Header("Layer Configuration")]
@@ -36,23 +38,27 @@ public class SolarPanelExplorer : MonoBehaviour
     public UnityEngine.UI.Button nextButton;
     public UnityEngine.UI.Button prevButton;
     public UnityEngine.UI.Button closeButton;
-    
+    public List<Toggle> tabToggles = new List<Toggle>();
+
     private Vector3[] closedPositions;
     private Vector3[] expandedPositions;
     private Quaternion[] originalRotations;
     private Vector3[] originalScales;
     
     private int currentLayerIndex = -1;
+    private int currentTabIndex = 0;
     private bool isExpanded = false;
     private bool isAnimating = false;
     
     private List<Renderer> layerRenderers = new List<Renderer>();
     private List<MaterialPropertyBlock> propertyBlocks = new List<MaterialPropertyBlock>();
+    public GameObject sun;
 
     void Start()
     {
         InitializeArrays();
         SetupUI();
+        SwitchTab(0);
         
         if (infoCanvas != null)
             infoCanvas.SetActive(false);
@@ -91,18 +97,6 @@ public class SolarPanelExplorer : MonoBehaviour
             }
         }
         
-        // Auto-populate layer descriptions if empty
-        if (layerDescriptions.Count == 0)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                layerDescriptions.Add(new LayerInfo
-                {
-                    layerName = $"Layer {i + 1}: {transform.GetChild(i).name}",
-                    description = "Add description here..."
-                });
-            }
-        }
     }
 
     void SetupUI()
@@ -166,11 +160,20 @@ public class SolarPanelExplorer : MonoBehaviour
         }
     }
 
+    public void ChangeExplorerState()
+    {
+        if (!isExpanded)
+            StartExplorer();
+        else
+            CloseExplorer();
+    }
+
     [ContextMenu("Start Explorer")]
     public void StartExplorer()
     {
         if (isAnimating) return;
         StartCoroutine(ExpandLayers());
+        sun.active = false;
     }
 
     [ContextMenu("Close Explorer")]
@@ -277,6 +280,8 @@ public class SolarPanelExplorer : MonoBehaviour
         isExpanded = false;
         isAnimating = false;
         currentLayerIndex = -1;
+
+        sun.active = true;
     }
 
     IEnumerator HighlightLayerCoroutine(int index)
@@ -293,7 +298,7 @@ public class SolarPanelExplorer : MonoBehaviour
         Transform layer = transform.GetChild(index);
         
         // Update UI text
-        UpdateUI(index);
+        UpdateUI(index, currentTabIndex);
         
         // Animate highlight
         float elapsed = 0f;
@@ -316,14 +321,6 @@ public class SolarPanelExplorer : MonoBehaviour
             layer.localPosition = Vector3.Lerp(startPosition, targetPosition, t);
             layer.localRotation = Quaternion.Slerp(originalRotations[index], targetRotation, t);
             layer.localScale = Vector3.Lerp(originalScales[index], targetScale, t);
-            
-            // Color lerp
-            if (layerRenderers[index] != null)
-            {
-                // Color c = Color.Lerp(normalColor, highlightColor, t);
-                // propertyBlocks[index].SetColor("_Color", c);
-                // layerRenderers[index].SetPropertyBlock(propertyBlocks[index]);
-            }
             
             yield return null;
         }
@@ -349,13 +346,6 @@ public class SolarPanelExplorer : MonoBehaviour
             layer.localRotation = Quaternion.Slerp(startRotation, originalRotations[index], t);
             layer.localScale = Vector3.Lerp(startScale, originalScales[index], t);
             
-            if (layerRenderers[index] != null)
-            {
-                // Color c = Color.Lerp(highlightColor, normalColor, t);
-                // propertyBlocks[index].SetColor("_Color", c);
-                // layerRenderers[index].SetPropertyBlock(propertyBlocks[index]);
-            }
-            
             yield return null;
         }
         
@@ -372,14 +362,30 @@ public class SolarPanelExplorer : MonoBehaviour
         }
     }
 
-    void UpdateUI(int index)
+    public void SwitchTab(int newTabIndex)
     {
-        if (index < 0 || index >= layerDescriptions.Count) return;
+        if (newTabIndex < 0 || newTabIndex >= tabToggles.Count) return;
+
+        currentTabIndex = newTabIndex;
+
+        for(int i = 0; i < tabToggles.Count; i++) {
+            tabToggles[i].ToggledOn = i == newTabIndex;
+        }
+
+        UpdateUI(currentLayerIndex, newTabIndex);
+    }
+
+    void UpdateUI(int layerIndex, int tabIndex)
+    {
+        if (layerIndex < 0 || layerIndex >= layerDescriptions.Count) return;
         
         if (layerNameText != null)
-            layerNameText.Text = layerDescriptions[index].layerName;
+            layerNameText.Text = layerDescriptions[layerIndex].layerName;
         
         if (descriptionText != null)
-            descriptionText.Text = layerDescriptions[index].description;
+            descriptionText.Text = layerDescriptions[layerIndex].layerText[tabIndex];
     }
 }
+
+
+

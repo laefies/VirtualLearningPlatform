@@ -7,14 +7,14 @@ public class Positioner : MonoBehaviour
 
     void Start() {
         _player = Camera.main.transform;
-        if (target == null || _player == null) return;
+        if (_player == null) return;
     }
 
     void LateUpdate() {
-        if (target == null || _player == null) return;
+        if (_player == null) return;
 
         // Keep attached to the target position
-        transform.position = target.position;
+        if (target != null) transform.position = target.position;
 
         // Face player while staying horizontally aligned
         Vector3 targetDirection = _player.position - transform.position; 
