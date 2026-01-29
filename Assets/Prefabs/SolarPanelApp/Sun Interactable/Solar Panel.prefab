@@ -341,8 +341,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5976501683857516748}
-  - component: {fileID: 1111766608381796826}
-  - component: {fileID: 2837992440174186195}
   - component: {fileID: 5569358868949657490}
   m_Layer: 0
   m_Name: Solar Panel
@@ -372,41 +370,6 @@ Transform:
   - {fileID: 1041015935229250678}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1111766608381796826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6465792687930454646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2e1b8389eaa0624bad1eb57647d7dc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spacing: 0.4
-  animationSpeed: 3
-  isOpen: 0
---- !u!114 &2837992440174186195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6465792687930454646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e5f17b2027a96840b39872b6e1cf6ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectsToFade:
-  - {fileID: 3565793041590085073}
-  - {fileID: 856465678935909443}
-  - {fileID: 1423881349217547429}
-  - {fileID: 7461450353928420497}
-  - {fileID: 9125858937204066545}
-  fadeDuration: 0.2
-  fadeIn: 0
 --- !u!65 &5569358868949657490
 BoxCollider:
   m_ObjectHideFlags: 0

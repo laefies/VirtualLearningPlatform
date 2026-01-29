@@ -60,8 +60,7 @@ public class SolarPanelExplorer : MonoBehaviour
         SetupUI();
         SwitchTab(0);
         
-        if (infoCanvas != null)
-            infoCanvas.SetActive(false);
+        infoCanvas?.SetActive(false);
     }
 
     void InitializeArrays()
@@ -101,14 +100,11 @@ public class SolarPanelExplorer : MonoBehaviour
 
     void SetupUI()
     {
-        if (nextButton != null)
-            nextButton.onClick.AddListener(NextLayer);
+        nextButton?.onClick.AddListener(NextLayer);
         
-        if (prevButton != null)
-            prevButton.onClick.AddListener(PreviousLayer);
+        prevButton?.onClick.AddListener(PreviousLayer);
         
-        if (closeButton != null)
-            closeButton.onClick.AddListener(CloseExplorer);
+        closeButton?.onClick.AddListener(CloseExplorer);
     }
 
     void Update()
@@ -236,8 +232,7 @@ public class SolarPanelExplorer : MonoBehaviour
         isAnimating = false;
         
         // Show UI and highlight first layer
-        if (infoCanvas != null)
-            infoCanvas.SetActive(true);
+        infoCanvas?.SetActive(true);
         
         HighlightLayer(0);
     }
@@ -386,6 +381,3 @@ public class SolarPanelExplorer : MonoBehaviour
             descriptionText.Text = layerDescriptions[layerIndex].layerText[tabIndex];
     }
 }
-
-
-
